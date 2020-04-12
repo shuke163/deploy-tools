@@ -1,0 +1,28 @@
+- name: change /etc/sysctl.conf
+  lineinfile:
+    dest: /etc/sysctl.conf
+    line: "{{ item.key }} = {{ item.value }}"
+    regexp: "{{ item.key }}"
+    state: present
+  with_items:
+    - {key: "vm.max_map_count", value: 2048000}
+    - {key: "kernel.shmmax", value: 4294967296}
+    - {key: "net.core.rmem_default", value: 67108864}
+    - {key: "net.core.wmem_default", value: 67108864}
+    - {key: "net.core.rmem_max", value: 67108864}
+    - {key: "net.core.wmem_max", value: 67108864}
+    - {key: "net.core.netdev_max_backlog", value: 2000}
+    - {key: "net.ipv4.tcp_timestamps", value: 1}
+    - {key: "net.ipv4.tcp_sack", value: 1}
+
+#- name: Change kernel
+#  shell: /sbin/sysctl -p 2>/dev/null; echo 'ok'
+
+- name: Set "net.ipv4.tcp_window_scaling" to 1 in /etc/sysctl.conf and reload if necessary
+  sysctl:
+    name: "net.ipv4.tcp_window_scaling"
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+    sysctl_file: "{{ sysctl_conf }}"

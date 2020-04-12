@@ -1,0 +1,59 @@
+---
+# defaults file for 23to26
+
+base_dir: "/data"
+tmp_path: "{{ base_dir }}/tmp"
+app_dir: "{{ base_dir }}/app"
+mgn_dir: "{{ app_dir }}/www"
+nginx_dir: "{{ app_dir }}/rcx.nginx"
+logs_dir: '{{ base_dir }}/logs'
+supervisor_conf_dir: "{{ base_dir }}/supervisord/etc"
+backup_dir: "{{ base_dir }}/backup"
+package_path: "packages"
+rcx_pkg_path: "{{ package_path }}/rcx"
+JAVA_PATH: "/data/app/jre/bin"
+
+# userrcx_pkg_name
+user: "rc_cloud"
+group: "rc_cloud"
+
+# zk list
+zk_list: ["127.0.0.1:2181",]
+
+# 服务进程名称
+rcx_server_app_name: "rcx-server.inst-0"
+rcx_management_app_name: "rcx-management.inst-0"
+
+mysql:
+  db_root: "root"
+  db_host: "127.0.0.1"
+  db_port: 3306
+  db_user: im
+  db_pwd: "1qazCDE#"
+  db_name: "comcloud_x"
+  encoding: "utf8mb4"
+  management_db_name: "management"
+
+backup_file_list:
+  - { src: "{{ app_dir }}/{{ rcx_server_app_name }}", dest: "{{ backup_dir }}/{{ rcx_server_app_name }}" }
+  - { src: "{{ app_dir }}/{{ rcx_management_app_name }}", dest: "{{ backup_dir }}/{{ rcx_management_app_name }}" }
+  - { src: "{{ supervisor_conf_dir }}/{{ rcx_management_app_name }}.conf", dest: "{{ backup_dir }}/{{ rcx_management_app_name }}/{{ rcx_management_app_name }}.conf" }
+  - { src: "{{ supervisor_conf_dir }}/{{ rcx_server_app_name }}.conf", dest: "{{ backup_dir }}/{{ rcx_server_app_name }}/{{ rcx_server_app_name }}.conf" }
+
+# 升级数据库
+migrate_tools_pkg_name: "23to26.tar.gz"
+runtime_pkg_name: "runtime_23t26.tar.gz"
+runtime_path: "{{ tmp_path }}/23to26/runtime"
+table_change_sql_file: "{{ tmp_path }}/23to26/runtime/sql/table_change_2.3_to_2.6.sql"
+management_sql_file: "{{ tmp_path }}/23to26/runtime/sql/management.sql"
+
+# 更新rcx-2.6.x应用
+rcx_pkg_name: "rcx.tar.gz"
+
+# 更新rcx-2.6.x管理后台应用
+rcx_mgn_pkg_name: "mgt.tar.gz"
+
+app_port:
+  rmtp_public_port: 8087
+  rmtp_ws_public_port: 8085
+  apush_public_port: 8089

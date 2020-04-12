@@ -1,0 +1,69 @@
+---
+inst_name: "tomcat"
+rce_name: "{{ inst_name }}"
+tomcat_package: "{{ package_path }}/tomcat.tar.gz"
+tomcat_instance_path: "{{ app_path }}/{{ rce_name }}"
+tomcat_catalina_home: "{{ tomcat_instance_path }}"
+
+rc_user: "rcloud"
+rc_group: "rcloud"
+tomcat_user_name: "{{ rc_user }}"
+tomcat_user_group: "{{ rc_group }}"
+tomcat_user_system: false
+
+tomcat_port: 8080
+tomcat_port_shutdown: 8005
+tomcat_port_connector: "{{ tomcat_port }}"
+tomcat_port_redirect: 8443
+tomcat_port_ajp: 8009
+
+tomcat_version_major: "8"
+
+tomcat_java_opts: "-Djava.security.egd=file:/dev/./urandom"
+tomcat_catalina_opts: ""
+
+tomcat_override_uri_encoding: ""
+
+tomcat_roles:
+  - manager
+  - manager-gui
+  - manager-script
+  - manager-jmx
+  - admin
+  - admin-gui
+  - admin-script
+
+tomcat_users: []
+  # - name: tomcat
+  #   password: tomcat
+  #   roles: "manager-gui,admin-gui"
+  #
+
+# This Edits And Allows Ansible To Configure These
+# Otherwise it does a default install
+tomcat_configure: true
+tomcat_configure_configs: "{{ tomcat_configure }}"
+tomcat_configure_libs: "{{ tomcat_configure }}"
+tomcat_configure_webapps: "{{ tomcat_configure }}"
+
+# Strings That Allow you to modify your
+# tomcat instance in a predictable fashion.
+tomcat_extra_global_naming_resources: ""
+tomcat_context_xml_header_extra: ""
+tomcat_context_xml_extra: ""
+
+
+# Disable or enable session persistence
+tomcat_disable_persistence_across_restarts: false
+
+# Custom Configuration Files
+tomcat_use_custom_server_xml: false
+# tomcat_custom_server_xml: Path
+tomcat_use_custom_web_xml: false
+# tomcat_custom_web_xml: Path
+tomcat_use_custom_context_xml: false
+# tomcat_custom_context_xml: Path
+tomcat_use_custom_tomcat_users_xml: false
+# tomcat_custom_tomcat_users_xml: Path
+tomcat_use_custom_manager_context_xml: false
+# tomcat_custom_manager_context_xml: Path

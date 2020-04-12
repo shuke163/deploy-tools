@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" name="MyApp" package="" monitorInterval="60">
+	<Properties>
+		<Property name="LOG_HOME">{{ rcx_logpath }}/logs</Property>
+		<Property name="MON_HOME">{{ rcx_logpath }}/mon</Property>
+		<Property name="MSG_HOME">{{ rcx_logpath }}/msglogs</Property>
+		<Property name="IMEDIATEFLUSH">true</Property>
+	</Properties>
+	<Appenders>
+		<!-- common -->
+		<RollingRandomAccessFile name="common"
+		                         fileName="${LOG_HOME}/common.log" immediateFlush="${IMEDIATEFLUSH}" bufferSize="8192"
+		                         filePattern="${LOG_HOME}/common.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+
+		<!-- service message -->
+		<RollingRandomAccessFile name="service-message"
+		                         fileName="${LOG_HOME}/service-message.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-message.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service group -->
+		<RollingRandomAccessFile name="service-group"
+		                         fileName="${LOG_HOME}/service-group.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-group.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service historymsg -->
+		<RollingRandomAccessFile name="service-historymsg"
+		                         fileName="${LOG_HOME}/service-historymsg.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-historymsg.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service pushmediator -->
+		<RollingRandomAccessFile name="service-pushmediator"
+		                         fileName="${LOG_HOME}/service-pushmediator.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-pushmediator.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service relationinfo -->
+		<RollingRandomAccessFile name="service-relationinfo"
+		                         fileName="${LOG_HOME}/service-relationinfo.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-relationinfo.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service upstream -->
+		<RollingRandomAccessFile name="service-upstream"
+		                         fileName="${LOG_HOME}/service-upstream.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-upstream.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service userstatus -->
+		<RollingRandomAccessFile name="service-userstatus"
+		                         fileName="${LOG_HOME}/service-userstatus.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-userstatus.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service userconnection -->
+		<RollingRandomAccessFile name="service-userconnection"
+		                         fileName="${LOG_HOME}/service-userconnection.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-userconnection.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service userinfo -->
+		<RollingRandomAccessFile name="service-userinfo"
+		                         fileName="${LOG_HOME}/service-userinfo.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-userinfo.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service msgtransmit-->
+		<RollingRandomAccessFile name="service-msgtransmit"
+		                         fileName="${LOG_HOME}/service-msgtransmit.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-msgtransmit.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- service media center -->
+		<RollingRandomAccessFile name="service-mediacenter"
+		                         fileName="${LOG_HOME}/service-mediacenter.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/service-mediacenter.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- http navi -->
+		<RollingRandomAccessFile name="http-navi"
+		                         fileName="${LOG_HOME}/http-navi.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/http-navi.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- api userinfo -->
+		<RollingRandomAccessFile name="api-userinfo"
+		                         fileName="${LOG_HOME}/api-userinfo.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/api-userinfo.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- api media center -->
+		<RollingRandomAccessFile name="api-mediacenter"
+		                         fileName="${LOG_HOME}/api-mediacenter.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/api-mediacenter.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- api message -->
+		<RollingRandomAccessFile name="api-message"
+		                         fileName="${LOG_HOME}/api-message.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/api-message.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- api group -->
+		<RollingRandomAccessFile name="api-group"
+		                         fileName="${LOG_HOME}/api-group.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/api-group.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- access rmtp -->
+		<RollingRandomAccessFile name="access-rmtp"
+		                         fileName="${LOG_HOME}/access-rmtp.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/access-rmtp.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- access android -->
+		<RollingRandomAccessFile name="access-androidpush"
+		                         fileName="${LOG_HOME}/access-androidpush.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/access-androidpush.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<!-- access access-filestorage -->
+		<RollingRandomAccessFile name="access-filestorage"
+		                         fileName="${LOG_HOME}/access-filestorage.log" immediateFlush="${IMEDIATEFLUSH}"
+		                         bufferSize="8192"
+		                         filePattern="${LOG_HOME}/access-filestorage.log.%i">
+			<PatternLayout charset="UTF-8">
+				<pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+			</PatternLayout>
+			<Filters>
+				<ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+				<ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="10"/>
+		</RollingRandomAccessFile>
+		<RollingRandomAccessFile name="monitor-record"
+		                         fileName="${MON_HOME}/monitor-record.log" append="true"
+		                         immediateFlush="${IMEDIATEFLUSH}" bufferSize="32768"
+		                         filePattern="${MON_HOME}/monitor-record-%d{yyyy-MM-dd-HH}.log">
+			<PatternLayout charset="UTF-8"/>
+			<Filters>
+				<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+			</Filters>
+			<Policies>
+				<TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+			</Policies>
+			<DefaultRolloverStrategy max="8760" compressionLevel="5"/>
+		</RollingRandomAccessFile>
+
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{MMdd HH:mm:ss,SSS}:[%p]:[%t]:%c{1}:%L %msg%n"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="info" additivity="false">
+			<AppenderRef ref="common"/>
+			<AppenderRef ref="Console"/>
+		</Root>
+		<Logger name="common-logger" level="info" additivity="false">
+			<AppenderRef ref="common"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="access-androidpush-logger" level="info" additivity="false">
+			<AppenderRef ref="access-androidpush"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="access-filestorage-logger" level="info" additivity="false">
+			<AppenderRef ref="access-filestorage"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+
+		<Logger name="access-rmtp-logger" level="info" additivity="false">
+			<AppenderRef ref="access-rmtp"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-group-logger" level="info" additivity="false">
+			<AppenderRef ref="api-group"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-message-logger" level="info" additivity="false">
+			<AppenderRef ref="api-message"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-userinfo-logger" level="info" additivity="false">
+			<AppenderRef ref="api-userinfo"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-userstatus-logger" level="debug" additivity="false">
+			<AppenderRef ref="service-userstatus"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-mediacenter-logger" level="info" additivity="false">
+			<AppenderRef ref="api-mediacenter"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="http-navi-logger" level="info" additivity="false">
+			<AppenderRef ref="http-navi"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+
+		<Logger name="service-group-logger" level="info" additivity="false">
+			<AppenderRef ref="service-group"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-historymsg-logger" level="info" additivity="false">
+			<AppenderRef ref="service-historymsg"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-message-logger" level="info" additivity="false">
+			<AppenderRef ref="service-message"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-pushmediator-logger" level="info" additivity="false">
+			<AppenderRef ref="service-pushmediator"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-relationinfo-logger" level="info" additivity="false">
+			<AppenderRef ref="service-relationinfo"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-upstream-logger" level="info" additivity="false">
+			<AppenderRef ref="service-upstream"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-userconnection-logger" level="info" additivity="false">
+			<AppenderRef ref="service-userconnection"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-userinfo-logger" level="info" additivity="false">
+			<AppenderRef ref="service-userinfo"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-msgtransmit-logger" level="info" additivity="false">
+			<AppenderRef ref="service-msgtransmit"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-mediacenter-logger" level="info" additivity="false">
+			<AppenderRef ref="service-mediacenter"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="monitor-record" level="error" additivity="false">
+			<AppenderRef ref="monitor-record"/>
+		</Logger>
+		<Logger name="common-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="common"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="http-navi-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="http-navi"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="access-androidpush-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="access-androidpush"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-group-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="api-group"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-message-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="api-message"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-userinfo-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="api-userinfo"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-chatroom-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="api-chatroom"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-discussion-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="api-discussion"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="api-rcpush-loggerV2" level="DEBUG" additivity="false">
+			<AppenderRef ref="api-rcpush"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-group-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-group"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-historymsg-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-historymsg"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-message-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-message"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-pushmediator-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-pushmediator"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-relationinfo-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-relationinfo"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-upstream-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-upstream"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-userconnection-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-userconnection"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-userconnection-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-userconnection"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-chatroom-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-chatroom"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-rcpush-loggerV2" level="DEBUG" additivity="false">
+			<AppenderRef ref="service-rcpush"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-broadcast-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-broadcast"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-userstatus-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-userstatus"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-usersetting-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-usersetting"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-userinfo-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-userinfo"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-msgtransmit-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-msgtransmit"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-chatroom-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-chatroom"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-chatroomhistorymessage-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-chatroomhistorymessage"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+		<Logger name="service-chatroommessage-loggerV2" level="INFO" additivity="false">
+			<AppenderRef ref="service-chatroommessage"/>
+			<AppenderRef ref="Console"/>
+		</Logger>
+	</Loggers>
+</Configuration>

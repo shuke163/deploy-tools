@@ -1,0 +1,113 @@
+---
+inst_name: "rcx"
+rc_user: rcloud
+rc_group: rcloud
+
+rcx_path: "{{ app_path }}/{{ inst_name }}"
+rcx_logpath: "{{ logs_path }}/{{ inst_name }}"
+
+#plugins:
+#  access:
+#  - {config: admin-http-config.xml, main: rcx.access.http.Bootstrap, name: rcx.access.http.admin, path: plugins/rcx.access.http-1.0.0.jar}
+#  - {config: api-http-config.xml, main: rcx.access.http.Bootstrap, name: rcx.access.http.api, path: plugins/rcx.access.http-1.0.0.jar}
+#  - {config: navi-http-config.xml, main: rcx.access.http.Bootstrap, name: rcx.access.http.navi, path: plugins/rcx.access.http-1.0.0.jar}
+#  - {config: service-config.xml, main: rcx.access.services.Bootstrap, name: rcx.access.services, path: plugins/rcx.access.services-1.0.0.jar}
+#  admin:
+#  - {main: rcx.api.configure.Bootstrap, name: rcx.api.configure, path: plugins/rcx.api.configure-1.0.0.jar}
+#  api:
+#  - {main: rcx.api.group.Bootstrap, name: rcx.api.group, path: plugins/rcx.api.group-1.0.0.jar}
+#  - {main: rcx.api.message.Bootstrap, name: rcx.api.message, path: plugins/rcx.api.message-1.0.0.jar}
+#  - {main: rcx.api.userinfo.Bootstrap, name: rcx.api.userinfo, path: plugins/rcx.api.userinfo-1.0.0.jar}
+##  restful:
+##  - {main: rcx.api.healthcheck.Bootstrap, name: rcx.api.healthcheck, path: plugins/rcx.api.healthcheck.jar}
+#
+#  navi:
+#  - {main: rcx.http.navi.Bootstrap, name: rcx.http.navi, path: plugins/rcx.http.navi-1.0.0.jar}
+#  service:
+#  - {main: rcx.service.broadcast.Bootstrap, name: rcx.service.broadcast, path: plugins/rcx.service.broadcast-1.0.0.jar}
+#  - {main: rcx.service.fileserverplugin.Bootstrap, name: rcx.service.fileserverplugin, path: plugins/rcx.service.fileserverplugin-1.0.0.jar}
+#  - {main: rcx.service.group.Bootstrap, name: rcx.service.group, path: plugins/rcx.service.group-1.0.0.jar}
+#  - {main: rcx.service.historymsg.Bootstrap, name: rcx.service.historymsg, path: plugins/rcx.service.historymsg-1.0.0.jar}
+#  - {main: rcx.service.message.Bootstrap, name: rcx.service.message, path: plugins/rcx.service.message-1.0.0.jar}
+#  - {main: rcx.service.messagetransmit.Bootstrap, name: rcx.service.messagetransmit, path: plugins/rcx.service.messagetransmit-1.0.0.jar}
+#  - {main: rcx.service.pushmediator.Bootstrap, name: rcx.service.pushmediator, path: plugins/rcx.service.pushmediator-1.0.0.jar}
+#  - {main: rcx.service.relationinfo.Bootstrap, name: rcx.service.relationinfo, path: plugins/rcx.service.relationinfo-1.0.0.jar}
+#  - {main: rcx.service.richmediaplugin.Bootstrap, name: rcx.service.richmediaplugin, path: plugins/rcx.service.richmediaplugin-1.0.0.jar}
+#  - {main: rcx.service.upstream.Bootstrap, name: rcx.service.upstream, path: plugins/rcx.service.upstream-1.0.0.jar}
+#  - {main: rcx.service.userconnection.Bootstrap, name: rcx.service.userconnection, path: plugins/rcx.service.userconnection-1.0.0.jar}
+#  - {main: rcx.service.usersetting.Bootstrap, name: rcx.service.usersetting, path: plugins/rcx.service.usersetting-1.0.0.jar}
+#  - {main: rcx.service.userstatus.Bootstrap, name: rcx.service.userstatus, path: plugins/rcx.service.userstatus-1.0.0.jar}
+
+configs:
+  - admin-http-config.xml
+  - api-http-config.xml
+  - navi-http-config.xml
+  - service-config.xml
+  - rcx-cfg.xml
+  - restfulhttp-config.xml
+#  - tcp-proxy.xml
+  - management.properties
+
+common_config:
+  - config.xml
+  - db-config.xml
+  - GlobalDBConfig.properties
+  - log4j2.xml
+rcdbs: []
+
+public_ip: "127.0.0.1"
+private_ip: "127.0.0.1"
+apush_public_host: "{{ public_ip }}"
+apush_listen_port: 8089
+apush_public_port: 8089
+
+admin_http_port: 8091
+navi_http_port: 8082
+api_http_port: 8081
+restful_port: 8084
+
+rmtp_public_host: "{{ public_ip }}"
+rmtp_private_host: "{{ private_ip }}"
+rmtp_listen_port: 8087
+rmtp_public_port: 8087
+rmtp_private_port: 8087
+rmtp_ap_port: 8000
+rmtp_ws_listen_port: 8085
+rmtp_ws_public_host: "{{ public_ip }}"
+rmtp_ws_private_host: "{{ private_ip }}"
+rmtp_ws_public_port: 8085
+rmtp_ws_private_port: 8085
+rmtp_wss_public_host: "{{ public_ip }}" 
+rmtp_wss_public_port: 8086
+rmtp_wss_private_host: "{{ private_ip }}"
+rmtp_wss_private_port: 8086
+
+#tproxy_commet_port: 18088
+#tproxy_commet_bak_port: 18089
+#tproxy_rmtp_port: 18070
+#tproxy_ws_port: 18085
+
+zookeeper_hosts: []
+zk_hosts: []
+
+rpc_ip: "{{ ansible_host }}"
+rpc_port: 8090
+
+fileserver_path: "{{ data_path }}/filestorage/data"
+fileserver_port: 8083
+isHttpServer: "true"
+virtualNodesNum: "100"
+
+mysql_port: 4306
+mysql_user: 'im'
+mysql_password: '1qazCDE#'
+
+mysql_host: '127.0.0.1'
+imdb: 'comcloud_x'
+cluster: 'clusterCommon'
+proxy_platform: 'MiniProgramKeng'
+rcx_db: 'rcx_db'
+file_expired_day: 18000
+id: 1
+db_type: 'mysql'
+fs: []

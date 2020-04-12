@@ -1,0 +1,24 @@
+- name: Copy libaio and openssl rpm packages and tools pkg
+  copy: src="{{ item }}" dest=/tmp/
+  with_items:
+    - "{{ libaio6_path }}"
+    - "{{ libaio7_path }}"
+    - "{{ openssl_path }}"
+    - "{{ openssl_libs_path }}"
+    - "{{ tools_path }}"
+  ignore_errors: yes
+
+- name: Ensure libaio installed
+  yum: name=/tmp/libaio-0.3.109-13.el7.x86_64.rpm state=present
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and (ansible_distribution_major_version == '7')
+  ignore_errors: yes
+
+- name: Ensure libaio installed
+  yum: name=/tmp/libaio-0.3.107-10.el6.x86_64.rpm state=present
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and (ansible_distribution_major_version == '6')
+  ignore_errors: yes
+
+- name: Ensure openssl version 1.0.2k
+  command: /usr/bin/yum install -y /tmp/openssl-1.0.2k-16.el7.x86_64.rpm /tmp/openssl-libs-1.0.2k-16.el7.x86_64.rpm
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  ignore_errors: yes

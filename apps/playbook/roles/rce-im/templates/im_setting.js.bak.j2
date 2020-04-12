@@ -1,0 +1,40 @@
+var config = {
+    server: 'http://{{ rce_server_api }}',
+    // approvalServer: 'http://{{ domain }}/erp/approval',// erp server 地址
+    sdk: {
+        api: '{{ im_api }}',
+        protobuf: 'lib/protobuf-2.3.1.min.js' //私有部署开启此配置，无需改值
+    },
+    emoji: {
+        sizePX: 16,
+        url : "modules/emoji/emoji-48.png"  //私有部署开启此配置，无需改值
+    },
+    voice : {
+        swfobject: "lib/swfobject-2.0.0.min.js",  //私有部署开启此配置，无需改值
+        player: "lib/player-2.0.2.swf"  //私有部署开启此配置，无需改值
+    },
+    voip: {
+        server: 'https://api.blinktalk.site:8080/websocketlist' // voip 服务地址 (代码只支持 blink 其他服务需要切换 SDK 修改代码)
+    },
+    locale: {{ rce_locale }}
+    product: {
+        name: {
+            "zh": "{{ company_name }}",
+            "en": "{{ company_en_name }}"
+        },
+        version: {{ rce_version }}
+        versionCode: {{ rce_versionCode }}
+        icon: "{{ web_im_icon }}",   // 应用图标，可使用网络地址，建议大小 32 x 32
+    }
+};
+
+
+
+
+
+
+
+
+
+
+

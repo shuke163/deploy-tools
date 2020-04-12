@@ -1,0 +1,10 @@
+---
+# tasks file for openresty
+
+- name: handler openresty required
+  import_tasks: tools.yml
+  tags: tools
+
+- name: install openresty
+  import_tasks: install.yml
+  tags: install

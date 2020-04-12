@@ -1,0 +1,13 @@
+- hosts: nginx
+  roles:
+  - role: nginx
+    tags: nginx
+  vars:
+    inst_name: nginx.inst-0
+    mgt_servers:
+    - '{{ private_ip }}:8094'
+    nginx_upstreams:
+    - name: mgt
+      strategy: ip_hash
+      keepalive: 16
+      servers: '{{ mgt_servers }}'

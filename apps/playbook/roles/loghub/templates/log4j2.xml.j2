@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- {{ ansible_managed }} -->
+<Configuration status="debug">
+    <!--配置一些全局属性供下面引用-->
+    <Properties>
+        <Property name="LOG_HOME">{{ LOG_HOME }}</Property>
+
+        <Property name="request">request</Property>
+        <Property name="store">store</Property>
+        <Property name="rcx-debug">rcx-debug</Property>
+    </Properties>
+    <!--配置输出源，即输出到什么地方（控制台 or 文件），文件设置最大存储容量10MB，超过之后进行备份，备份最多备份5个文件-->
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+        </Console>
+
+        <RollingRandomAccessFile name="request" fileName="{{ LOG_HOME }}/${request}.log" filePattern="{{ LOG_HOME }}/${request}-%d{yyyy-MM-dd-HH}.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%thread] [%file:%line] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="36">
+                <Delete basePath="{{ LOG_HOME }}" maxDepth="1">
+                    <IfFileName glob="request-*.gz" />
+                    <IfLastModified age="36H" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="store" fileName="${LOG_HOME}/${store}.log" filePattern="${LOG_HOME}/${store}-%d{yyyy-MM-dd-HH}.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%thread] [%file:%line] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="36">
+                <Delete basePath="{{ LOG_HOME }}" maxDepth="1">
+                    <IfFileName glob="store-*.gz" />
+                    <IfLastModified age="36H" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="rcx-debug" fileName="{{ LOG_HOME }}/${rcx-debug}.log" filePattern="{{ LOG_HOME }}/${rcx-debug}-%d{yyyy-MM-dd-HH}.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%thread] [%file:%line] %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="36">
+                <Delete basePath="{{ LOG_HOME }}" maxDepth="1">
+                    <IfFileName glob="rcx-debug-*.gz" />
+                    <IfLastModified age="36H" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="error">
+            <AppenderRef ref="Console" />
+        </Root>
+        <Logger level="debug" name="com.rcloud.log.loghub.httpserver">
+            <AppenderRef ref="request" />
+        </Logger>
+        <Logger level="debug" name="com.rcloud.log.loghub.store.util.DebugContent">
+            <AppenderRef ref="rcx-debug" />
+        </Logger>
+
+        <Logger level="debug" name="com.rcloud.log.loghub.store">
+            <AppenderRef ref="store" />
+        </Logger>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,15 @@
+jdbcUrl=jdbc:mysql://{{ mysql_host }}:{{ mysql_port }}/comcloud_x?useUnicode=true&characterEncoding=utf8&autoReconnect=true
+maximumPoolSize=30
+username={{ mysql_user }}
+password={{ mysql_password }}
+dataSource.cachePrepStmts=true
+dataSource.prepStmtCacheSize=250
+dataSource.prepStmtCacheSqlLimit=2048
+dataSource.useServerPrepStmts=true
+dataSource.useLocalSessionState=true
+dataSource.useLocalTransactionState=true
+dataSource.rewriteBatchedStatements=true
+dataSource.cacheResultSetMetadata=true
+dataSource.cacheServerConfiguration=true
+dataSource.elideSetAutoCommits=true
+dataSource.maintainTimeStats=false

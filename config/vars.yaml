@@ -1,0 +1,188 @@
+base:
+  title: 基础配置
+  description: 基础配置
+  isBase: true
+  global:
+    title: 全局配置
+    description: 全局配置
+    isBase: true,
+    data:
+      - {key: rc_user, value: root, isBase: false,  comment: 服务运行用户}
+      - {key: rc_group, value: root, isBase: false, comment: 服务运行组}
+      - {key: base_path, value: "/data", isBase: true, comment: 持久化根路径}
+      - {key: python_path, value: "/opt/python2", isBase: false, comment: 程序运行组}
+      - {key: ansible_python_interpreter, value: "/usr/bin/python2", isBase: false, comment: ansible python interpreter}
+      - {key: app_path, value: "{{ base_path }}/app", isBase: false, comment: 应用程序目录}
+      - {key: tmp_path, value: "{{ base_path }}/tmp", isBase: false, comment: 部署临时目录}
+      - {key: backup_path, value: "{{ base_path }}/backup", isBase: false, comment: 备份目录}
+      - {key: conf_path, value: "{{ base_path }}/supervisord/etc", isBase: false, comment: supervisor配置文件目录}
+      - {key: data_path, value: "{{ base_path }}/data", isBase: false, comment: 服务数据目录}
+      - {key: java_home, value: "{{ base_path }}/app/jdk", isBase: false, comment: JAVA_HOME}
+      - {key: log_path, value: "{{ base_path }}/supervisord/var/log", isBase: false, comment: 服务错误及控制台日志}
+      - {key: logs_path, value: "{{ base_path }}/logs", isBase: false, comment: 服务运行日志目录}
+      - {key: package_path, value: "../../../../packages", isBase: false, comment: 应用程序包}
+      - {key: run_path, value: "{{ base_path }}/supervisord/var/run", isBase: false, comment: 服务PID目录}
+      - {key: supervisord, value: "{{ python_path }}/bin/supervisord", isBase: false, comment: 进程管理工具bin路径}
+      - {key: supervisorctl, value: "{{ python_path }}/bin/supervisorctl", isBase: false, comment: 进程管理工具ctl路径}
+      - {key: rcx_initdb_enabled, value: 1, isBase: false, comment: 是否进行初始化rcx数据库}
+      - {key: db_type, value: mysql, isBase: false, comment: 数据库类型}
+      - {key: mysql_host, value: "{{ hostvars[groups['mysql'][0]]['private_ip'] }}", isBase: false, comment: DB主机地址}
+      - {key: mysql_replication_master, value: "{{ mysql_host }}", isBase: false, comment: MySQL数据库Master节点地址}
+
+rcx:
+  title: rcx 应用服务
+  description: rcx业务线
+  isBase: true
+  rcx_rcdb:
+    title: rcdb配置
+    description: RCDB(K/V存储)
+    isBase: true
+    data:
+      - {key: rcdb_nums, value: 4, isBase: true, comment: 单节点RCDB数量}
+      - {key: rcdb_start_port, value: 8888, isBase: false, comment: 单节点RCDB起始端口}
+  rcx_server:
+    title: IM应用配置
+    description: IM应用服务
+    isBase: true
+    data:
+      - {key: apush_listen_port, value: 8070, isBase: false, comment: PUSH监听端口}
+      - {key: apush_public_port, value: 8070, isBase: true, comment: PUSH公网监听端口}
+      - {key: admin_http_port, value: 8083, isBase: true, comment: IM管理API端口}
+      - {key: navi_http_port, value: 8082, isBase: true, comment: IM导航端口}
+      - {key: api_http_port, value: 8081, isBase: true, comment: IM API端口}
+      - {key: rmtp_listen_port, value: 8043, isBase: true, comment: RMTP监听端口}
+      - {key: rmtp_private_port, value: 8043, isBase: true, comment: RMTP内网端口}
+      - {key: rmtp_public_port, value: 8043, isBase: true, comment: RMTP公网端口}
+      - {key: rmtp_ws_listen_port, value: 8085, isBase: false, comment: Websocket监听端口}
+      - {key: rmtp_ws_private_port, value: 8085, isBase: false, comment: Websocket内网端口}
+      - {key: rmtp_ws_public_port, value: 8085, isBase: true, comment: Websocket公网端口}
+      - {key: rmtp_wss_private_port, value: 443, isBase: false, comment: Websocket(WSS) 内网端口}
+      - {key: rmtp_wss_public_port, value: 443, isBase: true, comment: Websocket(WSS) 公网端口}
+  rcx_fileserver:
+    title: rcx_fileserver配置
+    description: 文件服务
+    isBase: true
+    data:
+      - {key: file_expired_day, value: 18000, isBase: false, comment: 文件过期时间}
+      - {key: fileserver_port, value: 8086, isBase: true, comment: 文件服务监听端口}
+      - {key: fileserver_path, value: "{{ data_path }}/filestorage/data", isBase: false, comment: 文件服务存储路径}
+  rcx_management:
+    title: rcx_mangement配置
+    description: IM管理后台
+    isBase: true
+    data:
+      - {key: mgt_port, value: 8098, isBase: false, comment: IM管理后台端口}
+  fastdfs:
+    title: fastdfs配置
+    description: fastdfs服务
+    isBase: true
+    data:
+      - {key: storage_port, value: 23000, isBase: false, comment: storage端口}
+      - {key: tracker_port, value: 22122, isBase: false, comment: tracker端口}
+  redis:
+    title: redis配置
+    description: redis服务
+    isBase: true
+    data:
+      - {key: redis_port, value: 6379, isBase: true, comment: Redis 端口 (内网端口)}
+      - {key: redis_password, value: "173urkAB5s5JDT85", isBase: false, comment: Redis密码}
+  nginx:
+    title: Nginx配置
+    description: Nginx服务
+    isBase: true
+    data:
+      - {key: nginx_flag, value: mgt, isBase: false, comment: Nginx flag}
+      - {key: nginx_port, value: 8098, isBase: false, comment: RCX服务Nginx监听端口}
+      - {key: isHttps, value: false, isBase: false, comment: 是否开启https}
+  zookeeper:
+    title: zookeeper配置
+    description: zookeeper服务
+    isBase: true
+    data:
+      - {key: zookeeper_port, value: 2181, isBase: true, comment: zk服务监听端口}
+  mysql:
+    title: MySQL配置
+    description: MySQL服务
+    isBase: true
+    data:
+      - {key: mysql_host, value: 127.0.0.1, isBase: false, comment: MySQL主机地址}
+      - {key: mysql_port, value: 4306, isBase: false, comment: MySQL默认端口}
+      - {key: mysql_user, value: im, isBase: false, comment: IM程序访问数据库用户}
+      - {key: mysql_password, value: '1qazCDE#', isBase: false, comment: 数据库默认密码}
+      - {key: imdb, value: comcloud_x, isBase: false, comment: IM数据库名称}
+      - {key: im_db_init_type, value: shell, isBase: false, comment: IM数据库初始化类型}
+
+rce:
+  title: RCE 应用服务
+  description: rce业务线
+  isBase: true
+  rce_rcdb:
+    title: rcdb配置
+    description: rcdb服务
+    isBase: true
+    data:
+      - {key: rcdb_nums, value: 4, isBase: true, comment: 单节点RCDB数量}
+      - {key: rcdb_start_port, value: 7088, isBase: false, comment: 单节点RCDB起始端口}
+  elasticsearch:
+    title: elasticsearch配置
+    description: elasticsearch服务
+    isBase: true
+    data:
+      - {key: elasticsearch_host, value: 127.0.0.1, isBase: false, comment: Elasticsearch地址}
+      - {key: elasticsearch_http_port, value: 9200, isBase: true, comment: ES HTTP 端口}
+      - {key: elasticsearch_tcp_port, value: 9300, isBase: true, comment: ES TCP 端口}
+      - {key: elasticsearch_cluster_name, value: "es.rc", isBase: false, comment: Elasticsearch集群名称}
+      - {key: elasticsearch_jvm, value: 1g, isBase: false, comment: ES内存配置}
+  redis:
+    title: redis配置
+    description: redis服务
+    isBase: true
+    data:
+      - {key: redis_port, value: 6379, isBase: true, comment: Redis 端口 (内网端口)}
+      - {key: redis_password, value: "173urkAB5s5JDT85", isBase: false, comment: Redis密码}
+  nginx:
+    title: Nginx配置
+    description: Nginx服务
+    isBase: true
+    data:
+      - {key: nginx_flag, value: rce_api, isBase: false, comment: Nginx flag}
+      - {key: rce_api_port, value: 80, isBase: false, comment: RCE服务Nginx监听端口}
+      - {key: isHttps, value: false, isBase: false, comment: 是否开启https}
+  rcx_moments:
+    title: moments配置
+    description: moments服务
+    isBase: true
+    data:
+      - {key: moments_port, value: 8000, isBase: true, comment: 工作圈端口}
+      - {key: moments_server_url, value: "{{ domain }}", isBase: true, comment: 工作圈域名}
+  mysql:
+    title: MySQL配置
+    description: MySQL服务
+    isBase: true
+    data:
+      - {key: mysql_host, value: 127.0.0.1, isBase: false, comment: MySQL主机地址}
+      - {key: mysql_port, value: 4306, isBase: false, comment: MySQL默认端口}
+      - {key: mysql_user, value: im, isBase: false, comment: RCE程序访问数据库用户}
+      - {key: mysql_password, value: '1qazCDE#', isBase: false, comment: 数据库默认密码}
+      - {key: rcedb, value: rcedb, isBase: false, comment: RCE数据库名称}
+      - {key: im_db_init_type, value: shell, isBase: false, comment: RCE数据库初始化类型}
+
+rtc:
+  title: RTC 应用服务
+  description: rtc业务线
+  isBase: true
+  rtc:
+    title: 音视频配置
+    description: 音视频服务
+    isBase: true
+    data:
+      - {key: httpPort, value: 7788, isBase: true, comment: RTC WEB端口}
+      - {key: rtc_udp_port, value: 50001, isBase: true, comment: RTC UDP端口}
+      - {key: rtc_private_ip, value: 127.0.0.1, isBase: false, comment: RTC内网ip地址}
+      - {key: rtc_public_ip, value: 127.0.0.1, isBase: false, comment: RTC公网ip地址}
+  openresty:
+    title: openresty配置
+    description: openresty服务
+    isBase: true
+    data:
+      - {key: httpsPort, value: 1447, isBase: true, comment: RTC WEB端口}

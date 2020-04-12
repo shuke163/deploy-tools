@@ -1,0 +1,18 @@
+---
+- name: Ensure rce import dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ rce_import_path }}"
+
+- name: Copy rce import files
+  copy:
+    src: "{{ rce_import_source_path }}/{{ item }}"
+    dest: "{{ rce_import_path }}/{{ item }}"
+  with_items:
+    "{{ rce_import_items }}" 
+
+- name: Import data
+  shell: "cd {{ rce_import_path }} && {{ java_home }}/bin/java -jar RCEDataMerger-0.0.1-SNAPSHOT.jar -u{{ rce_username }} -p{{ rce_password }} -txls -fOrganization.xls -h{{ rce_server_api }}"

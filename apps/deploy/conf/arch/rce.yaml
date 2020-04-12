@@ -1,0 +1,38 @@
+all:
+  roles:
+    - install-python
+    - systemconf
+    - supervisord
+    - jre
+  sort: 0
+  description: 所有主机
+rce_rcdb:
+  roles:
+    - rcdb
+  sort: 200
+  description: rce_rcdb主机组
+rce_server:
+  roles:
+    - initdb
+    - tomcat
+    - rce
+  sort: 340
+  description: rce_server主机组
+nginx:
+  sort: 360
+  roles:
+    - nginx
+    - rce-admin
+    - rce-im
+    - erp-work
+  description: Nginx主机组
+rcx_moments:
+  sort: 400
+  roles:
+    - rcx-moments
+  description: rcx_moments主机组
+rce_slp2p:
+  sort: 500
+  roles:
+    - rce-slp2p
+  description: rce_slp2p主机组

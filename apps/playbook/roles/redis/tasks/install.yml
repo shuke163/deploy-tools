@@ -1,0 +1,42 @@
+- name: Ensure Redis path
+  file: path="{{ item }}" state=directory
+  with_items:
+    - "{{ global.app_path }}"
+    - "{{ redis_logpath }}"
+    - "{{ redis_dbpath }}"
+    - "{{ global.tmp_path }}"
+
+- name: Check If Already Installed
+  stat: path="{{ redis_path }}"
+  register: __redis_exists
+
+- name: unarchive redis files
+  unarchive:
+    src: "{{ redis_package }}"
+    dest: "{{ global.tmp_path }}"
+    owner: "{{ rc_user }}"
+    group: "{{ rc_group }}"
+    mode: 0755
+  when: not __redis_exists.stat.exists
+
+- name: Copy redis binary file
+  shell: cp -ar  "{{ global.tmp_path }}/redis" "{{ redis_path }}"
+  when: not __redis_exists.stat.exists
+
+#- name: Copy redis package
+#  unarchive: src="{{ redis_package }}" dest="{{ redis_path }}" owner="{{ rc_user }}" group="{{ rc_group }}" mode=0755 keep_newer=yes creates="{{ redis_path }}/redis.conf"
+#  when: __redis_exists.stat.exists
+
+- name: Ensure Redis is configured.
+  template: src=redis.conf.j2 dest="{{ redis_path }}/redis.conf" mode=0644
+  notify: restart redis
+
+- name: Add Redis service configured.
+  template: src=redis.service.j2 dest="{{ global.conf_path }}/{{ redis_name }}.conf" owner="{{ rc_user }}" group="{{ rc_group }}" mode=0644
+  notify: restart redis
+
+- name: Ensure Redis service is present
+  supervisorctl: name="{{ redis_name }}" state=present supervisorctl_path="{{ global.supervisorctl }}"
+
+- name: Ensure Redis is running
+  supervisorctl: name="{{ redis_name }}" state=started supervisorctl_path="{{ global.supervisorctl }}"

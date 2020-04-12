@@ -1,0 +1,63 @@
+
+from RestClient import RestClient
+
+
+RCE_API_BASE = '{{ RCE_API_BASE }}'
+RCE_SUPER_USERNAME = '{{ RCE_SUPER_USERNAME }}'
+RCE_SUPER_PASSWORD = '{{ RCE_SUPER_PASSWORD }}'
+
+
+RC_CONN_TYPE = 'private'
+
+RC_CONN_PUBLIC_APP_ID = '1234'
+RC_CONN_PUBLIC_APP_SECRET = '5678'
+RC_CONN_PUBLIC_DOMAIN = 'slapi-embed.oray.net'
+RC_CONN_PUBLIC_USE_SSL = 'true'
+
+RC_CONN_PRIVATE_ADDR = '{{ RC_CONN_PRIVATE_ADDR.stdout }}'
+RC_CONN_PRIVATE_SESSIONS = {{ RC_CONN_PRIVATE_SESSIONS.stdout }}
+
+RC_NEW_DATA = [
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'enable',            'value': 'true'},
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'type',              'value': RC_CONN_TYPE},
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'public_app_id',     'value': RC_CONN_PUBLIC_APP_ID},
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'public_app_secret', 'value': RC_CONN_PUBLIC_APP_SECRET},
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'public_domain',     'value': RC_CONN_PUBLIC_DOMAIN},
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'public_use_ssl',    'value': RC_CONN_PUBLIC_USE_SSL},
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'private_addr',      'value': RC_CONN_PRIVATE_ADDR},
+    {'app_visible': True, 'notify': 0, 'default_value': '1', 'scope': 'remote_control', 'name': 'private_sessions',  'value': ','.join(RC_CONN_PRIVATE_SESSIONS)},
+]
+
+RC_MODIFY_DATA = [
+    {'scope': 'remote_control', 'name': 'type',              'value': RC_CONN_TYPE},
+    {'scope': 'remote_control', 'name': 'public_app_id',     'value': RC_CONN_TYPE},
+    {'scope': 'remote_control', 'name': 'public_app_secret', 'value': RC_CONN_PUBLIC_APP_SECRET},
+    {'scope': 'remote_control', 'name': 'public_domain',     'value': RC_CONN_PUBLIC_DOMAIN},
+    {'scope': 'remote_control', 'name': 'public_use_ssl',    'value': RC_CONN_PUBLIC_USE_SSL},
+    {'scope': 'remote_control', 'name': 'private_addr',      'value': RC_CONN_PRIVATE_ADDR},
+    {'scope': 'remote_control', 'name': 'private_sessions',  'value': ','.join(RC_CONN_PRIVATE_SESSIONS)},
+]
+
+
+print '== init addr %s ==' % RCE_API_BASE
+client = RestClient('test', RCE_API_BASE, check_url=False)
+
+client.pretty_print(client.get('/misc/version'))
+
+print '== login =='
+client.login(RCE_SUPER_USERNAME, RCE_SUPER_PASSWORD)
+
+response = client.get('/configuration/all')
+client.pretty_print(response)
+
+features = response.result.result.features
+client.pretty_print(features)
+
+print '== create remote control setting =='
+response = client.post('/setting/batch/create', RC_NEW_DATA)
+client.print_response_code(response)
+
+
+print '== get remote control connection info =='
+response = client.get('/remotecontrol/connection_info')
+client.pretty_print(response)

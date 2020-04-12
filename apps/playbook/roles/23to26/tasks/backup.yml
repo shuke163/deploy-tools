@@ -1,0 +1,100 @@
+- debug: msg="{{ current_time }}"
+
+# 服务停止完成之后进行备份操作
+- name: supervisorctl rcx23 stopped
+  supervisorctl:
+    name: "{{ item }}"
+    state: stopped
+    config: "/etc/supervisord.conf"
+  with_items:
+    - "{{ rcx_server_app_name }}"
+    - "{{ rcx_management_app_name }}"
+
+- name: create {{ backup_dir }} directory if it doesn't exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+  with_items:
+    - "{{ backup_dir }}/databases"
+    - "{{ tmp_path }}"
+    - "{{ mgn_dir }}"
+
+- name: copy supervisorctl start conf
+  copy:
+    src: "{{ supervisor_conf_dir }}/{{ item }}.conf"
+    dest: "{{ app_dir }}/{{ item }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    remote_src: yes
+    force: yes
+  with_items:
+    - "{{ rcx_server_app_name }}"
+    - "{{ rcx_management_app_name }}"
+
+# - name: get current date
+#   command: date +%F
+#   register: date
+
+- name: create a tar.gz archive of rcx app dir for shell
+  shell: tar -zcvf {{ backup_dir }}/{{ item }}.{{ date }}.tar.gz {{ item }}
+  args:
+    chdir: "{{ app_dir }}/"
+    creates: "{{ item }}.{{ date }}.tar.gz"
+    warn: false
+  with_items:
+    - "{{ rcx_server_app_name }}"
+    - "{{ rcx_management_app_name }}"
+
+- name: change rcx23 tar.gz, group and permissions
+  file:
+    path: "{{ backup_dir }}/{{ item }}.{{ date }}.tar.gz"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  with_items:
+    - "{{ rcx_server_app_name }}"
+    - "{{ rcx_management_app_name }}"
+
+# 使用以下方式需要使用when条件判断文件是否存在,防止覆盖
+# - name: Get current date
+#   command: date +%F
+#   register: date
+
+# - name: Create a tar.gz archive of rcx app dir
+#   archive:
+#     path: "{{ app_dir }}/{{ item }}"
+#     dest: "{{ backup_dir }}/{{ item }}.{{ date.stdout }}.tar.gz"
+#     owner: "{{ user }}"
+#     group: "{{ group }}"
+#     format: gz
+#   with_items:
+#     - "{{ rcx_server_app_name }}"
+#     - "{{ rcx_management_app_name }}"
+
+# - name: Backup rcx23 dir and config file
+#   copy:
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     owner: "{{ user }}"
+#     group: "{{ group }}"
+#     remote_src: yes
+#     force: yes
+#   with_items:
+#     - { src: "{{ app_dir }}/{{ rcx_server_app_name }}", dest: "{{ backup_dir }}/" }
+#     - { src: "{{ app_dir }}/{{ rcx_management_app_name }}", dest: "{{ backup_dir }}/" }
+#     - { src: "{{ supervisor_conf_dir }}/{{ rcx_management_app_name }}.conf", dest: "{{ backup_dir }}/{{ rcx_management_app_name }}/{{ rcx_management_app_name }}.conf" }
+#     - { src: "{{ supervisor_conf_dir }}/{{ rcx_server_app_name }}.conf", dest: "{{ backup_dir }}/{{ rcx_server_app_name }}/{{ rcx_server_app_name }}.conf" }
+#   when: result is succeeded
+
+- name: Backup {{ mysql.db_name }} databases
+  mysql_db:
+    state: dump
+    name: "{{ mysql.db_name }}"
+    login_host: "{{ mysql.db_host }}"
+    login_user: "{{ mysql.db_user }}"
+    login_password: "{{ mysql.db_pwd }}"
+    login_port: "{{ mysql.db_port }}"
+    target: "{{ backup_dir }}/databases/{{ mysql.db_name }}.sql"

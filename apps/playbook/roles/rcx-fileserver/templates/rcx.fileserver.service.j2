@@ -1,0 +1,14 @@
+[program:{{ inst_name }}]
+directory={{ rcx_path }}
+command={{ global.java_home }}/bin/java -Duser.timezone=UTC -cp ./rcx.bootstrap.jar:./libs/*:./configs rcx.bootstrap.Bootstrap
+user={{ rc_user }}
+group={{ rc_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+environment=LD_LIBRARY_PATH="/usr/local/ssl/lib:/lib:/usr/lib:$LD_LIBRARY_PATH",JAVA_HOME={{ global.java_home }},LANG=en_US.UTF-8
+stdout_logfile={{ global.log_path }}/{{ inst_name }}.log

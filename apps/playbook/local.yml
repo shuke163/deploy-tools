@@ -1,0 +1,205 @@
+- hosts: all
+  roles:
+  - role: install-python
+    tags: all
+  - role: systemconf
+    tags: all
+  - role: supervisord
+    tags: all
+  - role: openssl
+    tags: all
+  - role: jre
+    tags: all
+- hosts: mysql
+  roles:
+  - role: mysql
+    tags: mysql
+  vars:
+    inst_name: mysql.inst-0
+- hosts: rcx_rcdb
+  roles:
+  - role: rcdb
+    tags: rcx_rcdb
+  vars:
+    inst_name:
+    - rcx_rcdb.inst-0
+    - rcx_rcdb.inst-1
+    - rcx_rcdb.inst-2
+    - rcx_rcdb.inst-3
+    rcdb_port:
+    - 8888
+    - 8889
+    - 8890
+    - 8891
+- hosts: zookeeper
+  roles:
+  - role: zookeeper
+    tags: zookeeper
+  vars:
+    inst_name: zookeeper.inst-0
+- hosts: rcx_fileserver
+  roles:
+  - role: rcx-fileserver
+    tags: rcx_fileserver
+  - role: fastdfs
+    tags: rcx_fileserver
+  vars:
+    inst_name: rcx_fileserver.inst-0
+    name_prefix: rcx-fs
+    common_config:
+    - config.xml
+    - log4j2.xml
+    configs:
+    - storage-config.xml
+    - namespace.properties
+    - trafficctl.properties
+    plugins:
+      access:
+      - config: storage-config.xml
+        main: rcx.access.filestorageserver.Bootstrap
+        name: rcx.access.filestorageserver
+        path: plugins/rcx.access.filestorageserver.jar
+- hosts: rcx_server
+  roles:
+  - role: rcx-db
+    tags: rcx_server
+  - role: rcx
+    tags: rcx_server
+  - role: nginx
+    tags: rcx_server
+  - role: rcx-management
+    tags: rcx_server
+  vars:
+    inst_name: rcx_server.inst-0
+    common_config:
+    - config.xml
+    - db-config.xml
+    - comcloud_x_imdb.properties
+    - log4j2.xml
+    configs:
+    - admin-http-config.xml
+    - api-http-config.xml
+    - navi-http-config.xml
+    - service-config.xml
+    - rcx-cfg.xml
+    - restfulhttp-config.xml
+    - management.properties
+    plugins:
+      access:
+      - config: admin-http-config.xml
+        main: rcx.access.http.Bootstrap
+        name: rcx.access.http.admin
+        path: plugins/rcx.access.http.jar
+      - config: api-http-config.xml
+        main: rcx.access.http.Bootstrap
+        name: rcx.access.http.api
+        path: plugins/rcx.access.http.jar
+      - config: navi-http-config.xml
+        main: rcx.access.http.Bootstrap
+        name: rcx.access.http.navi
+        path: plugins/rcx.access.http.jar
+      - config: service-config.xml
+        main: rcx.access.services.Bootstrap
+        name: rcx.access.services
+        path: plugins/rcx.access.services.jar
+      admin:
+      - main: rcx.api.configure.Bootstrap
+        name: rcx.api.configure
+        path: plugins/rcx.api.configure.jar
+      api:
+      - main: rcx.api.group.Bootstrap
+        name: rcx.api.group
+        path: plugins/rcx.api.group.jar
+      - main: rcx.api.message.Bootstrap
+        name: rcx.api.message
+        path: plugins/rcx.api.message.jar
+      - main: rcx.api.userinfo.Bootstrap
+        name: rcx.api.userinfo
+        path: plugins/rcx.api.userinfo.jar
+      - main: rcx.api.mediacenter.Bootstrap
+        name: rcx.api.mediacenter
+        path: plugins/rcx.api.mediacenter.jar
+      restful:
+      - main: rcx.api.healthcheck.Bootstrap
+        name: rcx.api.healthcheck
+        path: plugins/rcx.api.healthcheck.jar
+      navi:
+      - main: rcx.http.navi.Bootstrap
+        name: rcx.http.navi
+        path: plugins/rcx.http.navi.jar
+      service:
+      - main: rcx.service.broadcast.Bootstrap
+        name: rcx.service.broadcast
+        path: plugins/rcx.service.broadcast.jar
+      - main: rcx.service.fileserverplugin.Bootstrap
+        name: rcx.service.fileserverplugin
+        path: plugins/rcx.service.fileserverplugin.jar
+      - main: rcx.service.group.Bootstrap
+        name: rcx.service.group
+        path: plugins/rcx.service.group.jar
+      - main: rcx.service.historymsg.Bootstrap
+        name: rcx.service.historymsg
+        path: plugins/rcx.service.historymsg.jar
+      - main: rcx.service.message.Bootstrap
+        name: rcx.service.message
+        path: plugins/rcx.service.message.jar
+      - main: rcx.service.messagetransmit.Bootstrap
+        name: rcx.service.messagetransmit
+        path: plugins/rcx.service.messagetransmit.jar
+      - main: rcx.service.pushmediator.Bootstrap
+        name: rcx.service.pushmediator
+        path: plugins/rcx.service.pushmediator.jar
+      - main: rcx.service.relationinfo.Bootstrap
+        name: rcx.service.relationinfo
+        path: plugins/rcx.service.relationinfo.jar
+      - main: rcx.service.richmediaplugin.Bootstrap
+        name: rcx.service.richmediaplugin
+        path: plugins/rcx.service.richmediaplugin.jar
+      - main: rcx.service.upstream.Bootstrap
+        name: rcx.service.upstream
+        path: plugins/rcx.service.upstream.jar
+      - main: rcx.service.userconnection.Bootstrap
+        name: rcx.service.userconnection
+        path: plugins/rcx.service.userconnection.jar
+      - main: rcx.service.usersetting.Bootstrap
+        name: rcx.service.usersetting
+        path: plugins/rcx.service.usersetting.jar
+      - main: rcx.service.userstatus.Bootstrap
+        name: rcx.service.userstatus
+        path: plugins/rcx.service.userstatus.jar
+      - main: rcx.service.monitor.Bootstrap
+        name: rcx.service.monitor
+        path: plugins/rcx.service.monitor.jar
+      - main: rcx.service.mediacenter.Bootstrap
+        name: rcx.service.mediacenter
+        path: plugins/rcx.service.mediacenter.jar
+      - main: rcx.service.templatetransmit.Bootstrap
+        name: rcx.service.templatetransmit
+        path: plugins/rcx.service.templatetransmit.jar
+    mgt_servers:
+    - '{{ private_ip }}:8094'
+    nginx_upstreams:
+    - name: mgt
+      strategy: ip_hash
+      keepalive: 16
+      servers: '{{ mgt_servers }}'
+- hosts: mysql
+  roles:
+  - role: mysql
+    tags: mysql
+  vars:
+    inst_name: mysql.inst-0
+- hosts: zookeeper
+  roles:
+  - role: zookeeper
+    tags: zookeeper
+  vars:
+    inst_name: zookeeper.inst-0
+- hosts: rtc_server
+  roles:
+  - role: rtc
+    tags: rtc_server
+  - role: openresty
+    tags: rtc_server
+  vars:
+    inst_name: rtc_server.inst-0

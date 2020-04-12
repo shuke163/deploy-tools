@@ -1,0 +1,6 @@
+- hosts: mysql
+  roles:
+  - role: mysql
+    tags: mysql
+  vars:
+    inst_name: mysql.inst-0

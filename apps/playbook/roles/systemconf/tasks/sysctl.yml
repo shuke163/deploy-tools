@@ -1,0 +1,35 @@
+- name: Disable Selinux
+  shell: setenforce 0
+  when: ansible_os_family == 'RedHat'
+  ignore_errors: yes
+
+- name: Disable Selinux
+  selinux: state=disabled
+  when: ansible_os_family == 'RedHat'
+
+- name: Set kernel parameter
+  sysctl: name="{{ item.key }}" value="{{ item.value }}" sysctl_set=yes state=present reload=yes sysctl_file="{{ sysctl_conf }}"
+  with_items:
+    - "{{ sysctl_kernel }}"
+
+- name: Change Limits
+  lineinfile:
+    dest: /etc/security/limits.conf
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - {line: '*               soft    nproc         655535'}
+    - {line: '*               hard    nproc         655535'}
+    - {line: '*               soft    nofile        655535'}
+    - {line: '*               hard    nofile        655535'}
+    - {line: 'root            soft    nofile        655535'}
+    - {line: 'root            hard    nofile        655535'}
+    - {line: 'root            soft    nproc         655535'}
+    - {line: 'root            hard    nproc         655535'}
+
+- name: Add Python Path
+  lineinfile: dest="~/.bashrc" line='export PATH=/opt/miniconda3/bin:$PATH' regexp='export PATH=/opt/miniconda3/bin:\$PATH' state=present
+
+- name: Set Hostname in hosts file
+  lineinfile: dest=/etc/hosts line="127.0.0.1 {{ ansible_hostname }}" regexp="^.*{{ ansible_hostname }}$" state=present
+  ignore_errors: yes

@@ -1,0 +1,23 @@
+imdb: "imdb"
+mysql_host: 127.0.0.1
+mysql_port: 4306
+mysql_user: im
+mysql_password: 1qazCDE#
+mysql_path: "/opt/mysql"
+mysql_replication_role: ''
+license: "10Pvrn/dHOpi+qZleVz5j4FFckAjkitwhG25CAbtUwcYVYacBzSfXg=="
+rcx_initdb_enabled: "1"
+im_db_init_type: "shell"
+redis_host: 127.0.0.1
+redis_port: 6379
+redis_password: ''
+
+
+cmp_android_ip: "
+    {%- set ips = [] %}
+    {%- for host in groups['rcx-server'] %}
+    {{- ips.append(dict(id=loop.index, host=host, private_ip=hostvars[host]['private_ip'], public_ip=hostvars[host]['public_ip'])) }}
+    {%- endfor %}
+    {{- ips -}}"
+
+# im_db_init_type: model or shell

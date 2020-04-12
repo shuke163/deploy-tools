@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<storageConfig>
+	<fdfsName>fdfs</fdfsName> <!-- fdfs 配置文件名 -->
+	<clusterNodeId>{{ id }}</clusterNodeId> <!-- 存储节点ID，范围0~255 -->
+	<engineVsersion>0</engineVsersion> <!-- 存储引擎版本，范围0~255 -->
+	<httpPort>{{ fileserver_port }}</httpPort> <!-- HTTP端口 -->
+	<fileExpiredDay>{{ file_expired_day }}</fileExpiredDay> <!-- 文件过期时间 -->
+	<baseDir>{{ fileserver_path }}</baseDir> <!-- 存储根目录路径 -->
+	{% for item in fs %}
+	<clusterNode nodeId="{{ item['id'] }}" ip="{{ item['ip'] }}" rpcPort="9001" slaveNodeId="-1"
+	             virtualNodesNum="{{ item['virtualNodesNum'] }}" isHttpServer="{{ item['isHttpServer'] }}"/>
+	{% endfor %}
+	<clusterNode nodeId="1" ip="{{ hostvars[groups["rcx_server"][0]]['private_ip'] }}" rpcPort="9001" slaveNodeId="-1"
+	             virtualNodesNum="{{ virtualNodesNum }}" isHttpServer="{{ isHttpServer }}"/>
+</storageConfig>

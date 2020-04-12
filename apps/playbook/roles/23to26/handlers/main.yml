@@ -1,0 +1,16 @@
+---
+# handlers file for 23to26
+
+- name: systemctl reload nginx.service
+  systemd:
+    name: nginx
+    state: reloaded
+
+- name: supervisorctl rcx23 restart
+  supervisorctl:
+    name: "{{ item }}"
+    state: restarted
+    config: "/etc/supervisord.conf"
+  with_items:
+    - "{{ rcx_server_app_name }}"
+    - "{{ rcx_management_app_name }}"

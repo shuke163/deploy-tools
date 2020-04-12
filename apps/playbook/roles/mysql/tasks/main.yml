@@ -1,0 +1,35 @@
+---
+- name: set fact for MySQL
+  import_tasks: set_fact.yml
+  tags: set_fact
+
+# Variable configuration.
+# - include: variables.yml
+#
+- name: install numactl
+  import_tasks: rpm.yml
+  when: ansible_architecture == 'x86_64'
+  tags: install
+
+- name: install MySQL
+  import_tasks: install.yml
+  when: ansible_architecture == 'x86_64'
+  tags: install
+
+- name: config MySQL
+  import_tasks: configure.yml
+  tags: configure
+
+#- include: secure-installation.yml
+
+- name: crate database for MySQL
+  import_tasks: databases.yml
+  tags: database
+
+- name: create user for MySQL
+  import_tasks: users.yml
+  tags: user
+
+- name: Master-slave synchronization for MySQL
+  import_tasks: replication.yml
+  tags: master-slave

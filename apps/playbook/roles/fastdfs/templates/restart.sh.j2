@@ -1,0 +1,7 @@
+#!/bin/bash
+for i in `ps -ef|grep fdfs|grep -v grep|awk '{print $2}'`;do
+  kill $i
+done
+sleep 2
+{{ fastdfs_path }}/fdfs_storaged {{ fastdfs_path }}/fdfs/storage.conf
+{{ fastdfs_path }}/fdfs_trackerd {{ fastdfs_path }}/fdfs/tracker.conf

@@ -1,0 +1,12 @@
+[program:{{ fastdfs_name }}]
+directory={{ fastdfs_path }}
+command=/bin/bash {{ fastdfs_path }}/restart.sh
+user={{ fastdfs_user }}
+group={{ fastdfs_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile={{ global.log_path }}/{{ fastdfs_name }}.log

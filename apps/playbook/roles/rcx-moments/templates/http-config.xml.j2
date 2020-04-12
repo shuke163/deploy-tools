@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <!--
+    此处填写的是 http server 监听的域名和端口,格式为:"domain:port",例如:"nav.rongcloud.cn:8080", 如果不需要域名限定的话,
+    可以直接写为":port",例如:":8080".
+     -->
+    <host>:{{ moments_port }}</host>
+
+	<plugins>
+		<plugin>
+			<name>api-moments</name>
+			<path>plugins/rcx.api.moments-2.1.0-SNAPSHOT.jar</path>
+			<main>rcx.api.moments.Bootstrap</main>
+			<config>service-config.xml</config>
+			<version>1.0.0</version>
+		</plugin>
+
+	</plugins>
+</config>

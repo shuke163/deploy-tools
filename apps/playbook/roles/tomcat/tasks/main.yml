@@ -1,0 +1,150 @@
+---
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+
+- name: Ensure Redis path
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ app_path }}"
+    - "{{ tmp_path }}"
+
+# Here We Create The Group and User
+- name: Create Tomcat Group
+  group:
+    name: "{{ tomcat_user_group }}"
+    state: present
+
+- name: Create Tomcat user
+  user:
+    name: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    system: "{{ tomcat_user_system }}"
+    comment: "Tomcat Service User"
+
+- name: Check If Already Installed
+  stat:
+    path: "{{ tomcat_instance_path }}"
+  register: __tomcat_exists
+
+- name: Copy tomcat package
+  unarchive:
+    src: "{{ tomcat_package }}"
+    dest: "{{ tmp_path }}"
+    #force: yes
+  when: not __tomcat_exists.stat.exists
+
+- name: Copy Tomcat
+  shell: cp -ar  "{{ tmp_path }}/tomcat" "{{ tomcat_instance_path }}"
+  when: not __tomcat_exists.stat.exists
+
+- name: Ensure the tomcat instance mode
+  file:
+    path: "{{ tomcat_instance_path }}"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    recurse: yes
+
+- name: Install standard server.xml
+  when:
+    - not tomcat_use_custom_server_xml
+    - tomcat_configure_configs
+  template:
+    src: server.xml.j2
+    dest: "{{ tomcat_instance_path }}/conf/server.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Install custom server.xml
+  when:
+    - tomcat_use_custom_server_xml
+    - tomcat_configure_configs
+  copy:
+    src: "{{ tomcat_custom_server_xml }}"
+    dest: "{{ tomcat_instance_path }}/conf/server.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Install standard web.xml
+  when:
+    - not tomcat_use_custom_web_xml
+    - tomcat_configure_configs
+  template:
+    src: web.xml.j2
+    dest: "{{ tomcat_instance_path }}/conf/web.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Install custom web.xml
+  when:
+    - tomcat_use_custom_web_xml
+    - tomcat_configure_configs
+  copy:
+    src: "{{ tomcat_custom_web_xml }}"
+    dest: "{{ tomcat_instance_path }}/conf/web.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Install standard context.xml
+  when:
+    - not tomcat_use_custom_context_xml
+    - tomcat_configure_configs
+  template:
+    src: context.xml.j2
+    dest: "{{ tomcat_instance_path }}/conf/context.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Install custom context.xml
+  when:
+    - tomcat_use_custom_context_xml
+    - tomcat_configure_configs
+  copy:
+    src: "{{ tomcat_custom_context_xml }}"
+    dest: "{{ tomcat_instance_path }}/conf/context.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Install standard tomcat-users.xml
+  when:
+    - not tomcat_use_custom_tomcat_users_xml
+    - tomcat_configure_configs
+  template:
+    src: tomcat-users.xml.j2
+    dest: "{{ tomcat_instance_path }}/conf/tomcat-users.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Install custom tomcat-users.xml
+  when: tomcat_use_custom_tomcat_users_xml
+  copy:
+    src: "{{ tomcat_custom_tomcat_users_xml }}"
+    dest: "{{ tomcat_instance_path }}/conf/tomcat-users.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640
+
+- name: Add tomcat env file
+  template:
+    src: setenv.sh.j2
+    dest: "{{ tomcat_instance_path }}/bin/setenv.sh"
+    mode: 0644
+
+- name: Install custom manager app context.xml
+  when: tomcat_use_custom_manager_context_xml
+  copy:
+    src: "{{ tomcat_custom_manager_context_xml }}"
+    dest: "{{ tomcat_instance_path }}/webapps/manager/META-INF/context.xml"
+    owner: "{{ tomcat_user_name }}"
+    group: "{{ tomcat_user_group }}"
+    mode: 0640

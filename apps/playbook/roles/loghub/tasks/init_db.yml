@@ -1,0 +1,8 @@
+- name: init {{ service_name }} SQL
+  template:
+    src: "{{ item }}"
+    dest: "/data/tmp/init-loghub.sql"
+  with_items:
+    - "init.sql.j2"
+  delegate_to: "{{ mysql_host }}"
+  tags: init_db 

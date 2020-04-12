@@ -1,0 +1,39 @@
+---
+# tasks file for node
+
+- name: Download NodeJS | online
+  get_url:
+    url: "{{ node_download_url }}"
+    dest: "{{ pkg_path }}"
+    timeout: 300
+
+- name: Uncompress {{pkg_path}}
+  unarchive:
+    src: "{{pkg_path}}"
+    dest: "{{base_dir}}"
+    remote_src: True
+    creates: "{{dst_dir}}"
+
+- name: Make link to {{pkg_path}}
+  file:
+    src: "{{dst_dir}}"
+    dest: "{{link_dir}}"
+    state: link
+
+- name: Add  NODE_HOME to PATH
+  blockinfile:
+    path: /etc/profile
+    marker: '# {mark} NODE PATH ANSIBLE MANAGED BLOCK'
+    block: |
+      export NODE_HOME={{link_dir}}
+      export PATH=$NODE_HOME/bin:$PATH
+
+- name: Make link to bin path
+  file: src="/usr/local/node/bin/{{ item }}" dest="/usr/bin/{{ item }}" state=link
+  with_items:
+    - node
+    - npm
+    - npx
+
+- name: Install pm2 pkg
+  shell: /usr/local/node/bin/npm -g install pm2

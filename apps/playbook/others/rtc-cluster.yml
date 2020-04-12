@@ -1,0 +1,41 @@
+- hosts: mysql
+  roles:
+  - role: mysql
+    tags: mysql
+  vars:
+    inst_name: mysql.inst-0
+- hosts: zookeeper
+  roles:
+  - role: zookeeper
+    tags: zookeeper
+  vars:
+    inst_name: zookeeper.inst-0
+- hosts: rcdb
+  roles:
+  - role: rcdb
+    tags: rcdb
+  vars:
+    inst_name:
+    - rcdb.inst-0
+    - rcdb.inst-1
+    - rcdb.inst-2
+    - rcdb.inst-3
+    rcdb_port:
+    - 8888
+    - 8889
+    - 8890
+    - 8891
+- hosts: redis
+  roles:
+  - role: redis
+    tags: redis
+  vars:
+    inst_name: redis.inst-0
+- hosts: rtc
+  roles:
+  - role: rtc
+    tags: rtc
+  - role: openresty
+    tags: rtc
+  vars:
+    inst_name: rtc.inst-0

@@ -1,0 +1,54 @@
+---
+- name: Ensure rce dir
+  file: path="{{ item }}" state=directory owner={{ rc_user }} group={{ rc_group}} mode=0755
+  with_items:
+    - "{{ tomcat_instance_path }}/conf/rce"
+    - "{{ logs_path }}"
+
+- name: Add jdbc config
+  template: src=jdbc.properties.j2 dest="{{ tomcat_instance_path }}/conf/rce/jdbc.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  notify: Restart Rce
+  when: db_type == 'mysql'
+
+- name: Add jdbc config
+  template: src=cn-jdbc.properties.j2 dest="{{ tomcat_instance_path }}/conf/rce/jdbc.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  notify: Restart Rce
+  when: db_type == 'kingbase'
+
+- name: Add redis config
+  template: src=redis.properties.j2 dest="{{ tomcat_instance_path }}/conf/rce/redis.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  notify: Restart Rce
+
+- name: Add vars config
+  template: src=vars.properties.j2 dest="{{ tomcat_instance_path }}/conf/rce/vars.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  notify: Restart Rce
+
+- name: Add es config
+  template: src=elastic.properties.j2 dest="{{ tomcat_instance_path }}/conf/rce/elastic.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  notify: Restart Rce
+
+- name: Add routerfilter config
+  template: src=routefilter.properties.j2 dest="{{ tomcat_instance_path }}/conf/rce/routefilter.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  notify: Restart Rce
+
+- name: Copy rce war
+  copy: src="{{ rce_package }}" dest="{{ tomcat_instance_path }}/webapps/rce.war" owner={{ rc_user }} group={{ rc_group}} mode=0755
+  notify: Restart Rce
+
+- name: Ensure the tomcat instance mode
+  file: path="{{ tomcat_instance_path }}" state=directory owner={{ rc_user }} group={{ rc_group}} mode=0755
+
+- name: Install Service
+  template: src=rce_supervisor.service.j2 dest="{{ conf_path }}/{{ rce_name }}.conf"  owner={{ rc_user }} group={{ rc_group}} mode=0644
+
+- name: Add log link
+  file: src="{{ tomcat_instance_path }}/logs" dest="{{ logs_path }}/{{ rce_name }}" owner={{ rc_user }} group={{ rc_group}} state=link
+
+- name: Ensure Rce service is present
+  supervisorctl: name="{{ rce_name }}" state=present supervisorctl_path="{{ supervisorctl }}"
+
+- name: change path owner
+  file: path="{{ item }}" state=directory owner="{{ rc_user }}" group="{{ rc_user }}"  recurse=yes
+
+- name: Ensure Rce tomcat is running
+  supervisorctl: name="{{ rce_name }}" state=restarted supervisorctl_path="{{ supervisorctl }}"

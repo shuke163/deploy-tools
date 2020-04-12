@@ -1,0 +1,52 @@
+---
+- name: Copy my.cnf global MySQL configuration.
+  template:
+    src: my.cnf.j2
+    dest: "{{ mysql_config_file }}"
+    owner: "{{ mysql_run_user }}"
+    group: "{{ mysql_run_group }}"
+    mode: 0644
+    backup: yes
+    force: "{{ overwrite_global_mycnf }}"
+  notify: restart mysql
+
+- name: Verify mysql include directory exists.
+  file: path="{{ mysql_config_include_dir }}" state=directory owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" mode=0755
+  when: mysql_config_include_files | length
+
+- name: Copy my.cnf override files into include directory.
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ mysql_config_include_dir }}/{{ item.src | basename }}"
+    owner: "{{ mysql_run_user }}"
+    group: "{{ mysql_run_group }}"
+    mode: 0644
+    force: "{{ item.force | default(False) }}"
+  with_items: "{{ mysql_config_include_files }}"
+  notify: restart mysql
+
+- name: Create error log file
+  file: path="{{ mysql_slow_query_log_file }}" state=touch owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" mode=0644
+  when: mysql_slow_query_log_file is defined
+
+- name: Create slow query log file
+  file: path="{{ mysql_slow_query_log_file }}" state=touch owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" mode=0644
+  when: mysql_slow_query_log_enabled
+
+- name: Ensure MySQL is started and enabled on boot.
+  systemd: "name={{ mysql_daemon }} state=restarted enabled={{ mysql_enabled_on_startup }} daemon_reload=yes"
+  register: mysql_service_configuration
+  when: ansible_service_mgr == 'systemd'
+
+- name: Ensure mysql service is present
+  supervisorctl: name="{{ inst_name }}" state=present supervisorctl_path="{{ global.supervisorctl }}"
+
+- name: Ensure mysql is running
+  supervisorctl: name="{{ inst_name }}" state=started supervisorctl_path="{{ global.supervisorctl }}"
+
+- name: Sleep for 6 seconds and continue with play
+  wait_for: timeout=6
+  delegate_to: localhost
+
+- name: Update mysql root password
+  shell: "{{ mysql_path }}/bin/mysql -Ne \"GRANT ALL on *.* to '{{ mysql_root_username }}'@'%' identified by '{{ mysql_root_password }}'\""

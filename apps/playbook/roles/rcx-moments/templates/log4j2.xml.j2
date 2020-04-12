@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="MyApp" package="" monitorInterval="60">
+    <Properties>
+        <Property name="LOG_HOME">{{ moments_logpath }}/logs</Property>
+        <Property name="MON_HOME">{{ moments_logpath }}/mon</Property>
+        <Property name="IMEDIATEFLUSH">true</Property>
+    </Properties>
+    <Appenders>
+        <RollingRandomAccessFile name="common"
+                                 fileName="${LOG_HOME}/common.log" immediateFlush="${IMEDIATEFLUSH}" bufferSize="8192"
+                                 filePattern="${LOG_HOME}/common.log.%i">
+            <PatternLayout charset="UTF-8">
+                <pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
+            </PatternLayout>
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy fileIndex="min" max="10"/>
+        </RollingRandomAccessFile>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{MMdd HH:mm:ss,SSS}:%c{1}:%-5p %L %msg%n"/>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+    </Appenders>
+<Loggers>
+        <Root level="info" additivity="false">
+            <AppenderRef ref="common"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="common-logger" level="info" additivity="false">
+            <AppenderRef ref="common"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+</Loggers>
+
+</Configuration>

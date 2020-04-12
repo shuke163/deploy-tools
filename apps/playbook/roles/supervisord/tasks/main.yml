@@ -1,0 +1,53 @@
+---
+- name: Ensure work dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ global.rc_user }}"
+    group: "{{ global.rc_group }}"
+    mode: 0755
+  with_items: 
+    - "{{ global.run_path }}"
+    - "{{ global.conf_path }}"
+    - "{{ global.log_path }}"
+
+- name: Add supervisor config
+  template:
+    src: supervisord.conf.j2
+    dest: "/etc/supervisord.conf"
+
+- name: Install Service (systemd)
+  template:
+    src: supervisord.server.j2
+    dest: /usr/lib/systemd/system/supervisord.service
+    mode: 0644
+  when: "ansible_service_mgr == 'systemd'"
+
+- name: Install Service (init Redhat6)
+  template:
+    src: supervisord.server_rhel6.j2
+    dest: /etc/init.d/supervisord
+    mode: 0755
+  when: ansible_service_mgr != 'systemd' and ansible_os_family == 'RedHat' and ansible_distribution_major_version == "6"
+
+- name: Install Service (init Other)
+  template:
+    src: supervisord.server_initd.j2
+    dest: /etc/init.d/supervisord
+    mode: 0755
+  when: ansible_service_mgr != 'systemd' and ansible_os_family != 'RedHat'
+
+- name: Start service
+  service:
+    name: supervisord
+    state: started
+    enabled: yes
+  when: ansible_service_mgr == 'upstart'
+
+- name: Start supervisord Service
+  systemd:
+    name: supervisord
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+  when: ansible_service_mgr == 'systemd'

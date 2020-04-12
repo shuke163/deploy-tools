@@ -1,0 +1,82 @@
+- name: Ensure mysql user existes
+  user: name="{{ mysql_run_user }}" state=present system=no
+
+- name: Make sure mysql path is exists
+  file:  path="{{ mysql_path }}" state=directory owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" mode=0755 recurse=yes
+
+- name: Check If Already Installed
+  stat: path="{{ mysql_path }}/bin/mysqld"
+  register: __mysqld_exists
+
+- name: Check my.cnf Already Installed
+  stat: path="/etc/my.cnf"
+  register: __mysql_conf_exists
+
+- name: Check mysql data Already Installed
+  stat: path="{{ mysql_datadir }}/ibdata1"
+  register: __mysql_data_exists
+
+- name: Check mysql ssl Already Installed
+  stat: path="{{ mysql_datadir }}/ca.pem"
+  register: __mysql_ssl_exists
+
+- name: Check mysql file dir Already Installed
+  stat: path="{{ mysql_file_dir }}"
+  register: __mysql_file_exists
+
+- name: change mysql file dir owner
+  file: path="{{ mysql_file_dir }}" owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=directory mode=0750
+  when: __mysql_file_exists.stat.exists
+
+- name: Copy Mysql
+  unarchive: src="{{ mysql_package }}" dest="{{ mysql_path }}"
+  when: not __mysqld_exists.stat.exists
+
+- name: change mysql server dir owner
+  file: path="{{ mysql_path }}" owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=directory
+
+- name: create mysql data dir
+  file: path="{{ mysql_datadir }}" owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=directory mode=0750
+
+- name: create mysql tmp dir
+  file: path="{{ mysql_tmp }}" owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=directory mode=0755
+
+- name: create mysql log dir
+  file: path="{{ mysql_log_dir }}" owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=directory mode=0755
+
+- name: Initialize mysql server
+  shell: "{{ mysql_path }}/bin/mysqld --initialize-insecure --user=mysql --basedir={{ mysql_path }} --datadir={{ mysql_datadir }}"
+  when: not __mysql_data_exists.stat.exists
+
+- name: mysql ssl rsa setup
+  shell: "{{ mysql_path }}/bin/mysql_ssl_rsa_setup --user=mysql --basedir={{ mysql_path }} --datadir={{ mysql_datadir }}"
+  when: not __mysql_ssl_exists.stat.exists
+
+- name: change mysql ssl rsa owner
+  file: path="{{ mysql_datadir }}" owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=directory mode=0750
+
+- name: Add env config
+  template: src=env.j2 dest=/etc/profile.d/mysql.sh mode=0755
+
+- name: Check ln mysql
+  stat: path="/usr/bin/mysql"
+  register: __ln_mysql_exists
+
+- name: Add ln mysql
+  file: src={{ mysql_path }}/bin/mysql dest=/usr/bin/mysql owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=link
+  when: not __ln_mysql_exists.stat.exists
+
+- name: Check ln mysqldump
+  stat: path="/usr/bin/mysqldump"
+  register: __ln_mysqldump_exists
+
+- name: Add ln mysqldump
+  file: src={{ mysql_path }}/bin/mysqldump dest=/usr/bin/mysqldump owner="{{ mysql_run_user }}" group="{{ mysql_run_group }}" state=link
+  when: not __ln_mysqldump_exists.stat.exists
+
+- name: Copy mysql.service
+  template: src=mysql.service.tpl dest=/usr/lib/systemd/system/mysql.service mode=0644
+  when: ansible_service_mgr == 'systemd'
+
+- name: Add startup config to supervisor
+  template: src=mysql.service.j2 dest="{{ global.conf_path }}/{{ inst_name }}.conf" owner={{ global.rc_user }} group={{ global.rc_group }} mode=0644

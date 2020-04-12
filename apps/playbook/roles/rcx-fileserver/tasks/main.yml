@@ -1,0 +1,41 @@
+---
+- name: debug time
+  debug: var={{ item[4:] }}
+  ignore_errors: yes
+  with_items:
+    - "{{ fs }}"
+
+- name: Ensure work dir
+  file: path="{{ item }}" state=directory owner={{ rc_user }} group={{ rc_group}} mode=0755
+  with_items:
+    - "{{ global.app_path }}"
+    - "{{ rcx_logpath }}"
+    - "{{ rcx_path }}"
+    - "{{ rcx_path }}/configs"
+    - "{{ global.tmp_path }}"
+    - "{{ fileserver_path }}"
+
+- name: copy rcx-fileserver.tar.gz
+  unarchive: src="{{ global.package_path }}/rcx-fileserver.tar.gz" dest="{{ rcx_path }}/" owner={{ rc_user }} group={{ rc_group}} mode=0755 copy="yes"
+
+- name: Add rcx-fileserver common config
+  template: src="{{ item }}.j2" dest="{{ rcx_path}}/configs/{{ item }}" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  with_items: 
+    - "{{ common_config }}"
+
+- name: Add rcx-fileserver config
+  template: src="{{ item }}.j2" dest="{{ rcx_path }}/configs/{{ item }}" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  with_items:
+    - "{{ configs }}"
+
+- name: Add startup config
+  template: src=rcx.fileserver.service.j2 dest="{{ global.conf_path }}/{{ inst_name }}.conf" owner={{ rc_user }} group={{ rc_group}} mode=0644
+
+- name: Add rcx-fileserver db-config.xml
+  template: src=db-config.xml.j2 dest="{{ rcx_path }}/configs/db-config.xml" owner={{ rc_user }} group={{ rc_group}} mode=0644
+
+- name: Add rcx-fileserver fdfs.properties
+  template: src=fdfs.properties.j2 dest="{{ rcx_path }}/configs/fdfs.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644
+
+- name: Add rcx-fileserver fs.properties
+  template: src=comcloud_x.properties.j2 dest="{{ rcx_path }}/configs/comcloud_x.properties" owner={{ rc_user }} group={{ rc_group}} mode=0644

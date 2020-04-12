@@ -1,0 +1,32 @@
+---
+inst_name: "rce.server"
+rce_name: "{{ inst_name }}"
+rce_id: "{{ inst_name }}"
+env_type: prod
+
+rce_package: "{{ package_path }}/rce/rce.war"
+
+#redis_host: "127.0.0.1"
+redis_host: '{{ hostvars[groups["redis"][0]]["ansible_host"] }}'
+redis_port: "6379"
+redis_pass: ""
+
+mysql_host: "127.0.0.1"
+mysql_password: "123456"
+rcedb: "rcedb"
+jdbc_url: "jdbc:mysql://{{ mysql_host }}:{{ mysql_port }}/{{ rcedb }}?useUnicode=true"
+mysql_port: "4306"
+mysql_user: "root"
+
+rc_user: "rcloud"
+rc_group: "rcloud"
+tomcat_user_name: "{{ rc_user }}"
+tomcat_user_group: "{{ rc_group }}"
+tomcat_instance_path: "{{ app_path }}/{{ rce_name }}"
+
+es_hosts:
+  - "127.0.0.1"
+elasticsearch_host: "{{ es_hosts[0] }}"
+elasticsearch_tcp_port: "9300"
+elasticsearch_cluster_name: "elasticsearch"
+db_type: "mysql"

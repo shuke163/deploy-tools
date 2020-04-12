@@ -1,0 +1,25 @@
+---
+# tasks file for node
+- name: Remove /tmp/index.html if it exist
+  file:
+    path: "{{ network_lock_file }}"
+    state: absent
+
+- name: curl https://www.baidu.com/index.html
+  get_url:
+    url: https://www.baidu.com/index.html
+    dest: "{{ network_lock_file }}"
+    mode: '0440'
+    timeout: 300
+  register: network
+  ignore_errors: True
+
+- name: include online.yml
+  import_tasks: online.yml
+  when: network | succeeded and network.status_code == 200
+  tags: online
+
+- name: include offline.yml
+  import_tasks: offline.yml
+  when: network | failed and network.status == -1
+  tags: offline

@@ -1,0 +1,12 @@
+[program:{{ nginx_name }}]
+directory={{ nginx_path }}
+command={{  nginx_path }}/sbin/nginx -p {{  nginx_path }} -c {{ nginx_path }}/conf/nginx.conf -g "daemon off;"
+user={{ nginx_user }}
+group={{ nginx_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile={{ global.log_path }}/{{ nginx_name }}.log

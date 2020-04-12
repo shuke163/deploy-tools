@@ -1,0 +1,15 @@
+---
+inst_name: "rtc"
+rtc_name: "{{ inst_name }}"
+rtc_package: "{{ global.package_path }}/rtc.tar.gz"
+rtc_path: "{{ global.app_path }}/{{ rtc_name }}"
+
+httpPort: "{{ rtc.RTC_HTTP_PORT }}"
+rtcPort: "{{ rtc.RTC_UDP_PORT }}"
+rtc_private_ip: "{{ private_ip }}"
+rtc_public_ip: "{{ public_ip }}"
+
+rtc_user: "{{ global.rc_user }}"
+rtc_group: "{{ global.rc_group }}"
+
+sysctl_conf: "/etc/sysctl.conf"

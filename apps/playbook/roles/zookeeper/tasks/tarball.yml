@@ -1,0 +1,55 @@
+---
+
+- group: name=zookeeper system=yes
+- user: name=zookeeper group=zookeeper system=yes
+
+- name: Ensure ZK path
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ global.tmp_path }}"
+    - "{{ log_dir }}"
+    - "{{ data_dir }}"
+
+- name: Check If Already Installed
+  stat:
+    path: "{{ zk_path }}"
+  register: __zk_exists
+
+- name: Copy zk package
+  unarchive:
+    src: "{{ zookeeper_package }}"
+    dest: "{{ global.tmp_path }}"
+  when: not __zk_exists.stat.exists
+
+- name: Copy zk
+  copy:
+    src: "{{ global.tmp_path }}/zookeeper-{{ zookeeper_version }}/"
+    dest: "{{ zk_path }}"
+    owner: zookeeper
+    group: zookeeper
+    mode: "0755"
+    remote_src: yes
+  when: not __zk_exists.stat.exists
+
+- name: Change ownership on zookeeper directory.
+  file: path={{ zk_path }} state=directory owner=zookeeper group=zookeeper
+  tags: bootstrap
+
+- name: Write myid file.
+  template: src=myid.j2 dest={{ data_dir }}/myid owner=zookeeper group=zookeeper force="{{ zookeeper_force_myid }}"
+  tags: deploy
+  notify:
+    - Restart zookeeper
+
+- name: Configure zookeeper zoo.cfg
+  template: src=zoo.cfg.j2 dest={{ zk_path }}/conf/zoo.cfg owner=zookeeper group=zookeeper
+  tags: deploy
+  notify:
+    - Restart zookeeper
+
+- name: Add zookeeper's bin dir to the PATH
+  copy: content="export PATH=$PATH:{{ zk_path }}/bin" dest="/etc/profile.d/zookeeper_path.sh" mode=755
+  when: zookeeper_register_path_env

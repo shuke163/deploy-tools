@@ -1,0 +1,7 @@
+maxTotal=30
+maxIdle=16
+minIdle=4
+maxWaitMillis=3000
+testOnBorrow=true
+trackers= {{ hostvars[groups["rcx_server"][0]]['private_ip'] }}:{{ tracker_port }}
+storages= {{ hostvars[groups["rcx_server"][0]]['private_ip'] }}:{{ storage_port }}

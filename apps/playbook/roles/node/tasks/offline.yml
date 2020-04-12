@@ -1,0 +1,42 @@
+---
+# tasks file for node
+
+- name: Uncompress {{pkg_path}} | offline
+  unarchive:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "{{ package_path }}/node-{{ version }}-linux-x64.tar.gz", dest: "/data/tmp/" }
+    - { src: "{{ package_path }}/pm2.tar.gz", dest: "/data/tmp/node-{{ version }}-linux-x64/lib/node_modules/" } 
+
+- name: Make link to {{pkg_path}}
+  file:
+    src: "{{dst_dir}}"
+    dest: "{{link_dir}}"
+    state: link
+
+- name: Add  NODE_HOME to PATH
+  blockinfile:
+    path: /etc/profile
+    marker: '# {mark} NODE PATH ANSIBLE MANAGED BLOCK'
+    block: |
+      export NODE_HOME={{link_dir}}
+      export PATH=$NODE_HOME/bin:$PATH
+
+- name: Install pm2 pkg
+  shell: /data/app/node/bin/npm build pm2 -g
+  args:
+    chdir: "/data/app/node/lib/node_modules/"
+    executable: /bin/bash
+
+- name: Make link to bin path
+  file: src="/data/app/node/bin/{{ item }}" dest="/usr/bin/{{ item }}" state=link
+  with_items:
+    - node
+    - npm
+    - npx
+
+- name: Make link pm2 to bin path
+  file: src="/data/app/node/lib/node_modules/pm2/bin/{{ item }}" dest="/usr/bin/{{ item }}" state=link
+  with_items:
+    - pm2

@@ -1,0 +1,13 @@
+[program:{{ es_name }}]
+directory={{ es_path }}
+command={{ es_path }}/bin/elasticsearch
+user={{ elasticsearch_user }}
+group={{ elasticsearch_group }}
+startsecs=5
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+environment=JAVA_HOME={{ java_home }},LANG=en_US.UTF-8,ES_PATH_CONF={{ es_path }}/config
+stdout_logfile={{ log_path }}/{{ es_name }}.log

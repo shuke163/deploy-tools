@@ -1,0 +1,26 @@
+[ois]
+#UDP监听端口
+udp port={{ udp_port }}
+#TCP监听端口
+tcp port={{ tcp_secret_port }}
+tcp port 80={{ tcp_nonsecret_port }}
+tcp port monitor={{ tcp_port_monitor }}
+#服务器
+host={{ slp2p_host }}
+#随机码 用来加密生成的 session
+rand key={{ slp2p_randkey }}
+#SSL֤证书
+cert={{ cert_path }}
+private key={{ private_key_path }}
+#使用UDP转发 1启用 0关闭   UDP 转发速率控制 单位 kb 0 不限制
+
+udp_forward={{ udp_forward }}
+udp_forward_speed={{ udp_forward_speed }}
+[keepalive]
+#心跳包时间 单位秒 默认 60*60
+tcp keepalive={{ tcp_secret_keepalive }}
+tcp keepalive80={{ tcp_nonsecret_keepalive }}
+
+[LOGGER]
+PATH={{ slp2p_logpath }}
+MASK={{ slp2p_log_mask }}

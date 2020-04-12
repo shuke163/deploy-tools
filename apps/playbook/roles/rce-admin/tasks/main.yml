@@ -1,0 +1,30 @@
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+
+- name: Ensure nginx vhost dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+  with_items: 
+    - "{{ admin_dest }}"
+
+- name: Copy admin files
+  unarchive:
+    src: "{{ admin_local_repo }}"
+    dest: "{{ admin_dest }}/"
+
+- name: Add admin config
+  template:
+    src: admin_setting.js.j2
+    dest: "{{ admin_dest }}/setting.js"
+
+- name: change admin owner
+  file:
+    path: "{{ admin_dest }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    state: directory
+    recurse: yes

@@ -1,0 +1,14 @@
+---
+inst_name: "rcx-moments"
+moments_name: "{{ inst_name }}"
+moments_package: "{{ package_path }}/rce/rcx-moments.tar.gz"
+java_home: "{{ base_path }}/app/jdk"
+
+moments_path: "{{ app_path }}/{{ moments_name }}"
+moments_logpath: "{{ logs_path }}/{{ inst_name }}"
+moments_port: 8000
+
+rcdbs: []
+
+rc_user: "rcloud"
+rc_group: "rcloud"

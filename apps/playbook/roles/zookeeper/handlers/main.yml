@@ -1,0 +1,6 @@
+---
+- name: Restart zookeeper
+  supervisorctl:
+    name: "{{ zookeeper_name }}"
+    state: restarted
+    supervisorctl_path: "{{ global.supervisorctl }}"

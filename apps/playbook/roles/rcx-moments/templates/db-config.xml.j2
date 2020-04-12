@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <mappings>
+        <!-- mapping target="name1">GroupPersons</mapping>
+        <mapping target="name1">PersonGroups</mapping-->
+    </mappings>
+    <dbclusters>
+        <dbcluster name="name1">
+            <items>
+                <item>
+                    <ip>192.168.156.27</ip>
+                    <port>10001</port>
+                    <name>server1</name>
+                </item>
+            </items>
+        </dbcluster>
+        <dbcluster default="true">
+      <items>
+      {% for item in rcdbs %}
+
+        <item>
+          {% if 'ip' in item %}
+          <ip>{{ item['ip'] }}</ip>
+          {% else %}
+          <ip>{{ hostvars[groups[item['name']][0]]['ansible_host'] }}</ip>
+          {% endif %}
+          <port>{{ item['port'] }}</port>
+          <name>{{ item['name'] }}</name>
+        </item>
+      {% endfor %}
+      </items>
+
+        </dbcluster>
+    </dbclusters>
+</config>

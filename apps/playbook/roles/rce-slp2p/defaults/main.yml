@@ -1,0 +1,65 @@
+---
+inst_name: "rce-slp2p"
+slp2p_name: "{{ inst_name }}"
+slp2p_user: rcloud
+slp2p_group: rcloud
+#服务器域名
+public_ip: "127.0.0.1"
+slp2p_host: "{{ public_ip}}"
+slp2p_path: "{{ app_path }}/{{ inst_name }}"
+slp2p_logpath: "{{ logs_path }}/{{ inst_name }}"
+#日志掩码
+slp2p_log_mask: 7
+
+#UDP 端口
+udp_port: 4118
+
+#TCP 加密端口，值等于 0 表示关闭。加密端口和非加密端口只能开启其中一个
+tcp_secret_port: 3443
+
+
+#TCP 非加密端口，值等于 0 表示关闭。加密端口和非加密端口只能开启其中一个
+tcp_nonsecret_port: 0
+
+#TCP 状态查看端口，配置后可以通过浏览器访问，如: http://x.x.x.x:8123/status:
+tcp_port_monitor: 8123
+
+#随机码 用来加密生成的 session
+slp2p_randkey: n82456wedfjlawlkxcijhtuiunmdesxldfgmasdgd
+
+
+#SSL 证书
+cert_path: "{{ slp2p_path }}/cert.pem"
+private_key_path: "{{ slp2p_path }}/privtkey.pem"
+
+
+#授权文件 未取得 oray 授权时可暂不配置
+#slp2p_license_path: "{{ slp2p_path }}/slp2p.orayservers.license"
+
+#是否使用UDP转发 1启用 0关闭
+udp_forward: 1
+
+#UDP 转发速率控制 单位 kb 0 不限制
+udp_forward_speed: 0
+
+# 加密端口心跳包时间 单位秒 默认 60*60
+tcp_secret_keepalive: 3600
+
+# 非加密端口心跳包时间 单位秒 默认 60*60
+tcp_nonsecret_keepalive: 3600
+
+rce_server_host: '{{ hostvars[groups["rce-server"][0]]["ansible_host"] }}'
+RCE_PORT: 8090
+RCE_API_BASE: "http://{{ rce_server_host }}:{{ tomcat_port }}/rce/"  # NOTE: 这里不带 api 或 admin-api 这两个 path
+RCE_SUPER_USERNAME: 'superadmin'
+RCE_SUPER_PASSWORD: 'superadmin'
+RC_CONN_TYPE: 'private'
+
+RC_CONN_PUBLIC_APP_ID: '1234'
+RC_CONN_PUBLIC_APP_SECRET: '5678'
+RC_CONN_PUBLIC_DOMAIN: 'slapi-embed.oray.net'
+RC_CONN_PUBLIC_USE_SSL: 'true'
+
+#RC_CONN_PRIVATE_ADDR: ""   #'PHSRC://5.8.28.6:4118;PHSRC_HTTPS://5.8.28.6:3443;'
+#RC_CONN_PRIVATE_SESSIONS: ""
+

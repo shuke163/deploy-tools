@@ -1,0 +1,14 @@
+- hosts: mysql
+  serial: 2
+
+  vars:
+    mysql_host: 127.0.0.1
+    mysql_user: im
+    mysql_password: '1qazCDE#'
+    mysql_port: 4306
+
+- name: init loghub db
+  shell:
+    "/opt/mysql/bin/mysql -u{{ mysql_user }} -p{{ mysql_password }} -h {{ mysql_host }} -P {{ mysql_port }} < {{ item }}"
+  with_items:
+    - "/data/tmp/init-loghub.sql"

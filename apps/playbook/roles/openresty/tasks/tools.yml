@@ -1,0 +1,9 @@
+---
+- name: Check If libpcre.so.0.0.1 exists
+  stat: path="{{ libpcre.src_path }}"
+  register: __libpcre_exists
+  when: ansible_machine == "x86_64"
+
+- name: make ln /lib64/libpcre.so.1
+  file: src="{{ libpcre.src_path }}" dest="{{ libpcre.dest_path }}" state=link
+  when: __libpcre_exists.stat.exists

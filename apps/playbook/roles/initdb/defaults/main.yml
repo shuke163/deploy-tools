@@ -1,0 +1,64 @@
+migrate_package: "{{ package_path }}/rce/database.tar.gz"
+
+mysql_host: "127.0.0.1"
+mysql_port: "4306"
+rcedb: "rcedb"
+erpdb: "erp"
+mysql_user: root
+mysql_password: 123456
+
+im_api: '127.0.0.1:8081'
+im_navi: '127.0.0.1:8082'
+im_appkey: 'tmp_pathe0x9wycfx7flq'
+im_secret: 'SECRETTEST'
+# 0:QINIU 1:RCX-fileserver不分桶 2:RCX-fileserver分桶
+privatemedia_status: '2'
+
+file_server: '127.0.0.1:8086'
+
+rce_server_api: "{{ domain }}/api"
+rce_server_im: "{{ domain }}/im"
+rce_qr_url: "{{ rce_server_im }}/QR.html"
+rce_work_url: '127.0.0.1/work/application.html'
+moments_server_api: '127.0.0.1'
+moments_server_url: "127.0.0.1"
+company_name: "RongCloud"
+default_company_name: "{{ company_name }}"
+db_type: 'mysql'
+
+conference_api_url: "conference.rce.rongcloud.net"
+superadmin_username: "superadmin"
+rce_domain: "test.com"
+sms_tpl_register: "9vC_9xBR4fz8Cw9kax0Wu3"
+sms_tpl_reset_password: "feGF_8trQzX9a2j74aGYKE"
+sms_tpl_pin_notification: "0J0iohy6k_Va2zwmyMZBLh"
+sms_tpl_broadcast: "xxxx"
+sms_api_appkey: "tdrvipkst7v85"
+sms_api_appsecret: "NmzK6kfrpC4"
+sms_api_url: "http://api.sms.ronghub.com"
+qiniu_ak: ""
+qiniu_sk: ""
+qiniu_bucket_name: "rongcloud-rce-potrait"
+qiniu_bucket_domain: "{{ file_server }}"
+qiniu_upload_domain: "{{ file_server }}"
+remote_control_type: ""
+remote_control_public_app_id: ""
+remote_control_public_app_secret: ""
+remote_control_public_domain: ""
+remote_control_public_use_ssl: ""
+remote_control_private_addr: ""
+remote_control_private_sessions: ""
+private_media_status: 2
+rcsr_xunfei_api_url: ""
+rcsr_xunfei_appid: ""
+rcsr_xunfei_apikey: ""
+rce_web_url: "{{ domain }}/im"
+
+email_host: ""
+email_account: ""
+email_password: ""
+email_sender_email_address: ""
+password_public_key_rsa: ""
+password_private_key_rsa: ""
+conference_call_api: ""
+

@@ -1,0 +1,5 @@
+use {{ db.name }}
+insert into CC_AppExtConfig(appId, attName, attValue) values({{ db.appId }}, 'monitorFlag', 1);
+insert into CC_AppExtConfig(appId, attName, attValue) values({{ db.appId }}, 'uploadType', 2);
+insert into CC_AppExtConfig(appId, attName, attValue) values({{ db.appId }}, 'offlinelogserver', {{ db.attValue }});
+insert into CC_AppExtConfig(appId, attName, attValue) values({{ db.appId }}, 'onlinelogserver', {{ db.attValue }});

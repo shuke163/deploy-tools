@@ -1,0 +1,9 @@
+---
+- name: install {{ service_name }}
+  import_tasks: install.yml
+  tags: install
+
+- name: init {{ service_name }} for sql
+  import_tasks: init_db.yml
+  tags: init_db
+  when: init_db

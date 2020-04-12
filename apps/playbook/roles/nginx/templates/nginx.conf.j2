@@ -1,0 +1,64 @@
+user  {{ nginx_user }};
+
+pid        /tmp/{{ nginx_name }}.pid;
+error_log  {{ nginx_error_log }};
+
+worker_processes  {{ nginx_worker_processes }};
+
+events {
+    worker_connections  {{ nginx_worker_connections }};
+    multi_accept {{ nginx_multi_accept }};
+}
+
+{% if nginx_extra_conf_options %}
+{{ nginx_extra_conf_options }}
+{% endif %}
+
+http {
+    include       {{ nginx_mime_file_path }};
+    default_type  application/octet-stream;
+
+    server_names_hash_bucket_size {{ nginx_server_names_hash_bucket_size }};
+    client_max_body_size {{ nginx_client_max_body_size }};
+
+    log_format  main  {{ nginx_log_format|indent(23) }};
+    access_log  {{ nginx_access_log }};
+
+    sendfile        {{ nginx_sendfile }};
+    tcp_nopush      {{ nginx_tcp_nopush }};
+    tcp_nodelay     {{ nginx_tcp_nodelay }};
+
+    keepalive_timeout  {{ nginx_keepalive_timeout }};
+    keepalive_requests {{ nginx_keepalive_requests }};
+
+    server_tokens {{ nginx_server_tokens }};
+    gzip  on;
+    gzip_disable "msie6";
+    
+    gzip_min_length 1k;
+    gzip_buffers 4 16k;
+    gzip_comp_level 4;
+    
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+    fastcgi_temp_path          {{ nginx_path }}/fastcgi_temp;
+    uwsgi_temp_path            {{ nginx_path }}/uwsgi_temp;
+    scgi_temp_path             {{ nginx_path }}/scgi_temp;
+    client_body_temp_path      {{ nginx_path }}/client_body_temp;
+    proxy_temp_path            {{ nginx_path }}/proxy_temp;
+
+{% if nginx_proxy_cache_path %}
+    proxy_cache_path {{ nginx_proxy_cache_path }};
+{% endif %}
+
+{% if nginx_extra_http_options %}
+    {% for line in nginx_extra_http_options %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
+
+    include {{ nginx_conf_path }}/*.conf;
+{% if nginx_conf_path != nginx_vhost_path %}
+    include {{ nginx_vhost_path }}/*;
+{% endif %}
+}

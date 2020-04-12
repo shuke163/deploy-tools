@@ -1,0 +1,13 @@
+- name: Ensure nginx vhost dirs
+  file: path="{{ item }}" state=directory owner="{{ rc_user }}" group="{{ rc_group }}" mode=0755
+  with_items:
+    - "{{ mgt_dest }}"
+
+- name: Copy mgt files
+  unarchive: src="{{ mgt_local_repo }}" dest="{{ mgt_dest }}/" owner="{{ rc_user }}" group="{{ rc_user }}" mode=0755
+
+- name: Add mgt config
+  template: src=mgt_setting.js.j2 dest="{{ mgt_dest }}/management/setting.js" owner="{{ rc_user }}" group="{{ rc_group }}" mode=0644
+
+- name: change ownership
+  file: path="{{ mgt_dest }}" owner="{{ rc_user }}" group="{{ rc_group }}" state=directory recurse=yes

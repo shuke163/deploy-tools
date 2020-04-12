@@ -1,0 +1,112 @@
+- debug: msg="{{ current_time }}"
+
+- name: unzip {{ migrate_tools_pkg_name }}
+  unarchive:
+    src: "{{ package_path }}/{{ migrate_tools_pkg_name }}"
+    dest: "{{ tmp_path }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: u=rw,g=r,o=r
+    keep_newer: yes
+
+- name: unzip {{ runtime_pkg_name }}
+  unarchive:
+    src: "{{ tmp_path }}/23to26/{{ runtime_pkg_name }}"
+    dest: "{{ tmp_path }}/23to26"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+    keep_newer: yes
+    remote_src: yes
+
+- name: the render of migrate tools jdbc config and run.sh
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+    # backup: yes
+  with_items:
+    - { src: "comcloud_x.properties.j2", dest: "{{ runtime_path }}/comcloud_x.properties" }
+    - { src: "comcloud_x.properties.j2", dest: "{{ runtime_path }}/rcx23_db.properties" }
+    - { src: "{{ mysql.management_db_name }}.properties.j2", dest: "{{ runtime_path }}/{{ mysql.management_db_name }}.properties" }
+    - { src: "db-config.xml.j2", dest: "{{ runtime_path }}/db-config.xml" }
+    - { src: "sqlite_rcdb.properties.j2", dest: "{{ runtime_path }}/sqlite_rcdb.properties" }
+    - { src: "run.sh.j2", dest: "{{ runtime_path }}/run.sh" }
+
+- name: wait on user input
+  pause:
+    prompt: "Warning! Now: {{ current_time }}, start update database and tables,ENTER to continue CTRL-C a to quit"
+
+- name: unzip {{ rcx_management_app_name }}.{{ date }}.tar.gz
+  unarchive:
+    src: "{{ backup_dir }}/{{ rcx_management_app_name }}.{{ date }}.tar.gz"
+    dest: "{{ backup_dir }}/"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+    keep_newer: yes
+    remote_src: yes
+
+- name: copy database file of rc.db
+  copy:
+    src: "{{ backup_dir }}/{{ rcx_management_app_name }}/rcxapi/db/rc.db"
+    dest: "{{ runtime_path }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    remote_src: yes
+    force: yes
+    # https://docs.ansible.com/ansible/latest/modules/copy_module.html
+    # If yes, the remote file will be replaced when contents are different than the source.(如果目标文件存在且内容与源文件不一致时,更新目标文件)
+
+- name: delete {{ rcx_management_app_name }} backup dir
+  file:
+    path: "{{ backup_dir }}/{{ rcx_management_app_name }}"
+    state: absent    
+
+- name: upgrade the database of {{ mysql.db_name }}'s tables from 2.3 to 2.6.x
+  mysql_db:
+    state: import
+    login_host: "{{ mysql.db_host }}"
+    login_user: "{{ mysql.db_user }}"
+    login_password: "{{ mysql.db_pwd }}"
+    login_port: "{{ mysql.db_port }}"
+    name: "{{ mysql.db_name }}"
+    target: "{{ table_change_sql_file }}"
+  ignore_errors: True 
+
+- name: create database with name {{ mysql.management_db_name }}
+  mysql_db:
+    login_host: "{{ mysql.db_host }}"
+    login_user: "{{ mysql.db_root }}"
+    login_password: "{{ mysql.db_pwd }}"
+    login_port: "{{ mysql.db_port }}"
+    name: "{{ mysql.management_db_name }}"
+    encoding: "{{ mysql.encoding }}"
+    state: "present"
+
+- name: import the database of {{ mysql.management_db_name }}'s tables
+  mysql_db:
+    state: import
+    login_host: "{{ mysql.db_host }}"
+    login_user: "{{ mysql.db_root }}"
+    login_password: "{{ mysql.db_pwd }}"
+    login_port: "{{ mysql.db_port }}"
+    name: "{{ mysql.management_db_name }}"
+    target: "{{ management_sql_file }}"
+#   ignore_errors: True
+
+- name: change run.sh file ownership, group and permissions
+  file:
+    path: "{{ runtime_path }}/run.sh"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+
+- name: execute the script of run.sh and will only run when {{ runtime_path }}/nohup.out doesn't exist
+  shell: nohup ./run.sh > nohup.out 2>&1 &
+  args:
+    chdir: "{{ runtime_path }}/"
+    creates: "{{ runtime_path }}/nohup.out"
+    # executable: /bin/bash

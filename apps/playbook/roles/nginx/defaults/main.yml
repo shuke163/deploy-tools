@@ -1,0 +1,99 @@
+---
+nginx_package: "{{ global.package_path }}/nginx.tar.gz"
+
+nginx_inst_name: "nginx.inst-0"
+nginx_name: "{{ nginx_inst_name }}"
+rc_user: "rcloud"
+rc_group: "rcloud"
+nginx_user: "{{ rc_user }}"
+nginx_group: "{{ rc_group }}"
+nginx_worker_processes: "{{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+nginx_worker_connections: "1024"
+nginx_multi_accept: "off"
+
+nginx_path: "{{ global.app_path }}/{{ nginx_name }}"
+nginx_conf_path: "{{ nginx_path }}/conf/conf.d"
+nginx_vhost_path: "{{ nginx_conf_path }}"
+nginx_logpath: "{{ global.logs_path }}/{{ nginx_name }}"
+nginx_error_log: "{{ nginx_logpath }}/error.log warn"
+nginx_access_log: "{{ nginx_logpath }}/access.log main buffer=16k"
+
+nginx_sendfile: "on"
+nginx_tcp_nopush: "on"
+nginx_tcp_nodelay: "on"
+
+
+nginx_mime_file_path: "{{ nginx_path }}/conf/mime.types"
+
+nginx_keepalive_timeout: "65"
+nginx_keepalive_requests: "100"
+
+nginx_server_tokens: "off"
+
+nginx_client_max_body_size: "64m"
+
+nginx_server_names_hash_bucket_size: "64"
+
+nginx_proxy_cache_path: ""
+
+nginx_extra_conf_options: ""
+# Example extra main options, used within the main nginx's context:
+#   nginx_extra_conf_options: |
+#     env VARIABLE;
+#     include /etc/nginx/main.d/*.conf;
+
+nginx_extra_http_options:
+# Example extra http options, printed inside the main server http config:
+  #  - 'proxy_buffering    off;'
+  - 'proxy_set_header   X-Real-IP $remote_addr;'
+  - 'proxy_set_header   X-Scheme $scheme;'
+  - 'proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;'
+  - 'proxy_set_header   Host $http_host;'
+
+nginx_remove_default_vhost: false
+nginx_vhost_filename: "vhost_{{ name }}.conf"
+root_path: "{{ global.app_path }}/www"
+nginx_port: 8098
+nginx_vhosts: 
+# Example vhost below, showing all available options:
+  - listen: "{{ nginx_port }}"
+    index: "index.html index.htm"
+    root: "{{ root_path }}"
+
+tomcat_port: 8080
+erp_port: 8889
+moments_port: 8000
+rce_servers:
+  - "127.0.0.1:{{ tomcat_port }}"
+erp_servers:
+  - "127.0.0.1:{{ erp_port }}"
+moments_servers:
+  - "127.0.0.1:{{ moments_port }}"
+mgt_servers:
+  - "127.0.0.1:{{ rcx.RCX_MGT | int(default=8094 }}"
+
+nginx_flag: 'mgt'
+rce_upstream_name: 'rceapi'
+erp_upstream_name: 'erp'
+moments_upstream_name: 'moments'
+rcx_mgt_upstream_name: 'mgt'
+
+nginx_upstreams:
+  - name: "{{ rce_upstream_name }}"
+    strategy: "ip_hash"
+    keepalive: 16
+    servers: "{{ rce_servers }}"
+  - name: "{{ erp_upstream_name }}"
+    strategy: "ip_hash"
+    keepalive: 16
+    servers: "{{ erp_servers }}"
+  - name: "{{ moments_upstream_name }}"
+    strategy: "ip_hash"
+    keepalive: 16
+    servers: "{{ moments_servers }}"
+
+nginx_log_format: |
+  '$remote_addr - $remote_user [$time_local] '
+  '[$request_time] [$request_length] "$request" '
+  '$status $body_bytes_sent "$http_referer" '
+  '"$http_user_agent" "$http_x_forwarded_for"'

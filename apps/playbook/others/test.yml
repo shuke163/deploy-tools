@@ -1,0 +1,67 @@
+- hosts: all
+  serial: 2
+
+  vars:
+    mysql_host: 127.0.0.1
+    mysql_user: im
+    mysql_password: '1qazCDE#'
+    mysql_port: 4306
+    zk_port: 2181
+
+  tasks:
+  - name: give me largest permutations (order matters)
+    debug:
+      msg: "{{ [1,2,3,4,5] | permutations | list }}"
+
+  - name: give me permutations of sets of three
+    debug:
+      msg: "{{ [1,2,3,4,5] | permutations(3) | list }}"
+  
+  - name: generate multiple hostnames
+    debug:
+      msg: "{{ groups['zookeeper'] | map ('extract',hostvars,['ansible_host']) | list }}"
+    register: zk_list
+
+#  - name: generate multiple hostnames
+#    debug:
+#      msg: "{{ {{ groups['zookeeper'] | map ('extract',hostvars,['ansible_host']) | list }} | product(['2181']) | map('join', '.') | join(',')}}" 
+
+  - name: echo zk list
+    debug:
+      msg: "{{ zk_list.msg }}"
+  
+  - name: generate multiple hostnames01
+    debug:
+      msg: "{{ zk_list.msg | product(['2181']) | map('join', ':') | join(',') }}"
+
+  - name: give me permutations of sets of three
+    debug:
+      msg: "{{ [1,2,3,4,5] | permutations(3) | list }}"
+
+  - name: current group_name
+    debug:
+      msg: "{{ group_names }}"
+
+  - name: current ansible_play_role_names
+    debug:
+      msg: "{{ ansible_play_role_names }}"
+
+  - name: current inventory_dir
+    debug:
+      msg: "{{ inventory_dir }}"
+
+  - name: current inventory_file
+    debug:
+      msg: "{{ inventory_file }}"
+
+  - name: current ansible_play_hosts
+    debug:
+      msg: "{{ ansible_play_hosts }}"
+
+  - name: current role_names
+    debug:
+      msg: "{{ role_names }}"
+
+  - name: current '{{ hostvars[groups['mysql'][0]]["ansible_host"] }}'
+    debug:
+      msg: "{{ hostvars[groups['mysql'][0]]['ansible_host'] }}"

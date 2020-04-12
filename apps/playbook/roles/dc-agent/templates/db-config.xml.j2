@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<mappings>
+		<!--mapping target="name1">GroupPersons</mapping>
+		<mapping target="name1">PersonGroups</mapping-->
+	</mappings>
+	<dbclusters>
+		<dbcluster default="true">
+			<items>
+				{% for item in rcdbs %}
+				<item>
+					{% if 'ip' in item %}
+					<ip>{{ item['ip'] }}</ip>
+					{% else %}
+					<ip>{{ hostvars[groups[item['name']][0]]['ansible_host'] }}</ip>
+					{% endif %}
+					<port>{{ item['port'] }}</port>
+					<name>{{ item['name'] }}</name>
+				</item>
+				{% endfor %}
+			</items>
+		</dbcluster>
+	</dbclusters>
+	<!-- <rdbclusters>
+    <rdbcluster name="rdbclusterName" default="true">
+      <rdbs>
+        <rdb>
+          <name>DB1</name>
+          {% if db_type == 'kingbase' %}
+          <type>kingbase</type>
+          {% elif db_type == 'shentong' %}
+          <type>shentong</type>
+          {% elif db_type == 'dm' %}
+          <type>dm</type>
+          {% else %}
+          <type>MYSQL</type>
+          {% endif %}
+          <filePath>comcloud_x_imdb.properties</filePath>
+        </rdb>
+      </rdbs>
+    </rdbcluster>
+  </rdbclusters>-->
+</config>

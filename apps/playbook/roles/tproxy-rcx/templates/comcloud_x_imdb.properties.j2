@@ -1,0 +1,9 @@
+{% if db_type == 'kingbase' %}
+jdbcUrl=jdbc:kingbase8://{{ mysql_host }}:{{ mysql_port }}/{{ rcx_db }}
+driverClassName=com.kingbase8.Driver
+{% else %}
+jdbcUrl=jdbc:mysql://{{ mysql_host }}:{{ mysql_port }}/{{ imdb }}?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false
+{% endif %}
+username={{ mysql_user }}
+password={{ mysql_password }}
+maximumPoolSize=5

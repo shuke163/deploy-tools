@@ -1,0 +1,9 @@
+{% for host in es_hosts %}
+{% if loop.index == 1 %}
+elasticsearch.host={{ host }}
+{% else %}
+elasticsearch{{ loop.index-1 }}.host={{ host }}
+{% endif %}
+elasticsearch.port={{ elasticsearch_tcp_port }}
+{% endfor %}
+elasticsearch.cluster.name={{ elasticsearch_cluster_name }}

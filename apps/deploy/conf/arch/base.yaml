@@ -1,0 +1,11 @@
+## BASE
+zookeeper:
+  roles:
+    - zookeeper
+  sort: 200
+  description: ZK主机组
+mysql:
+  roles:
+    - mysql
+  sort: 100
+  description: MySQL主机组

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<plugins>
+		<plugin>
+			<name>rcx.access.restfulhttp</name>
+			<path>plugins/rcx.access.restfulhttp.jar</path>
+			<main>rcx.access.restfulhttp.Bootstrap</main>
+			<config>restfulhttp-config.xml</config>
+		</plugin>
+		<plugin>
+			<name>rcx.access.http.admin</name>
+			<path>plugins/rcx.access.http.jar</path>
+			<main>rcx.access.http.Bootstrap</main>
+			<config>admin-http-config.xml</config>
+		</plugin>
+
+		<plugin>
+			<name>rcx.access.http.api</name>
+			<path>plugins/rcx.access.http.jar</path>
+			<main>rcx.access.http.Bootstrap</main>
+			<config>api-http-config.xml</config>
+		</plugin>
+
+		<plugin>
+			<name>rcx.access.http.navi</name>
+			<path>plugins/rcx.access.http.jar</path>
+			<main>rcx.access.http.Bootstrap</main>
+			<config>navi-http-config.xml</config>
+		</plugin>
+
+		<plugin>
+			<name>rcx.access.services</name>
+			<path>plugins/rcx.access.services.jar</path>
+			<main>rcx.access.services.Bootstrap</main>
+			<config>service-config.xml</config>
+		</plugin>
+		<plugin>
+			<name>rcx.access.androidpush</name>
+			<path>plugins/rcx.access.androidpush.jar</path>
+			<main>rcx.access.androidpush.Bootstrap</main>
+			<config>androidpush-config.xml</config>
+		</plugin>
+		<plugin>
+			<name>rcx.access.rmtp</name>
+			<path>plugins/rcx.access.rmtp.jar</path>
+			<main>rcx.access.rmtp.Bootstrap</main>
+			<config>rmtp-config.xml</config>
+		</plugin>
+	</plugins>
+
+</config>

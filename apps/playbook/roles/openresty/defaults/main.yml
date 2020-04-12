@@ -1,0 +1,60 @@
+---
+service_name: "openresty"
+openresty_name: "{{ service_name }}"
+openresty_package: "{{ global.package_path }}/openresty.tar.gz"
+openresty_path: "{{ global.app_path }}/{{ service_name }}"
+openresty_logs_path: "{{ global.logs_path }}/{{ service_name }}"
+
+openresty_private_ip: "{{ private_ip }}"
+openresty_public_ip: "{{ public_ip }}"
+
+rc_user: "rcloud"
+rc_group: "rcloud"
+openresty_user: "{{ global.rc_user }}"
+openresty_group: "{{ global.rc_group }}"
+
+openresty_worker_processes: "{{ ansible_processor_vcpus | default(ansible_processor_count) }}"
+openresty_worker_connections: "1024"
+openresty_multi_accept: "off"
+
+# openresty_path: "{{ app_path }}/{{ openresty_name }}"
+openresty_logpath: "{{ global.logs_path }}/{{ service_name }}"
+openresty_error_log: "{{ openresty_logpath }}/error.log warn"
+openresty_access_log: "{{ openresty_logpath }}/access.log main buffer=16k"
+
+openresty_sendfile: "on"
+openresty_tcp_nopush: "on"
+openresty_tcp_nodelay: "on"
+
+openresty_mime_file_path: "{{ openresty_path }}/nginx/conf/mime.types"
+
+openresty_keepalive_timeout: "65"
+openresty_keepalive_requests: "100"
+
+openresty_server_tokens: "on"
+
+openresty_client_max_body_size: "64m"
+
+openresty_server_names_hash_bucket_size: "64"
+openresty_gzip: "on"
+openresty_port: "1447"
+openresty_ssl: "on"
+
+openresty_proxy_cache_path: ""
+
+openresty_log_format: |
+  '$remote_addr - $remote_user [$time_local] '
+  '[$request_time] [$request_length] "$request" '
+  '$status $body_bytes_sent "$http_referer" '
+  '"$http_user_agent" "$http_x_forwarded_for"';
+
+httpPort: "{{ rtc.RTC_HTTP_PORT }}"
+openresty_upstream: "
+    {%- set ips = [] %}
+    {%- for host in groups['rtc_server'] %}
+    {{- ips.append(dict(id=loop.index, host=host, ip=hostvars[host]['ansible_host'], port=httpPort)) }}
+    {%- endfor %}
+    {{- ips -}}"
+
+# 依赖处理
+libpcre: {src_path: "/lib64/libpcre.so.0.0.1", dest_path: "/lib64/libpcre.so.1"}

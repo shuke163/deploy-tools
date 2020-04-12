@@ -1,0 +1,13 @@
+[program:{{ rtc_name }}]
+directory={{ rtc_path }}
+command=/bin/bash {{ rtc_path }}/conf/start.sh
+user={{ rtc_user }}
+group={{ rtc_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile={{ global.log_path }}/{{ rtc_name }}.log

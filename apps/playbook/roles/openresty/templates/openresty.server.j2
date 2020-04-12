@@ -1,0 +1,13 @@
+[program:{{ openresty_name }}]
+directory={{ openresty_path }}
+command={{ openresty_path }}/nginx/sbin/nginx -c {{ openresty_path }}/nginx/conf/nginx.conf -g "daemon off;"
+user={{ openresty_user }}
+group={{ openresty_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile={{ global.log_path }}/{{ openresty_name }}.log

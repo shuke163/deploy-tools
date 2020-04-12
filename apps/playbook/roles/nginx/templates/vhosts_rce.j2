@@ -1,0 +1,100 @@
+{% for upstream in nginx_upstreams %}
+  {% if upstream.servers %}
+  upstream {{ upstream.name }} {
+    {% if upstream.strategy is defined %}
+        {{ upstream.strategy }};
+    {% endif %}
+    {% for server in upstream.servers %}
+        server {{ server }};
+    {% endfor %}
+    {% if upstream.keepalive is defined %}
+        keepalive {{ upstream.keepalive }};
+    {% endif %}
+  }
+  {% endif %}
+{% endfor %}
+
+{% for vhost in nginx_vhosts %}
+server {
+    listen {{ vhost.listen | default('80 default_server') }};
+{% if vhost.server_name is defined %}
+    server_name {{ vhost.server_name }};
+{% endif %}
+{% if vhost.root is defined %}
+    root {{ vhost.root }};
+{% endif %}
+{% if vhost.ssi is defined %}
+    ssi on;
+{% endif %}
+
+    index {{ vhost.index | default('index.html index.htm') }};
+
+    location /api {
+        proxy_pass http://{{ rce_upstream_name }}/rce/api;
+{% if nginx_extra_http_options %}
+    {% for line in nginx_extra_http_options %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
+        proxy_cookie_path /rce/api /api;
+    }
+
+    location /admin-api {
+        proxy_pass http://{{ rce_upstream_name }}/rce/admin-api;
+{% if nginx_extra_http_options %}
+    {% for line in nginx_extra_http_options %}
+    {{ line }}
+    {% endfor %}
+{% endif %}
+        proxy_cookie_path /rce/admin-api /admin-api;
+    }
+
+{% for upstream in nginx_upstreams %}
+  {% if upstream.servers %}
+
+    {% if upstream.name == erp_upstream_name %}
+    location /erp/approval {
+        proxy_pass http://{{ erp_upstream_name }};
+        proxy_cookie_path / /erp/approval;
+    }
+
+    {% elif upstream.name == moments_upstream_name %}
+
+    location /moments {
+        proxy_pass http://{{ moments_upstream_name }};
+        proxy_cookie_path / /moments;
+    }
+    {% endif %}
+
+  {% endif %}
+{% endfor %}
+    location / {
+        root {{ vhost.root }}/im;
+    }
+
+    location /im {
+        alias {{ vhost.root }}/im;
+    }
+
+    location /admin {
+        alias {{ vhost.root }}/admin;
+    }
+
+    location /erp-pc {
+        alias {{ vhost.root }}/erp-pc;
+    }
+
+    location /work {
+        alias {{ vhost.root }}/work;
+    }
+
+    location /erp {
+        alias {{ vhost.root }}/erp;
+    }
+
+    location /resource {
+        proxy_pass http://{{ rce_upstream_name }}/rce/excel;
+        proxy_cookie_path /rce/excel /resource;
+    }
+}
+{% endfor %}

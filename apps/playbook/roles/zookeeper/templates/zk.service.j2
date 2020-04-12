@@ -1,0 +1,14 @@
+[program:{{ zookeeper_name }}]
+directory={{ zk_path }}
+command={{ zk_path }}/bin/zkServer.sh start-foreground
+user={{ zk_user }}
+group={{ zk_group }}
+stopsignal=TERM
+startretries=5
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+environment=JAVA_HOME={{ global.java_home }}
+stdout_logfile={{ global.log_path }}/{{ zookeeper_name }}.log

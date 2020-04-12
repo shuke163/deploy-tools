@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+
+if [ -z $JAVA_HOME ]; then
+    JAVA_BIN=java
+else
+    JAVA_BIN=$JAVA_HOME/bin/java
+fi
+
+if [ -z $JAVA_OPOTS ]; then
+    JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=. -Duser.timezone=UTC -Djava.security.egd=file:/dev/./urandom"
+else
+    JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=. -Duser.timezone=UTC -Djava.security.egd=file:/dev/./urandom -Druntime.threadpool.model=apiThreadPool"
+fi
+
+SCRIPT_PATH=$(dirname $0)
+echo "CURRENT_PATH: $SCRIPT_PATH"
+cd $SCRIPT_PATH
+
+main_class="com.rcloud.log.loghub.Bootstrap"
+lib=$(find lib -name "*.jar" -exec printf :{} ';')
+
+ARGS="$JAVA_OPTS -cp $(ls ./loghub-*.jar*):./conf$lib ${main_class} {{ loghub_port }}"
+
+echo "Command: $JAVA_BIN $ARGS"
+
+exec $JAVA_BIN $ARGS

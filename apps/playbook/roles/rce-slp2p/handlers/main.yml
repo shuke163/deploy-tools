@@ -1,0 +1,6 @@
+---
+- name: restart rce-slp2p
+  supervisorctl:
+    name: "{{ slp2p_name }}"
+    state: restarted
+    supervisorctl_path: "{{ supervisorctl }}"

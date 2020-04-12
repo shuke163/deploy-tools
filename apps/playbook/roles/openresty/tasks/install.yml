@@ -1,0 +1,49 @@
+---
+- name: Check If Already Installed
+  stat:
+    path: "{{ openresty_path }}"
+  register: __openresty_exists
+
+- name: Ensure openresty
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ global.app_path }}"
+    - "{{ global.tmp_path }}"
+    - "{{ openresty_logs_path }}"
+
+- name: Copy openresty package
+  unarchive:
+    src: "{{ openresty_package }}"
+    dest: "{{ global.app_path }}"
+    #force: yes
+  when: not __openresty_exists.stat.exists
+
+- name: Add openresty nginx.conf configured.
+  template:
+    src: nginx.conf.j2
+    dest: "{{ openresty_path }}/nginx/conf/nginx.conf"
+    mode: 0644
+
+- name: Add openresty server configured.
+  template:
+    src: openresty.server.j2
+    dest: "{{ global.conf_path }}/{{ openresty_name }}.conf"
+    owner: "{{ openresty_user }}"
+    group: "{{ openresty_group }}"
+    mode: 0644
+  notify: restart openresty
+
+- name: Ensure openresty service is present
+  supervisorctl:
+    name: "{{ openresty_name }}"
+    state: present
+    supervisorctl_path: "{{ global.supervisorctl }}"
+
+- name: Ensure openresty is running
+  supervisorctl:
+    name: "{{ openresty_name }}"
+    state: started
+    supervisorctl_path: "{{ global.supervisorctl }}"

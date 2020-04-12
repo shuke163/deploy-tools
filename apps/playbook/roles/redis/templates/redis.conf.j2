@@ -1,0 +1,51 @@
+#daemonize yes
+pidfile {{ global.run_path }}/{{ redis_name }}.pid
+port {{ redis_port }}
+bind 0.0.0.0
+
+{% if redis_unixsocket %}
+unixsocket {{ redis_unixsocket }}
+{% endif %}
+
+timeout {{ redis_timeout }}
+
+loglevel {{ redis_loglevel }}
+logfile {{ redis_logfile }}
+
+# To enable logging to the system logger, just set 'syslog-enabled' to yes,
+# and optionally update the other syslog parameters to suit your needs.
+# syslog-enabled no
+# syslog-ident redis
+# syslog-facility local0
+
+databases {{ redis_databases }}
+
+{% for save in redis_save %}
+save {{ save }}
+{% endfor %}
+
+rdbcompression {{ redis_rdbcompression }}
+dbfilename {{ redis_dbfilename }}
+dir {{ redis_dbpath }}
+
+# maxclients 128
+
+{% if redis_maxmemory %}
+maxmemory {{ redis_maxmemory }}
+maxmemory-policy {{ redis_maxmemory_policy }}
+maxmemory-samples {{ redis_maxmemory_samples }}
+{% endif %}
+
+appendonly {{ redis_appendonly }}
+appendfsync {{ redis_appendfsync }}
+no-appendfsync-on-rewrite no
+
+# 密码设置
+{% if redis_pass %}
+masterauth {{ redis_pass }}
+requirepass {{ redis_pass }}
+{% endif %}
+
+{% for include in redis_includes %}
+include {{ include }}
+{% endfor %}

@@ -1,0 +1,18 @@
+---
+# tasks file for 23to26
+
+- name: stop {{ service_name }} and backup {{ service_name }}
+  import_tasks: backup.yml
+  tags: backup
+
+- name: upgrade database from 2.3 to 2.6.x
+  import_tasks: upgrade_db.yml
+  tags: upgrade_db
+
+- name: upgrade rcx from 2.3 to 2.6.x
+  import_tasks: upgrade_rcx.yml
+  tags: upgrade_rcx
+
+- name: The rollback from 2.6.x to 2.3
+  import_tasks: rollback.yml
+  tags: rollback

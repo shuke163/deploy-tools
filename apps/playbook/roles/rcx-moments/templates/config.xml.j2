@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<info>
+		<name>rcx-moments.inst-0</name>
+		<appkey>testappkey</appkey>
+		<cluster>prod</cluster>
+	</info>
+
+
+	<plugins>
+
+		<plugin>
+			<name>access-service</name>
+			<path>plugins/rcx.access.services-2.1.0-SNAPSHOT.jar</path>
+			<main>rcx.access.services.Bootstrap</main>
+			<config>service-config.xml</config>
+			<version>1.0.0</version>
+		</plugin>
+
+		<plugin>
+			<name>access-http</name>
+			<path>plugins/rcx.access.http-2.1.0-SNAPSHOT.jar</path>
+			<main>rcx.access.http.Bootstrap</main>
+			<config>http-config.xml</config>
+			<version>1.0.0</version>
+		</plugin>
+
+</plugins>
+</config>

@@ -1,0 +1,38 @@
+---
+im_dest: "{{ app_path }}/www/im"
+im_local_repo: "{{ package_path }}/rce/im.tar.gz"
+
+rc_user: "rcloud"
+rc_group: "rcloud"
+nginx_user: "{{ rc_user }}"
+nginx_group: "{{ rc_group }}"
+
+im_appkey: 'e0x9wycfx7flq'
+rce_server_api: 'http://127.0.0.1:8080/rce/api'
+approval_server: 'http://127.0.0.1/erp/approval'
+
+# RCE WEB IM配置
+im_api: '127.0.0.1:8081'
+im_navi: '127.0.0.1:8081'
+
+enable_bqmm: 'false'
+enable_qrcodeLogin: 'true'
+enable_forgetPwd: 'true'
+enable_friend: 'true'
+enable_star: 'true'
+
+supportDeviceId: "false"
+
+file_server: "127.0.0.1:8086"
+file_server_base64: "{{ file_server }}/upload/base64"
+file_server_type: "RongCloud"
+
+## RCE-Web 名称及版本
+company_name: "融云企业版"
+company_en_name: 'RCE'
+rce_version: '1.6.9'
+rce_versionCode: 1
+rce_locale: 'zh'
+
+# Rce Web 应用图标，可使用网络地址，建议大小 32 x 32
+web_im_icon: "css/images/logo.png"

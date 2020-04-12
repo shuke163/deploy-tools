@@ -1,0 +1,15 @@
+[program:{{ inst_name }}]
+directory={{ mysql_datadir }}
+command={{ mysql_path }}/bin/mysqld --datadir={{ mysql_datadir }} --log-error={{ mysql_log_error }} --pid-file={{ mysql_pid_file }} --socket={{ mysql_socket}} --port={{ mysql_port }}
+user={{ mysql_run_user }}
+group={{ mysql_run_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+numprocs=1
+redirect_stderr=true
+priority=1
+stdout_logfile=/data/supervisord/var/log/mysql.log

@@ -1,0 +1,55 @@
+---
+- name: Check If Already Installed
+  stat:
+    path: "{{ rtc_path }}"
+  register: __rtc_exists
+
+- name: Ensure rtc
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ global.app_path }}"
+    - "{{ global.tmp_path }}"
+    - "{{ rtc_path }}"
+
+- name: Copy rtc package
+  unarchive:
+    src: "{{ rtc_package }}"
+    dest: "{{ rtc_path }}"
+    #force: yes
+  when: not __rtc_exists.stat.exists
+
+- name: Add rtc ServiceSettings configured.
+  template:
+    src: ServiceSettings.properties.j2
+    dest: "{{ rtc_path }}/conf/ServiceSettings.properties"
+    mode: 0644
+
+- name: Add rtc start.sh configured.
+  template:
+    src: start.sh.j2
+    dest: "{{ rtc_path }}/conf/start.sh"
+    mode: 0644
+
+- name: Add rtc server configured.
+  template:
+    src: rtc.server.j2
+    dest: "{{ global.conf_path }}/{{ rtc_name }}.conf"
+    owner: "{{ rtc_user }}"
+    group: "{{ rtc_group }}"
+    mode: 0644
+  notify: restart rtc
+
+- name: Ensure rtc service is present
+  supervisorctl:
+    name: "{{ rtc_name }}"
+    state: present
+    supervisorctl_path: "{{ global.supervisorctl }}"
+
+- name: Ensure rtc is running
+  supervisorctl:
+    name: "{{ rtc_name }}"
+    state: started
+    supervisorctl_path: "{{ global.supervisorctl }}"

@@ -1,0 +1,30 @@
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+
+- name: Ensure ERP dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+  with_items: 
+    - "{{ erp_path }}"
+
+- name: Copy ERP files
+  unarchive:
+    src: "{{ erp_package }}"
+    dest: "{{ erp_path }}/"
+
+- name: Add ERP config
+  template:
+    src: config.js.j2
+    dest: "{{ erp_path }}/config.js"
+
+- name: change ERP owner
+  file:
+    path: "{{ erp_path }}"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    state: directory
+    recurse: yes

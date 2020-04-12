@@ -1,0 +1,40 @@
+hosts:
+  im_node1:
+  - ansible_host: 127.0.0.1
+  - ansible_connection: local
+  - mysql_replication_role: master
+groups:
+  rcx_rcdb:
+  - im_node1
+  mysql:
+  - im_node1
+  rcx_server:
+  - im_node1
+  rcx_fileserver:
+  - im_node1
+  rcx_management:
+  - im_node1
+  fastdfs:
+  - im_node1
+  zookeeper:
+  - im_node1
+  redis:
+  - im_node1
+  nginx:
+  - im_node1
+
+vars:
+  global:
+    base_path: /data
+  mysql:
+    mysql_host: "{{ hostvars[groups['mysql'][0]]['ansible_host'] }}"
+    mysql_replication_master: '{{ mysql_host }}'
+  rcx_rcdb:
+    rcdb_nums: 2
+  rcx_server:
+    admin_http_port: 8083
+    api_http_port: 8081
+    apush_public_port: 8070
+    navi_http_port: 8082
+    rmtp_public_port: 8043
+    rmtp_ws_public_port: 8085

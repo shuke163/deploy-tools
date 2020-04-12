@@ -1,0 +1,180 @@
+# 数据库
+flyway.url=jdbc:kingbase8://{{ mysql_host }}:{{ mysql_port }}/{{ rcedb }}?useUnicode=true
+flyway.user={{ mysql_user }}
+flyway.password={{ mysql_password }}
+flyway.driver=com.kingbase8.Driver
+
+# 环境变量
+flyway.placeholders.env=prod
+
+flyway.placeholders.git.commit=XXXX
+
+flyway.placeholders.superadmin.uid='fGpg5fuCsF2PWCD4uZ8Dzh'
+flyway.placeholders.superadmin.email='superadmin@test.com'
+flyway.placeholders.superadmin.secret='bLGTG21yiRTMN'
+
+flyway.placeholders.im.appkey='{{ im_appkey }}'
+flyway.placeholders.im.secret='{{ im_secret }}'
+flyway.placeholders.im.api='{{ im_api }}'
+flyway.placeholders.im.navi_domain='http://{{ im_navi }}'
+flyway.placeholders.im.navi_https_enabled='false'
+flyway.placeholders.im.media_domain='{{ file_server }}'
+flyway.placeholders.im.media_https_enabled='false'
+
+flyway.placeholders.sms.verification='false'
+flyway.placeholders.sms.template.register='9vC_9xBR4fz8Cw9kax0Wu3'
+flyway.placeholders.sms.template.resetpassword='feGF_8trQzX9a2j74aGYKE'
+flyway.placeholders.sms.template.pin='0J0iohy6k_Va2zwmyMZBLh'
+flyway.placeholders.sms.template.broadcast='xxxx'
+flyway.placeholders.sms.appkey='tdrvipkst7v85'
+flyway.placeholders.sms.secret='NmzK6kfrpC4'
+flyway.placeholders.sms.api='http://api.sms.ronghub.com'
+
+# 2017-9-26 添加plugin 配置 ##start
+flyway.placeholders.sms.verification.code.type='0'
+flyway.placeholders.sms.verification.code.length='4'
+flyway.placeholders.sms.verification.max.length='255'
+
+flyway.placeholders.sms.template_content.register='您的短信验证码是####，请在15分钟内输入使用。超时请重新申请。'
+flyway.placeholders.sms.template_content.resetpassword='####密码找回验证码15分钟内有效，请尽快完成验证。'
+flyway.placeholders.sms.template_content.pin='####: #### 请打开RCE确认回复。'
+# 2017-9-26 添加plugin 配置 ##stop
+
+flyway.placeholders.qiniu.accesskey='livk5rb3__JZjCtEiMxXpQ8QscLxbNLehwhHySnX'
+flyway.placeholders.qiniu.secretkey='ysrYdcDrrF425QNz0pfY9RoafANC6Hni3TIVgjw5'
+flyway.placeholders.qiniu.bucketname='rongcloud-rce-potrait'
+flyway.placeholders.qiniu.bucketdomain='{{ file_server }}'
+flyway.placeholders.qiniu.server='{{ file_server }}'
+
+flyway.placeholders.privatemedia.status='{{ privatemedia_status }}'
+flyway.placeholders.privatemedia.version='Rongcloud14'
+flyway.placeholders.privatemedia.time='7200'
+
+flyway.placeholders.media.rcx_server_api_url=''
+flyway.placeholders.media.rcx_app_key=''
+flyway.placeholders.media.rcx_secret_key=''
+
+flyway.placeholders.pin.bucketname='rongcloud-rce-pin'
+flyway.placeholders.pin.bucketdomain='oqekw07cj.bkt.clouddn.com'
+flyway.placeholders.pin.max_receiver_count='200'
+flyway.placeholders.pin.max_attachment_count='10'
+
+flyway.placeholders.conferencecall.api='http://58.220.51.56:8078/TeleMeeting/meeting/operation.do'
+flyway.placeholders.conferencecall.vccid='3211'
+flyway.placeholders.conferencecall.password='888888'
+
+flyway.placeholders.server.url='{{ rce_server_api }}'
+
+flyway.placeholders.conf.red_packet.enable='false'
+flyway.placeholders.conf.voip.enable='false'
+flyway.placeholders.conf.call.enable='false'
+flyway.placeholders.conf.pin.enable='false'
+flyway.placeholders.conf.friend.enable='true'
+flyway.placeholders.conf.organization.enable='true'
+flyway.placeholders.conf.registration.enable='false'
+flyway.placeholders.conf.voice_input.enable='true'
+flyway.placeholders.conf.location.enable='true'
+flyway.placeholders.conf.work.enable='true'
+flyway.placeholders.conf.emoticon.enable='true'
+flyway.placeholders.conf.work.url='{{ rce_work_url }}'
+flyway.placeholders.conf.call.visitor_enable='false'
+flyway.placeholders.conf.moments.enable='true'
+flyway.placeholders.conf.moments.url='{{ moments_server_api }}'
+
+flyway.placeholders.group.max_member_count = '1000'
+
+# global群组权限设置
+flyway.placeholders.group.permission.gdp_quit_forbid = '0'
+flyway.placeholders.group.permission.gdp_need_invitee_confirm = '0'
+flyway.placeholders.group.permission.gdp_need_join_permit = '0'
+flyway.placeholders.group.permission.gdp_p_accept_join = '7'
+flyway.placeholders.group.permission.gdp_p_modify_info = '7'
+flyway.placeholders.group.permission.gdp_p_modify_alias = '7'
+flyway.placeholders.group.permission.gdp_p_delete_group = '7'
+flyway.placeholders.group.permission.gdp_p_invite_member = '7'
+flyway.placeholders.group.permission.gdp_p_remove_member = '7'
+flyway.placeholders.group.permission.gdp_p_pub_notice = '7'
+flyway.placeholders.group.permission.gdp_p_mute_op = '7'
+flyway.placeholders.group.permission.gdp_p_admin_op = '7'
+
+# eab群组权限设置
+flyway.placeholders.group.permission.edp_quit_forbid = '1'
+flyway.placeholders.group.permission.edp_need_invitee_confirm = '0'
+flyway.placeholders.group.permission.edp_need_join_permit = '1'
+flyway.placeholders.group.permission.edp_p_accept_join = '3'
+flyway.placeholders.group.permission.edp_p_modify_info = '3'
+flyway.placeholders.group.permission.edp_p_modify_alias = '7'
+flyway.placeholders.group.permission.edp_p_delete_group = '1'
+flyway.placeholders.group.permission.edp_p_invite_member = '3'
+flyway.placeholders.group.permission.edp_p_remove_member = '3'
+flyway.placeholders.group.permission.edp_p_pub_notice = '7'
+flyway.placeholders.group.permission.edp_p_mute_op = '3'
+flyway.placeholders.group.permission.edp_p_admin_op = '3'
+
+# 密码复杂度
+flyway.placeholders.conf.password.max_length='16'
+flyway.placeholders.conf.password.minimum_length='6'
+flyway.placeholders.conf.password.word='0'
+flyway.placeholders.conf.password.number='0'
+flyway.placeholders.conf.password.symbol='0'
+flyway.placeholders.conf.password.min_char_type_count='0'
+flyway.placeholders.conf.password.symbol_scope='~`@#$%^&*-_=+|\?/()<>[]{}"",.;''!'
+flyway.placeholders.conf.password.default_security='1'
+
+flyway.placeholders.friend.request.expire='604800'
+
+flyway.placeholders.group.default_name_prefix_source=''
+
+flyway.placeholders.eab.staff_user_compatibility_on = 'true'
+flyway.placeholders.eab.use_external_order = 'false'
+flyway.placeholders.eab.username_binding = 'mobile'
+flyway.placeholders.eab.mobile_email_checking = 'true'
+flyway.placeholders.eab.mobile_checking = 'true'
+flyway.placeholders.eab.email_checking = 'false'
+flyway.placeholders.eab.path_separator = '; ,'
+
+# 密码错误锁定账号设置
+flyway.placeholders.conf.lockaccount.enable='false'
+flyway.placeholders.conf.lockaccount.password_error_number='5'
+flyway.placeholders.conf.lockaccount.password_error_in_time='30'
+flyway.placeholders.conf.lockaccount.locktime='30'
+
+# 机器人名称
+flyway.placeholders.file.file_transfer_robot_name='文件小助手'
+flyway.placeholders.group.group_invite_robot_name = '入群验证'
+
+# 邀请有效期
+flyway.placeholders.group.group_invite_expire_time = '168'
+
+# 禁言有效期
+flyway.placeholders.group.mute_expire_time = 0
+
+# 电话会议回调地址
+flyway.placeholders.call.conference_api_url='http://callapi.linkcircle.net/ICCPMEETING/operationIccp.do'
+flyway.placeholders.call.conference_display_number= '01068449511'
+flyway.placeholders.call.conference_charge_number= '01068449511'
+
+# 文件配置
+flyway.placeholders.media.max_file_size= '100'
+
+# 监控功能配置
+flyway.placeholders.monitor.conversation_enable= 'true'
+flyway.placeholders.monitor.message_enable= 'true'
+flyway.placeholders.monitor.sensitive_word_enable= 'true'
+flyway.placeholders.monitor.admin_operation_enable= 'true'
+flyway.placeholders.monitor.device_enable= 'true'
+
+# 隐私配置
+flyway.placeholders.privacy.display_mobile= 'true'
+
+# 水印开关
+flyway.placeholders.watermark.enable= 'true'
+
+# 推送开关
+flyway.placeholders.push.customization_enable= 'false'
+
+# 机器人名称
+flyway.placeholders.device.device_manage_robot_name='设备管理'
+
+# 默认公司名，如果部署时不需要则为空
+flyway.placeholders.company.default_company_name='{{ default_company_name }}'

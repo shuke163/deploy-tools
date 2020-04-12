@@ -1,0 +1,90 @@
+---
+- group: name="{{ elasticsearch_group }}" system=yes
+- user: name="{{ elasticsearch_user }}" group="{{ elasticsearch_group }}" system=yes
+
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+
+- name: Ensure base path
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ tmp_path }}"
+    - "{{ logs_path }}"
+    - "{{ data_path }}"
+
+- name: Ensure ES path
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: 0755
+  with_items: 
+    - "{{ log_dir }}"
+    - "{{ data_dir }}"
+
+- name: Copy ES package
+  unarchive:
+    src: "{{ es_package }}"
+    dest: "{{ tmp_path }}"
+
+- name: Change ownership on es directory.
+  file: path={{ es_path }} state=directory owner={{ elasticsearch_user }} group={{ elasticsearch_group }}
+
+- name: Copy ES 
+  shell: "{{ item }}"
+  with_items:
+    - "cp -ar {{ tmp_path }}/elasticsearch-{{ es_version }}/* {{ es_path }}/"
+
+- name: Configure Elasticsearch.
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ es_path }}/config/{{ item }}"
+    mode: 0750
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+  with_items:
+    - 'elasticsearch.yml'
+    - 'jvm.options'
+  notify: restart elasticsearch
+
+- name: Add ES service configured.
+  template:
+    src: es.service.j2
+    dest: "{{ conf_path }}/{{ es_name }}.conf"
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: 0644
+  notify: restart elasticsearch
+
+- name: Ensure ES service is present
+  supervisorctl:
+    name: "{{ es_name }}"
+    state: present
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: Change path Owner
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: 0755
+    recurse: yes
+  with_items: 
+    - "{{ log_dir }}"
+    - "{{ data_dir }}"
+    - "{{ es_path }}"
+
+- name: Ensure ES is running
+  supervisorctl:
+    name: "{{ es_name }}"
+    state: started
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: Make sure Elasticsearch is running before proceeding.
+  wait_for: host={{ elasticsearch_host }} port={{ elasticsearch_http_port }} delay=3 timeout=60

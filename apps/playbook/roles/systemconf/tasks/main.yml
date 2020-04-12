@@ -1,0 +1,14 @@
+---
+- name: user and group and work dir
+  import_tasks: user_group.yml
+  tags:
+    - user_group
+    - work_dir
+
+- name: sysctl config
+  import_tasks: sysctl.yml
+  tags: sysctl
+
+- name: install rpm pkg
+  import_tasks: rpm.yml
+  tags: rpm

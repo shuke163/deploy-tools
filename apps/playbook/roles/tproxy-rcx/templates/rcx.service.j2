@@ -1,0 +1,14 @@
+[program:{{ inst_name }}]
+directory={{ rcx_path }}
+command=/bin/bash ./start.sh
+user={{ rc_user }}
+group={{ rc_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+environment=LD_LIBRARY_PATH="/usr/local/ssl/lib:/lib:/usr/lib:$LD_LIBRARY_PATH",JAVA_HOME={{ java_home }},LANG=en_US.UTF-8
+stdout_logfile={{ log_path }}/{{ inst_name }}.log

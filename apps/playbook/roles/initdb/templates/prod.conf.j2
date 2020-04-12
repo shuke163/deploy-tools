@@ -1,0 +1,531 @@
+##################################################
+#  需要预设的变量
+#    - db_host
+#    - db_port
+#    - db_user
+#    - db_password
+#    - db_db_name
+#
+#    - rce_domain
+#    - superadmin_username
+#    - superadmin_email
+#
+#    - smtp_domain
+#    - smtp_port
+#    - smtp_use_auth
+#    - smtp_use_tls
+#    - smtp_username
+#    - smtp_password
+#    - smtp_sendmail
+#
+#    - qiniu_ak
+#    - qiniu_sk
+#    - qiniu_bucket_name
+#    - qiniu_bucket_domain
+##################################################
+
+##################################################
+#  RCE 连接数据库相关配置
+##################################################
+# RCE 连接数据库地址
+flyway.url = jdbc:mysql://{{ mysql_host }}:{{ mysql_port }}/{{ rcedb }}?useUnicode=true
+# RCE 访问数据库的用户名
+flyway.user = {{ mysql_user }}
+# RCE 访问数据库的密码
+flyway.password = {{ mysql_password }}
+
+##################################################
+#  环境、源码等元信息
+##################################################
+# 当前环境的标识，暂未使用
+flyway.placeholders.env=prod
+# 暂未使用
+flyway.placeholders.git.commit=XXXX
+
+##################################################
+#  超级用户相关配置
+##################################################
+# 初始超级用户的唯一标识
+flyway.placeholders.superadmin.uid='fGpg5fuCsF2PWCD4uZ8Dzh'
+# 初始超级用户的邮箱地址
+flyway.placeholders.superadmin.email='{{ superadmin_username }}@{{ rce_domain }}'
+# 初始超级用户的密码，默认为 superadmin
+flyway.placeholders.superadmin.secret='bLGTG21yiRTMN'
+
+##################################################
+#  RCE 需要访问的 IM 服务器的信息
+##################################################
+# IM 服务对应的 AppKey
+flyway.placeholders.im.appkey='{{ im_appkey }}'
+# IM 服务对应的 AppSecret
+flyway.placeholders.im.secret='{{ im_secret }}'
+# IM 服务对应的 Server API URL
+flyway.placeholders.im.api = 'http://{{ im_api }}'
+# IM 服务对应的导航域名
+flyway.placeholders.im.navi_domain = 'http://{{ im_navi }}'
+# IM 服务导航是否开启 HTTPS
+flyway.placeholders.im.navi_https_enabled='false'
+# IM 媒体服务器对应的域名，影响文件消息的上传、下载
+flyway.placeholders.im.media_domain = '{{ file_server }}'
+# IM 媒体服务器是否开启 HTTPS
+flyway.placeholders.im.media_https_enabled='false'
+
+##################################################
+#  短信相关配置项
+##################################################
+# 是否开启短信验证功能
+flyway.placeholders.sms.verification='false'
+# 注册提醒短信对应的模板标识
+flyway.placeholders.sms.template.register='{{ sms_tpl_register }}'
+# 重置密码短信对应的模板标识
+flyway.placeholders.sms.template.resetpassword='{{ sms_tpl_reset_password }}'
+# PIN消息提醒短信对应的模板标识
+flyway.placeholders.sms.template.pin='{{ sms_tpl_pin_notification }}'
+# 广播短信对应的模板标识，暂未使用
+flyway.placeholders.sms.template.broadcast='{{ sms_tpl_broadcast }}'
+# RongCloud 公有云 SMS 服务对应的 AppKey
+flyway.placeholders.sms.appkey='{{ sms_api_appkey }}'
+# RongCloud 公有云 SMS 服务对应的 AppSecret
+flyway.placeholders.sms.secret='{{ sms_api_appsecret }}'
+# RongCloud 公有云 SMS 服务对应的 API URL
+flyway.placeholders.sms.api='{{ sms_api_url }}'
+
+##################################################
+#  短信验证码相关配置
+##################################################
+# 短信验证码类型 ????
+flyway.placeholders.sms.verification.code.type='0'
+# 短信验证码的长度
+flyway.placeholders.sms.verification.code.length='4'
+# 短信验证码最大长度
+flyway.placeholders.sms.verification.max.length='255'
+
+# 注册短信内容模板
+flyway.placeholders.sms.template_content.register='您的短信验证码是####，请在15分钟内输入使用。超时请重新申请。'
+# 密码找回内容模板
+flyway.placeholders.sms.template_content.resetpassword='####密码找回验证码15分钟内有效，请尽快完成验证。'
+# PIN 消息提醒内容模板
+flyway.placeholders.sms.template_content.pin='####: #### 请打开RCE确认回复。'
+
+##################################################
+#  七牛相关配置项
+##################################################
+flyway.placeholders.qiniu.accesskey='{{ qiniu_ak }}'
+flyway.placeholders.qiniu.secretkey='{{ qiniu_sk }}'
+flyway.placeholders.qiniu.bucketname='{{ qiniu_bucket_name }}'
+flyway.placeholders.qiniu.bucketdomain='{{ qiniu_bucket_domain }}'
+flyway.placeholders.qiniu.server='{{ qiniu_upload_domain }}'
+
+##################################################
+#  私有云部署时文件服务器的配置
+##################################################
+# 文件服务器类型: 0为七牛，1为不分桶的文件服务器，2为分桶的文件服务器
+flyway.placeholders.privatemedia.status = '{{ private_media_status }}'
+# 文件服务器版本标识
+flyway.placeholders.privatemedia.version='Rongcloud14'
+# 文件服务器 ????
+flyway.placeholders.privatemedia.time='7200'
+
+flyway.placeholders.media.rcx_server_api_url='http://{{ file_server }}'
+flyway.placeholders.media.rcx_app_key='{{ im_appkey }}'
+flyway.placeholders.media.rcx_secret_key='{{ im_secret }}'
+
+# 存储 PIN 消息的七牛空间名字
+flyway.placeholders.pin.bucketname='rongcloud-rce-pin'
+# 存储 PIN 消息的七牛空间域名
+flyway.placeholders.pin.bucketdomain=''
+# 单条 PIN 最大接收者个数
+flyway.placeholders.pin.max_receiver_count='200'
+# 单条 PIN 最大附件个数
+flyway.placeholders.pin.max_attachment_count='10'
+
+flyway.placeholders.server.url='http://{{ rce_server_api }}'
+flyway.placeholders.webim.url='http://{{ rce_web_url }}'
+
+# 红包功能是否开启
+flyway.placeholders.conf.red_packet.enable='false'
+# 音视频电话功能是否开启
+flyway.placeholders.conf.voip.enable='false'
+# 视频功能是否开启
+flyway.placeholders.conf.voip.video_enable = 'true'
+# 音频功能是否开启
+flyway.placeholders.conf.voip.audio_enable = 'true'
+# 落地电话功能是否开启
+flyway.placeholders.conf.call.enable='false'
+# PIN 功能是否开启
+flyway.placeholders.conf.pin.enable='true'
+# 好友功能是否开启
+flyway.placeholders.conf.friend.enable='true'
+# ????
+flyway.placeholders.conf.organization.enable='true'
+# 注册功能是否开启
+flyway.placeholders.conf.registration.enable='false'
+# 语音输入是否开启
+flyway.placeholders.conf.voice_input.enable='true'
+# 位置信息功能是否开启
+flyway.placeholders.conf.location.enable='true'
+# Work 页面是否开启
+flyway.placeholders.conf.work.enable='true'
+# Work 页面的 URL
+flyway.placeholders.conf.work.url='http://{{ rce_work_url }}'
+# 自定义表情功能是否开启
+flyway.placeholders.conf.emoticon.enable='true'
+# ????
+flyway.placeholders.conf.call.visitor_enable='false'
+# 工作圈功能是否开启
+flyway.placeholders.conf.moments.enable='true'
+# moments_server_api: 工作圈domain，不包含moments
+flyway.placeholders.conf.moments.url = 'http://{{ moments_server_url }}'
+# 群成员最大个数
+flyway.placeholders.group.max_member_count = '1000'
+
+##################################################
+#  自建群的全局默认权限，如果某个群没有设置过权限信息，
+#  则使用这里的设置作为群组权限
+#
+#  角色列表使用 Bit Mask 进行标记，包括如下三种角色
+#    - 群的拥有者(group_manager): 0x01，一个群组只能有一个
+#    - 群的管理员(group_admin): 0x02，一个群组可以有多个
+#    - 群的普通成员(group_member): 0x04
+#
+#  gdp: Global Group Default Permission
+##################################################
+# 是否禁止成员退出
+flyway.placeholders.group.permission.gdp_quit_forbid = '0'
+# 入群时是否需要被邀请者确认才可以入群
+flyway.placeholders.group.permission.gdp_need_invitee_confirm = '0'
+# 入群时是否需要管理员审核才可以入群 ????
+flyway.placeholders.group.permission.gdp_need_join_permit = '0'
+# 可以审核入群请求的角色列表
+flyway.placeholders.group.permission.gdp_p_accept_join = '7'
+# 可以修改群基本信息的角色列表，如群名称，头像
+flyway.placeholders.group.permission.gdp_p_modify_info = '7'
+# 可以修改群成员备注名的角色列表
+flyway.placeholders.group.permission.gdp_p_modify_alias = '7'
+# 可以进行删除群操作的角色列表
+flyway.placeholders.group.permission.gdp_p_delete_group = '7'
+# 可以发起入群邀请的角色列表
+flyway.placeholders.group.permission.gdp_p_invite_member = '7'
+# 可以移除群成员的角色列表
+flyway.placeholders.group.permission.gdp_p_remove_member = '7'
+# 可以发布群通知的角色列表
+flyway.placeholders.group.permission.gdp_p_pub_notice = '7'
+# 可以进行群成员禁言操作的角色列表
+flyway.placeholders.group.permission.gdp_p_mute_op = '7'
+# 可以进行群管理员操作的角色列表，包括群主转让
+flyway.placeholders.group.permission.gdp_p_admin_op = '7'
+# 新加入群成员是否允许查看群历史消息
+flyway.placeholders.group.permission.gdp_view_chat_history = '1'
+
+##################################################
+#  官方群的全局默认权限，原则上同一个企业用同一套即可
+#
+#  角色列表使用 Bit Mask 进行标记，包括如下三种角色
+#    - 群的拥有者(group_manager): 0x01，一个群组只能有一个
+#    - 群的管理员(group_admin): 0x02，一个群组可以有多个
+#    - 群的普通成员(group_member): 0x04
+#
+#  edp: EAB Default Permission
+##################################################
+# 是否禁止成员退出
+flyway.placeholders.group.permission.edp_quit_forbid = '1'
+# 入群时是否需要被邀请者确认才可以入群
+flyway.placeholders.group.permission.edp_need_invitee_confirm = '0'
+# 入群时是否需要管理员审核才可以入群 ????
+flyway.placeholders.group.permission.edp_need_join_permit = '1'
+# 可以审核入群请求的角色列表
+flyway.placeholders.group.permission.edp_p_accept_join = '3'
+# 可以修改群基本信息的角色列表，如群名称，头像
+flyway.placeholders.group.permission.edp_p_modify_info = '3'
+# 可以修改群成员备注名的角色列表
+flyway.placeholders.group.permission.edp_p_modify_alias = '7'
+# 可以进行删除群操作的角色列表
+flyway.placeholders.group.permission.edp_p_delete_group = '1'
+# 可以发起入群邀请的角色列表
+flyway.placeholders.group.permission.edp_p_invite_member = '3'
+# 可以移除群成员的角色列表
+flyway.placeholders.group.permission.edp_p_remove_member = '3'
+# 可以发布群通知的角色列表
+flyway.placeholders.group.permission.edp_p_pub_notice = '7'
+# 可以进行群成员禁言操作的角色列表
+flyway.placeholders.group.permission.edp_p_mute_op = '3'
+# 可以进行群管理员操作的角色列表，包括群主转让
+flyway.placeholders.group.permission.edp_p_admin_op = '3'
+# 新加入群成员是否允许查看群里是消息
+flyway.placeholders.group.permission.edp_view_chat_history = '1'
+##################################################
+#  密码复杂度相关配置
+##################################################
+# 密码最大字符长度
+flyway.placeholders.conf.password.max_length='16'
+# 密码最小字符长度
+flyway.placeholders.conf.password.minimum_length='6'
+# 密码中至少包含字母的个数
+flyway.placeholders.conf.password.word='0'
+# 密码中至少包含数字的个数
+flyway.placeholders.conf.password.number='0'
+# 密码中至少包含符号的个数
+flyway.placeholders.conf.password.symbol='0'
+flyway.placeholders.conf.password.min_char_type_count='0'
+# 可用于密码的符号表
+flyway.placeholders.conf.password.symbol_scope='~`@#$%^&*-_=+|\?/()<>[]{}",.;\'!'
+flyway.placeholders.conf.password.default_security='1'
+
+##################################################
+#  好友相关配置
+##################################################
+# 申请加好友请求的有效时长
+flyway.placeholders.friend.request.expire='604800'
+
+##################################################
+#  员工群成员前缀来源
+#
+#  项目需求，每个员工可以设置一个默认群成员前缀，
+#  该前缀在群成员列表时显示，便于集团或行业应用中标识成员来源
+#
+#  目前仅支持 "t_staff_vcharp3"，则从员工的 p3 扩展参数取这个前缀
+#
+##################################################
+flyway.placeholders.group.default_name_prefix_source=''
+
+# 接口兼容控制字段
+# 是否能用 GET staffs/{sid}的接口获取 visitor, robot, app 的信息
+flyway.placeholders.eab.staff_user_compatibility_on = "true"
+# 是否使用外部 order，如果启用('true')，则由外部保证顺序字段的正确性
+flyway.placeholders.eab.use_external_order = "false"
+# 用户名是否自动绑定，
+#   - 'none': 不进行自动绑定，此时username作为一个独立的字段
+#   - 'mobile': username字段自动绑定到手机号，修改手机号时自动修改用户名
+#   - 'email': username字段自动绑定到邮箱，修改邮箱时自动修改用户名
+flyway.placeholders.eab.username_binding = "mobile"
+# 添加员工时，是否检查手机号,邮箱的合法性
+flyway.placeholders.eab.mobile_email_checking = "false"
+# 添加员工时，是否检查手机号的合法性
+flyway.placeholders.eab.mobile_checking = "false"
+# 添加员工时，是否检查邮箱的合法性
+flyway.placeholders.eab.email_checking = "false"
+# 是否是超大通讯录模式，如果开启，端上会有一些对应的调整
+flyway.placeholders.eab.massive_mode = "false"
+# 部门路径对应的分隔符
+flyway.placeholders.eab.path_separator = "; ,"
+# 端上是否开启massive mode
+flyway.placeholders.eab.massive_mode = "false"
+#是否允许公司名称相同
+flyway.placeholders.eab.company_name_same = "false"
+#是否允许同级部门名称相同
+flyway.placeholders.eab.same_level_department_name_same = "false"
+#是否使用外部唯一标识
+flyway.placeholders.eab.use_external_uid = "false"
+#手机号是否是必须的
+flyway.placeholders.eab.mobile_required = "true"
+#邮箱是否是必须的
+flyway.placeholders.eab.email_required = "false"
+#员工号是否是必须的
+flyway.placeholders.eab.staff_no_required = "false"
+
+##################################################
+#  账号安全相关配置
+##################################################
+# 是否启动账号锁定功能
+flyway.placeholders.conf.lockaccount.enable='false'
+# 账号连续错误输入导致账号锁定的次数，默认是5次
+flyway.placeholders.conf.lockaccount.password_error_number='5'
+# 账号输入错误累计计数的时间，单位分钟，默认是30分钟
+flyway.placeholders.conf.lockaccount.password_error_in_time='30'
+# 账号锁定的时长，单位分钟，默认是30分钟
+flyway.placeholders.conf.lockaccount.locktime='30'
+
+##################################################
+#  预置机器人相关配置
+##################################################
+# 文件小助手机器人默认名称
+flyway.placeholders.file.file_transfer_robot_name='文件小助手'
+# 群助手机器人默认名称
+flyway.placeholders.group.group_invite_robot_name = '入群验证'
+
+# 邀请有效期，单位小时，默认7天
+flyway.placeholders.group.group_invite_expire_time = '168'
+
+# 禁言有效期，单位分钟，暂未使用 TODO
+flyway.placeholders.group.mute_expire_time = 0
+
+##################################################
+#  电话会议相关配置
+##################################################
+# 电话会议提供商的 API 地址
+flyway.placeholders.call.conference_api_url = 'http://{{ conference_api_url }}'
+# 电话会议的显示号码
+flyway.placeholders.call.conference_display_number= '01068449511'
+# 电话会议的计费号码
+flyway.placeholders.call.conference_charge_number= '01068449511'
+
+flyway.placeholders.conferencecall.api='http://conference.rce.rongcloud.net'
+# 电话会议服务商提供的账号
+flyway.placeholders.conferencecall.vccid='3211'
+# 电话会议服务商提供的密码
+flyway.placeholders.conferencecall.password='888888'
+
+##################################################
+#  一些服务配置开关值
+##################################################
+# 传输文件大小限制，单位MB
+flyway.placeholders.media.max_file_size= '100'
+
+# 监控功能配置
+flyway.placeholders.monitor.conversation_enable= 'true'
+flyway.placeholders.monitor.message_enable= 'true'
+flyway.placeholders.monitor.sensitive_word_enable= 'true'
+flyway.placeholders.monitor.admin_operation_enable= 'true'
+flyway.placeholders.monitor.device_enable= 'true'
+
+# 隐私配置
+flyway.placeholders.privacy.display_mobile= 'true'
+
+# 水印开关
+flyway.placeholders.watermark.enable= 'true'
+
+# 推送详情开关
+flyway.placeholders.push.customization_enable= 'false'
+
+# 机器人名称
+flyway.placeholders.device.device_manage_robot_name='设备管理'
+
+# 默认公司名，如果制定，则会在 db migration 时自动生成默认公司数据，参考 V141 的 SQL 语句
+# 如果不需要则置为空串
+flyway.placeholders.company.default_company_name='{{ default_company_name }}'
+
+##################################################
+#  超级管理员找回密码时需要通过邮箱进行找回，
+#  这里定义了 SMTP 服务器或邮件相关参数
+##################################################
+# 发送邮件的协议，默认为 SMTP
+flyway.placeholders.email.protocol='smtp'
+# 邮件服务器的域名
+flyway.placeholders.email.host = ''
+# 邮件服务器的端口
+flyway.placeholders.email.port='25'
+# 邮件服务器是否需要鉴权
+flyway.placeholders.email.auth_enable='true'
+# 邮件服务器是否开启TLS/SSL
+flyway.placeholders.email.tls_enable='true'
+# 发送邮件的用户名
+flyway.placeholders.email.account = ''
+# 发送邮件的密码
+flyway.placeholders.email.password = ''
+# 发送邮件的邮箱地址
+flyway.placeholders.email.sender_email_address = ''
+# 发送验证码邮件的主题
+flyway.placeholders.email.admin_verify_code_subject='账号安全中心-邮箱身份验证'
+# 发送验证码邮件的内容，"####"部分会被替换为真实的验证码
+flyway.placeholders.email.admin_verify_code_content='亲爱的用户：\n您好，您正在申请 RCE 管理后台的邮箱验证服务，本次请求的邮箱验证码是：####\n(为了保障您账号的安全性，请您在30分钟内完成验证)\n\n如非本人操作，请忽略邮件。\n祝使用愉快！\n\nRCE 账号安全中心\n####'
+
+# 服务配置
+flyway.placeholders.setting.app_configuration_expire_time = '1800'
+flyway.placeholders.setting.im.navi_urls = 'http://{{ im_navi }}, https://{{ im_navi }}'
+flyway.placeholders.setting.im.media_urls = 'http://{{ file_server }}, https://{{ file_server }}'
+flyway.placeholders.setting.im.stats_urls = 'http://stats.cn.ronghub.com, https://stats.cn.ronghub.com'
+flyway.placeholders.setting.media.download_urls = 'http://{{ file_server }}, https://{{ file_server }}'
+flyway.placeholders.setting.media.upload_urls = 'http://{{ file_server }}, https://{{ file_server }}'
+flyway.placeholders.setting.pin.download_urls = 'http://{{ file_server }}, https://{{ file_server }}'
+flyway.placeholders.setting.pin.upload_urls = 'http://{{ file_server }}, https://{{ file_server }}'
+flyway.placeholders.setting.apm.enable = 'true'
+flyway.placeholders.setting.apm.ios_bugly_id = 'b8d4c6ee09'
+flyway.placeholders.setting.apm.android_bugly_id = 'f60a819d2b'
+flyway.placeholders.setting.qrcode.login_enable = 'true'
+# 需要在每个URL后增加"/QR.html"
+flyway.placeholders.setting.qrcode.share_urls = 'http://{{ rce_qr_url }}, https://{{ rce_qr_url }}'
+# 需要在每个URL后增加"/moments"
+flyway.placeholders.setting.moments.urls = 'http://{{ moments_server_api }}, https://{{ moments_server_api }}'
+flyway.placeholders.setting.work.urls = 'http://{{ rce_work_url }}, https://{{ rce_work_url }}'
+flyway.placeholders.setting.password.forgot_enable = 'true'
+# 远程控制功能是否开启
+flyway.placeholders.setting.remotecontrol.enable  =  'false'
+flyway.placeholders.setting.ratelimit.enable = 'false'
+
+##################################################
+#  远程控制相关配置
+##################################################
+# 远程控制服务类型: public: 公有云服务; priviate: 私有云服务
+flyway.placeholders.remote_control.type = '{{remote_control_type}}'
+# 服务类型是公有云远程控制时对应的 AppId
+flyway.placeholders.remote_control.public_app_id = '{{remote_control_public_app_id}}'
+# 服务类型是公有云远程控制时对应的 AppSecret
+flyway.placeholders.remote_control.public_app_secret = '{{remote_control_public_app_secret}}'
+# 服务类型是公有云远程控制时对应的 Domain
+flyway.placeholders.remote_control.public_domain = '{{remote_control_public_domain}}'
+# 服务类型是公有云远程控制时，是否启用SSL
+flyway.placeholders.remote_control.public_use_ssl = '{{remote_control_public_use_ssl}}'
+# 服务类型是私有云远程控制时的连接地址
+flyway.placeholders.remote_control.private_addr = '{{remote_control_private_addr}}'
+# 服务类型是私有云远程控制时的连接会话信息，逗号隔开的列表格式
+flyway.placeholders.remote_control.private_sessions = '{{remote_control_private_sessions}}'
+
+
+##################################################
+# 系统配置
+##################################################
+# 系统是否初始化标识，True:已进行初始化配置，默认false
+flyway.placeholders.system.init = "false"
+
+# 搜索配置
+flyway.placeholders.searchable.enable = 'true'
+flyway.placeholders.searchable.refresh_enable = 'true'
+
+# 群组搜索配置，依赖搜索配置
+flyway.placeholders.searchable.group_enable = 'false'
+flyway.placeholders.searchable.group_refresh_enable = 'false'
+
+flyway.placeholders.monitor.slow_threshold=50000000
+
+# 语音识别
+flyway.placeholders.rcsr.enable = 'false'
+flyway.placeholders.rcsr.config_format = 'pcm'
+flyway.placeholders.rcsr.config_rate = '16000'
+flyway.placeholders.rcsr.config_bitdepth = '16'
+flyway.placeholders.rcsr.config_channel = '1'
+flyway.placeholders.rcsr.type = 'xunfei'
+flyway.placeholders.rcsr.xunfei.api_url = '{{ rcsr_xunfei_api_url }}'
+flyway.placeholders.rcsr.xunfei.appid = '{{ rcsr_xunfei_appid }}'
+flyway.placeholders.rcsr.xunfei.apikey = '{{ rcsr_xunfei_apikey }}'
+
+# 通知相关
+flyway.placeholders.notice.depart_member_change_enable = 'true'
+
+# 新加入群成员是否允许查看群里是消息
+flyway.placeholders.group.permission.gdp_view_chat_history = '1'
+
+# 新加入群成员是否允许查看群里是消息
+flyway.placeholders.group.permission.edp_view_chat_history = '1'
+flyway.placeholders.setting.ratelimit.enable = 'false'
+
+
+# 账号锁定，是否清除端上本地数据
+flyway.placeholders.conf.lockaccount.clear_local_data_enable = 'false'
+# 密码加密
+flyway.placeholders.security.password_public_key_rsa
+flyway.placeholders.security.password_private_key_rsa
+# 资源开关
+flyway.placeholders.closable_resources.unsafe_password = 'true'
+# 限流流量
+flyway.placeholders.rate_limit.default_rate = '100'
+flyway.placeholders.rate_limit.sms_rate = '0.2'
+
+需要修改默认值的配置项：
+
+# 电话会议的显示号码
+flyway.placeholders.call.conference_display_number= '1111111'
+# 电话会议的计费号码
+flyway.placeholders.call.conference_charge_number= '1111111'
+flyway.placeholders.conferencecall.api= '{{ conference_call_api }}'
+# 电话会议服务商提供的账号
+flyway.placeholders.conferencecall.vccid='111111'
+# 电话会议服务商提供的密码
+flyway.placeholders.conferencecall.password='111111'
+# 邮件服务器的域名
+flyway.placeholders.email.host = '{{ email_host }}'
+# 发送邮件的用户名
+flyway.placeholders.email.account = '{{ email_account }}'
+# 发送邮件的密码
+flyway.placeholders.email.password = '{{ email_password }}'
+# 发送邮件的邮箱地址
+flyway.placeholders.email.sender_email_address = '{{ email_sender_email_address }}'

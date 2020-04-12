@@ -1,0 +1,9 @@
+model:
+  - local:
+      name: '单机部署（本机）'
+      sort: 10
+      arch: 1 MySQL + 1 Redis + 1 Nginx + 1 Tomcat + 2 RCDB + 1 RCX-Moment + 1 ERP
+  - multi_3node:
+      sort: 3
+      name: '集群三节点 V1'
+      arch: 2 RCDB * 3 + 1 MySQL Master + 1 MySQL Slave + 3 Zookeeper + 3 FileServer + 3 IMServer

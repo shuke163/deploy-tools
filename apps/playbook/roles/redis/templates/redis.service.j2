@@ -1,0 +1,13 @@
+[program:{{ redis_name }}]
+directory={{ redis_path }}
+command={{ redis_path }}/redis-server redis.conf
+user={{ redis_user }}
+group={{ redis_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile={{ global.log_path }}/{{ redis_name }}.log

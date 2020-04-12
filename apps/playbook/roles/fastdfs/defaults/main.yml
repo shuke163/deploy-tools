@@ -1,0 +1,22 @@
+---
+fastdfs_inst_name: "fastdfs"
+fastdfs_name: "{{ fastdfs_inst_name }}"
+fastdfs_package: "{{ global.package_path }}/fastdfs.tar.gz"
+libfastcommon_package: "{{ global.package_path }}/libfastcommon.tar.gz"
+
+fastdfs_path: "{{ global.app_path }}/{{ fastdfs_name }}"
+storage_path: "{{ global.data_path }}/{{ fastdfs_name }}/storage"
+tracker_path: "{{ global.data_path }}/{{ fastdfs_name }}/tracker"
+libfastcommon_path: "{{ fastdfs_path }}/libfastcommon"
+
+fastdfs_user: "root"
+fastdfs_group: "root"
+
+storage_port: 23000
+tracker_port: 22122
+tracker_string: "
+    {%- set ips = [] %}
+    {%- for host in groups['fastdfs'] %}
+    {{- ips.append(dict(id=loop.index, host=host, ip=hostvars[host]['ansible_host'], port=tracker_port)) }}
+    {%- endfor %}
+    {{- ips -}}"

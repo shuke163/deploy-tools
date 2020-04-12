@@ -1,0 +1,17 @@
+model:
+  - local:
+      sort: 1
+      name: '单机部署（本机）'
+      arch: 4 RCDB + 1 MySQL + 1 FileServer + 1 IMServer
+  - local-cn:
+      sort: 2
+      name: '单机部署 (Qilin)'
+      arch: 4 RCDB + 1 FileServer + 1 rcx-server
+  - multi_3node:
+      sort: 3
+      name: '集群三节点 V1'
+      arch: 2 RCDB * 3 + 1 MySQL Master + 1 MySQL Slave + 3 Zookeeper + 3 FileServer + 3 IMServer
+  - multi_3node-cn:
+      sort: 4
+      name: '集群三节点 (Qilin)'
+      arch: 2 RCDB * 3 + 3 Zookeeper + 3 FileServer + 3 rcx-server

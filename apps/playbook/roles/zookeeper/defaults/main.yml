@@ -1,0 +1,53 @@
+---
+inst_name: "zookeeper"
+zookeeper_name: "{{ inst_name }}"
+zookeeper_version: 3.4.14
+zookeeper_package: "{{ global.package_path }}/zookeeper-{{ zookeeper_version }}.tar.gz"
+zk_path: "{{ global.app_path }}/{{ zookeeper_name }}"
+
+zookeeper_register_path_env: false
+
+client_port: "{{ zookeeper_port }}"
+init_limit: 5
+sync_limit: 2
+tick_time: 2000
+zookeeper_autopurge_purgeInterval: 0
+zookeeper_autopurge_snapRetainCount: 10
+
+data_dir: "{{ global.data_path }}/{{ zookeeper_name }}"
+log_dir: "{{ global.logs_path }}/{{ zookeeper_name }}"
+
+# Rolling file appender setttings
+zookeeper_rolling_log_file_max_size: 10MB
+zookeeper_max_rolling_log_file_count: 10
+
+# List of dict (i.e. {zookeeper_hosts:[{host:,id:},{host:,id:},...]})
+#zookeeper_hosts:
+#  - host: "{{ inventory_hostname }}" # the machine running
+#    id: 1
+zookeeper_hosts: "
+    {%- set ips = [] %}
+    {%- for host in groups['zookeeper'] %}
+    {{- ips.append(dict(id=loop.index, host=host, ip=hostvars[host]['ansible_host'])) }}
+    {%- endfor %}
+    {{- ips -}}"
+
+# Dict of ENV settings to be written into the (optional) conf/zookeeper-env.sh
+zookeeper_env: {}
+
+# Controls Zookeeper myid generation
+zookeeper_force_myid: yes
+
+rc_user: "zookeeper"
+rc_group: "zookeeper"
+zk_user: "{{ rc_user }}"
+zk_group: "{{ rc_group }}"
+#externalapush: ' {"publicIps":[{"ip":"{{ public_ip }}","order":1,"port": "{{ apush_public_port }}"}]}'
+#externalrmtp: ' {"publicIps":[{"rmtpPort": "{{ rmtp_public_port }}","ip":"{{ public_ip }}","order":1,"wsPort":"{{ rmtp_ws_public_port }}", "wssPort": "{{ rmtp_ws_public_port }}"}]}'
+
+zk_host: '{{ ansible_default_ipv4.address }}'
+zookeeper_port: 2181
+ClusterName: 'cluster_one'
+logsDir: '{{ base_path }}/logs'
+zkString: '{{ zk_host }}:{{ zookeeper_port }}'
+

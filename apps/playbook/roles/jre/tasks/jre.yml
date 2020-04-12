@@ -1,0 +1,46 @@
+- group: name="{{ global.rc_group }}" system=yes
+- user: name="{{ global.rc_user }}" group="{{ global.rc_group }}" system=yes
+
+- name: Ensure jre path
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ global.app_path }}"
+
+- name: Check If Already Installed
+  stat:
+    path: "{{ global.app_path }}/jdk"
+  register: __jre_exists
+
+- name: Install jre runtime
+  unarchive:
+    src: "{{ jdk_package }}"
+    dest: "{{ global.app_path }}"
+  when: not __jre_exists.stat.exists
+  ignore_errors: yes
+
+- name: change path owner
+  file:
+    path: "{{ global.app_path }}/jdk"
+    owner: "{{ global.rc_user }}"
+    group: "{{ global.rc_group }}"
+    state: directory
+    recurse: yes
+
+- name: Add env config
+  template:
+    src: env.j2
+    dest: /etc/profile.d/jdk.sh
+    mode: 0755
+
+- name: Check ln java
+  stat:
+    path: "/usr/bin/java"
+  register: __lnjava_exists
+
+- name: Add ln java
+  shell: "ln -s {{ global.app_path }}/jdk/bin/java /usr/bin/java"
+  when: not __lnjava_exists.stat.exists
+  ignore_errors: yes

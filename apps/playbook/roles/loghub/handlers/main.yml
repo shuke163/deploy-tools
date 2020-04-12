@@ -1,0 +1,6 @@
+---
+- name: Restart loghub
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: restarted
+    supervisorctl_path: "{{ supervisorctl }}"

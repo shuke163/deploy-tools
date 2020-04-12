@@ -1,0 +1,47 @@
+hosts:
+  rce_node1:
+    ansible_host: ""
+    ansible_connection: local
+groups:
+  mysql:
+    - rce_node1
+  elasticsearch:
+    - rce_node1
+  redis:
+    - rce_node1
+  rce_rcdb:
+    - rce_node1
+  rce_server:
+    - rce_node1
+  rce_nginx:
+    - rce_node1
+  rcx_moments:
+    - rce_node1
+  rce_slp2p:
+    - rce_node1
+vars:
+  global:
+    base_path: '/data'
+    tomcat_port: 8080
+    nginx_port: 80
+  rce-rcdb:
+    rcdb_nums: 2
+  elasticsearch:
+    elasticsearch_jvm: "1g"
+  rcx-moments:
+    moments_port: 8000
+  mysql:
+    mysql_host: "{{ hostvars[groups['mysql'][0]]['ansible_host'] }}"
+  mysql-conf:
+    mysql_user: 'rce'
+    mysql_password: '1qazCDE#'
+    imdb: rcedb
+  rce-slp2p:
+    udp_port: 4118
+    tcp_secret_port: 3443
+    tcp_nonsecret_port: 0
+    tcp_port_monitor: 8123
+    udp_forward: 1
+    udp_forward_speed: 0
+    tcp_secret_keepalive: 3600
+    tcp_nonsecret_keepalive: 3600

@@ -1,0 +1,40 @@
+{% for upstream in nginx_upstreams %}
+upstream {{ upstream.name }} {
+{% if upstream.strategy is defined %}
+    {{ upstream.strategy }};
+{% endif %}
+{% for server in upstream.servers %}
+    server {{ server }};
+{% endfor %}
+{% if upstream.keepalive is defined %}
+    keepalive {{ upstream.keepalive }};
+{% endif %}
+}
+{% endfor %}
+
+{% for vhost in nginx_vhosts %}
+server {
+    listen {{ vhost.listen | default('80 default_server') }};
+{% if vhost.server_name is defined %}
+    server_name {{ vhost.server_name }};
+{% endif %}
+{% if vhost.root is defined %}
+    root {{ vhost.root }};
+{% endif %}
+{% if vhost.ssi is defined %}
+    ssi on;
+{% endif %}
+
+    index {{ vhost.index | default('index.html index.htm') }};
+
+    location /api {
+        add_header Access-Control-Allow-Credentials 'true';
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods 'GET, POST, OPTIONS';
+        add_header Access-Control-Allow-Headers 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Set-Cookie,Content-Type,Authorization,Cookie';
+        proxy_pass http://{{ rcx_mgt_upstream_name }};
+    }
+
+}
+{% endfor %}
+

@@ -1,0 +1,10 @@
+var config = {
+   //	server: 'http://api-test.rcx.rongcloud.cn:8099/api', // 应用服务器接口地址
+   server: 'http://{{ ansible_host }}:8098/api', // 应用服务器接口地址
+  	//	 server: 'http://api-test.rcx.rongcloud.cn:8099/api', // 应用服务器接口地址
+    refreshSecret: false, // 是否支持刷新secret
+    product: {
+        name: "私有云", // 应用名称
+        icon: "css/images/logo.png" //应用图标，可以使用网络地址，建议 icon 大小 32 x 32，私有部署改为 css/images/logo.png
+    }
+};

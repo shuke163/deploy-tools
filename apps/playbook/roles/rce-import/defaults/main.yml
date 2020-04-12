@@ -1,0 +1,9 @@
+rce_import_path: '{{ tmp_path }}/rce_import'
+rce_import_source_path: "{{ package_path }}/rce/import"
+rce_import_items:
+  - RCEDataMerger-0.0.1-SNAPSHOT.jar
+  - HowToUse.txt
+  - Organization.xls
+rce_server_api: 'http://127.0.0.1:8080/rce/api'
+rce_username: superadmin
+rce_password: superadmin

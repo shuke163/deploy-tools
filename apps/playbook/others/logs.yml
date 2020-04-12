@@ -1,0 +1,39 @@
+- hosts: redis
+  serial: 2
+
+  vars:
+    date: "{{ lookup('pipe','date +%Y-%m-%d') }}"
+    current_time: "{{ lookup('pipe','date +%Y%m%d%H%M%S') }}"
+    hours: "{{ lookup('pipe','date +%Y-%m-%d-%H') }}"
+    current_path: /Users/shuke/Work/SCM/deploy-system
+    base_path: /data
+    tmp_path: /data/tmp
+    logs_path: /data/logs
+    user: root
+
+  tasks:
+  - name: create some dir
+    file:
+      path: '{{ tmp_path }}/{{ item }}'
+      state: directory
+      owner: root
+      group: root
+      recurse: yes
+      mode: 0755
+    with_items:
+    - "{{ groups['all'] }}"
+
+  - name: rsync logs
+    shell: rsync -KtLaruvz -m --delete {{ user }}@{{ hostvars[host]['ansible_host'] }}:{{
+      logs_path }} {{ tmp_path }}{{ item }}/
+    with_items:
+    - "{{ groups['all'] }}"
+    delegate_to: localhost
+
+
+  - name: Ensurer rsync pull logs */5 minutes
+    cron:
+      name: rsync logs
+      minute: '*'
+      job: cd {{ current_path }}/playbook && /opt/python2/bin/ansible-playbook -i
+        inventory/im/hosts.ini logs.yml

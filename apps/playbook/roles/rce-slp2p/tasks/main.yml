@@ -1,0 +1,106 @@
+---
+- name: Ensure work dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ app_path }}"
+    - "{{ slp2p_path }}"
+    - "{{ slp2p_logpath }}"
+
+- name: copy slp2p.tar.gz
+  unarchive:
+    src: "{{ package_path }}/slp2p.tar.gz"
+    dest: "{{ slp2p_path }}/"
+    copy: "yes"
+
+- name: copy rce-slp2p config file
+  template:
+    src: "ois.ini.j2"
+    dest: "{{ slp2p_path }}/ois.ini"
+
+- name: copy rce-slp2p cert file
+  template:
+    src: "cert.pem"
+    dest: "{{ slp2p_path }}/"
+
+- name: copy rce-slp2p private key file
+  template:
+    src: "privtkey.pem"
+    dest: "{{ slp2p_path }}/"
+
+- name: copy rce-slp2p lisence file
+  template:
+    src: "slp2p.orayservers.license"
+    dest: "{{ slp2p_path }}/"
+
+- name: Add rce-slp2p startup config
+  template:
+    src: slp2p.service.j2
+    dest: "{{ conf_path }}/{{ inst_name }}.conf"
+    owner: "{{ slp2p_user }}"
+    group: "{{ slp2p_group }}"
+
+- name: Ensure path User
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ slp2p_user }}"
+    group: "{{ slp2p_group }}"
+    mode: 0755
+    recurse: yes
+  with_items: 
+    - "{{ slp2p_path }}"
+    - "{{ slp2p_logpath }}"
+
+- name: Ensure rce-slp2p service is present
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: present
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: Ensure rce-slp2p is stopped
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: stopped
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: save rce-slp2p sessions
+  shell: |
+    {{ slp2p_path }}/slp2p -c {{ slp2p_path }}/ois.ini -g -e > {{ slp2p_path }}/slp2p-sessions.txt
+    sed -i 's/^M//g' {{ slp2p_path }}/slp2p-sessions.txt
+
+- name: assign rce variable
+  shell: "sed -n '4p' {{ slp2p_path }}/slp2p-sessions.txt"
+  register: RC_CONN_PRIVATE_ADDR
+
+- name: assign rce variable
+  shell: |
+    echo -e "["; sed -n '6,15p' {{ slp2p_path }}/slp2p-sessions.txt | awk -F'"' '{print "\""$2"\","}'; echo -e "]"
+  register: RC_CONN_PRIVATE_SESSIONS
+
+- name: copy rce-slp2p update_remote_cntrol.py file
+  template:
+    src: "update_remote_control.py.j2"
+    dest: "/tmp/update_remote_control.py"
+  delegate_to: 127.0.0.1
+  ignore_errors: yes
+
+- name: copy rce-slp2p RestClient.py.j2 file
+  template:
+    src: "RestClient.py.j2"
+    dest: "/tmp/RestClient.py"
+  delegate_to: 127.0.0.1
+
+- name: execute update_remote_cntrol.py
+  command: "/opt/python2/bin/python /tmp/update_remote_control.py"
+  delegate_to: 127.0.0.1
+  ignore_errors: yes
+
+- name: Ensure rce-slp2p is running
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: started
+    supervisorctl_path: "{{ supervisorctl }}"
+

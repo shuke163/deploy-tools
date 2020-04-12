@@ -1,0 +1,23 @@
+{% if db_type == 'kingbase' %}
+jdbcUrl=jdbc:kingbase8://{{ mysql_host }}:{{ mysql_port }}/management?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false
+{% elif db_type == 'shentong' %}
+jdbcUrl=jdbc:oscar://{{ mysql_host }}:{{ mysql_port }}/management?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false
+{% elif db_type == 'dm' %}
+jdbcUrl=jdbc:dm://{{ mysql_host }}:{{ mysql_port }}/management?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false
+{% else %}
+jdbcUrl=jdbc:mysql://{{ mysql_host }}:{{ mysql_port }}/{{ rcx_db }}?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false
+{% endif %}
+username={{ mysql_user }}
+password={{ mysql_password }}
+maximumPoolSize=5
+dataSource.cachePrepStmts=true
+dataSource.prepStmtCacheSize=250
+dataSource.prepStmtCacheSqlLimit=2048
+dataSource.useServerPrepStmts=true
+dataSource.useLocalSessionState=true
+dataSource.useLocalTransactionState=true
+dataSource.rewriteBatchedStatements=true
+dataSource.cacheResultSetMetadata=true
+dataSource.cacheServerConfiguration=true
+dataSource.elideSetAutoCommits=true
+dataSource.maintainTimeStats=false

@@ -1,0 +1,72 @@
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+
+- name: Ensure fastdfs
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ global.app_path }}"
+    - "{{ global.tmp_path }}"
+
+- name: Check If Already Installed
+  stat:
+    path: "{{ fastdfs_path }}"
+  register: __fastdfs_exists
+
+- name: Copy fastdfs package
+  unarchive:
+    src: "{{ fastdfs_package }}"
+    dest: "{{ global.tmp_path }}"
+
+- name: Copy fastdfs
+  shell: "cp -ar  {{ global.tmp_path }}/fastdfs {{ fastdfs_path }}"
+
+- name: Copy libfastcommon.so
+  shell: "cp -r {{ fastdfs_path }}/libfastcommon.so /usr/lib64/"
+
+- name: Copy fastcommon dir
+  shell: "cp -r {{ fastdfs_path }}/fastcommon /usr/include/"
+
+- name: Ensure fastdfs is configured as storage.
+  template:
+    src: storage.conf.j2
+    dest: "{{ fastdfs_path }}/fdfs/storage.conf"
+    mode: 0644
+
+- name: Ensure fastdfs is configured as tracker.
+  template:
+    src: tracker.conf.j2
+    dest: "{{ fastdfs_path }}/fdfs/tracker.conf"
+    mode: 0644
+
+#- name: Ensure fastdfs server
+#  template:
+#    src: fast.server.j2
+#    dest: "{{ conf_path }}/{{ fastdfs_name }}.conf"
+#    mode: 0644
+
+- name: Ensure fastdfs restart.sh
+  template:
+    src: restart.sh.j2
+    dest: "{{ fastdfs_path }}/restart.sh"
+    mode: 0644
+
+- name: Ensure fastdfs data dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ storage_path }}"
+    - "{{ tracker_path }}"
+
+- name: start tracker
+  shell: "{{ fastdfs_path }}/fdfs_trackerd {{ fastdfs_path }}/fdfs/tracker.conf"
+  ignore_errors: yes
+
+- name: start storage
+  shell: "{{ fastdfs_path }}/fdfs_storaged {{ fastdfs_path }}/fdfs/storage.conf"
+  ignore_errors: yes

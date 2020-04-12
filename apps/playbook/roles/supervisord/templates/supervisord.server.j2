@@ -1,0 +1,14 @@
+[Unit]
+Description=Process Monitoring and Control Daemon
+Documentation=http://supervisord.org
+After=network.target
+
+[Service]
+Type=forking
+ExecStart={{ global.supervisord }} -c /etc/supervisord.conf
+ExecReload={{ global.supervisorctl }} reload
+ExecStop={{ global.supervisorctl }} shutdown
+LimitNOFILE=655535
+
+[Install]
+WantedBy=multi-user.target

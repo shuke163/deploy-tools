@@ -1,0 +1,17 @@
+---
+admin_local_repo: "{{ package_path }}/rce/admin.tar.gz"
+admin_dest: "{{ app_path }}/www/admin"
+
+# RCE API 地址，如需公网访问请填写公网访问地址
+rce_server_api: '{{ domain }}/rce/api'
+# RCE-Admin 地址
+rce_admin_api: "{{ domain }}/admin-api"
+# RCE-Admin 名称
+company_name: "RCE 管理系统"
+# RCE-Admin 应用图标，可以使用网络地址，建议 icon 大小 32 x 32，私有部署改为 css/images/logo.png
+company_icon: "css/images/logo.png"
+
+rc_user: "rcloud"
+rc_group: "rcloud"
+nginx_user: "{{ rc_user }}"
+nginx_group: "{{ rc_group }}"

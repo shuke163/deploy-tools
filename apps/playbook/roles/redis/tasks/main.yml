@@ -1,0 +1,9 @@
+---
+- name: install redis
+  import_tasks: install.yml
+  tags: install
+
+- name: uninstall redis
+  import_tasks: uninstall.yml
+  tags: uninstall
+  when: not install

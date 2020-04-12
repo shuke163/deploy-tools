@@ -1,0 +1,20 @@
+- hosts: rcx_fileserver
+  roles:
+  - role: rcx-fileserver
+    tags: rcx_fileserver
+  vars:
+    inst_name: rcx_fileserver.inst-0
+    name_prefix: rcx-fs
+    common_config:
+    - config.xml
+    - log4j2.xml
+    configs:
+    - storage-config.xml
+    - namespace.properties
+    - trafficctl.properties
+    plugins:
+      access:
+      - config: storage-config.xml
+        main: rcx.access.filestorageserver.Bootstrap
+        name: rcx.access.filestorageserver
+        path: plugins/rcx.access.filestorageserver.jar

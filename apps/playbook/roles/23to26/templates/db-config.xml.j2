@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <mappings>
+        <!--mapping target="name1">GroupPersons</mapping>
+        <mapping target="name1">PersonGroups</mapping-->
+    </mappings>
+    <dbclusters>
+        <dbcluster name="name1">
+            <items>
+                <item>
+                    <ip>192.168.156.27</ip>
+                    <port>10001</port>
+                    <name>server1</name>
+                </item>
+            </items>
+        </dbcluster>
+        <dbcluster default="true">
+            <items>
+                <item>
+                    <ip>127.0.0.1</ip>
+                    <port>8888</port>
+                    <name>rcdb.inst-0</name>
+                </item>
+                <!--<item>-->
+                    <!--<ip>172.29.203.11</ip>-->
+                    <!--<port>8089</port>-->
+                    <!--<name>rcdb.inst-1</name>-->
+                <!--</item>-->
+                <!--<item>-->
+                    <!--<ip>172.29.203.11</ip>-->
+                    <!--<port>8090</port>-->
+                    <!--<name>rcdb.inst-2</name>-->
+                <!--</item>-->
+                <!--<item>-->
+                    <!--<ip>172.29.203.11</ip>-->
+                    <!--<port>8091</port>-->
+                    <!--<name>rcdb.inst-3</name>-->
+                <!--</item>-->
+            </items>
+        </dbcluster>
+    </dbclusters>
+    <rdbclusters>
+        <rdbcluster name="rdbclusterName" default="true">
+            <rdbs>
+                <rdb>
+                    <name>DB1</name>
+                    <type>MYSQL</type>
+                    <filePath>comcloud_x.properties</filePath>
+                </rdb>
+            </rdbs>
+        </rdbcluster>
+    </rdbclusters>
+</config>

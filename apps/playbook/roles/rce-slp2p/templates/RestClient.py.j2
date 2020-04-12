@@ -1,0 +1,443 @@
+# -*- coding: utf-8 -*-
+
+import json
+import posixpath
+import urlparse
+
+import requests
+from munch import Munch
+from faker import Factory
+
+
+LOCALHOST_BASE_URL = 'http://127.0.0.1:8080/rce'
+
+
+class DepartMemberType(object):
+    STAFF = 0
+    BRANCH = 1
+
+
+class GroupType(object):
+    CUSTOM = 0
+    DEPARTMENT = 1
+    COMPANY = 2
+
+
+class GroupMemberStatus(object):
+    PENDING = 0
+    NORMAL = 1
+
+
+class StaffStatus(object):
+    DISABLE = 0
+    NORMAL = 1
+
+
+class Dummy(object):
+    _faker = Factory.create('zh_CN')
+    _username_bind = 'mobile'
+
+    @classmethod
+    def faker_name(cls):
+        return Dummy._faker.name()
+
+    @classmethod
+    def faker_email(cls):
+        return Dummy._faker.email()
+
+    @classmethod
+    def faker_phone_number(cls):
+        return Dummy._faker.phone_number()
+
+    @classmethod
+    def create_super_staff(cls, **kwargs):
+        name = u'superstaff'
+        s = Munch()
+        s.name = name
+        s.username = unicode(
+            kwargs['username']) if 'username' in kwargs else u'admin'
+        s.email = name + u'@test.com'
+        s.mobile = Dummy.faker_phone_number()
+        s.portrait_url = u'http://www.qq1234.org/uploads/allimg/140515/3_140515164252_100.jpg'
+        s.tel = u'tel:superstaff'
+
+        return s
+
+        # response = self.post('/staffs', s)
+        # self.assertEqual(response.status, 200)
+        # self.assertEqual(response.result.code, 10000)
+        # s.id = response.result.result.id
+        #
+        # self._super_staff = s
+
+    @classmethod
+    def one_staff_info(cls, i, **kwargs):
+        name = u'ds-%d' % i
+        name = name + Dummy.faker_name()
+        s = Munch()
+        s.username = kwargs['username'] if 'username' in kwargs else u'ds-%d' % i
+        s.password = kwargs['password'] if 'password' in kwargs else s.username
+        s.name = s.username  # Dummy.faker_name()
+        s.email = kwargs['email'] if 'email' in kwargs else u'%s@example.com' % s.username  # Dummy.faker_email()
+        s.mobile = kwargs['mobile'] if 'mobile' in kwargs else Dummy.faker_phone_number()
+        if Dummy._username_bind == 'mobile':
+            s.username = s.mobile
+        elif Dummy._username_bind == 'email':
+            s.username = s.email
+        s.portrait_url = u'http://www.qq1234.org/uploads/allimg/140515/3_140515164252_%d.jpg' % i
+        s.tel = u'tel:%d' % i
+        s.int_p1 = kwargs['int_p1'] if 'int_p1' in kwargs else None
+        s.int_p2 = kwargs['int_p2'] if 'int_p2' in kwargs else None
+        s.vchar_p3 = kwargs['vchar_p3'] if 'vchar_p3' in kwargs else None
+        s.extra = kwargs['extra'] if 'extra' in kwargs else "extra"
+        s.is_executive = kwargs[
+            'is_executive'] if 'is_executive' in kwargs else None
+        s.state = kwargs['state'] if 'state' in kwargs else 0
+        s.org_ids = kwargs['org_ids'] if 'org_ids' in kwargs else None
+        if 'depart_id' in kwargs:
+            s.depart_id = kwargs['depart_id']
+        if 'company_id' in kwargs:
+            s.company_id = kwargs['company_id']
+        if 'duty_name' in kwargs:
+            s.duty_name = kwargs['duty_name']
+        if 'supervisor_id' in kwargs:
+            s.supervisor_id = kwargs['supervisor_id']
+        if 'mobile' in kwargs:
+            s.mobile = kwargs['mobile']
+            if Dummy._username_bind == 'mobile':
+                s.username = s.mobile
+        if 'order' in kwargs:
+            s.order = kwargs['order']
+
+        return s
+
+    @classmethod
+    def one_company_info(cls, i, **kwargs):
+        c = Munch()
+        c.id = kwargs['id'] if 'id' in kwargs else None
+        c.name = kwargs['name'] if 'name' in kwargs else 'company-' + str(i)
+        c.full_name = kwargs[
+            'full_name'] if 'full_name' in kwargs else c.name + '-fn'
+        c.address = kwargs['address'] if 'address' in kwargs else 'beijing'
+        c.contact_phone = kwargs[
+            'contact_phone'] if 'contact_phone' in kwargs else "1234567"
+        c.contact_email = kwargs[
+            'contact_email'] if 'contact_email' in kwargs else "hr@rongcloud.cn"
+        c.manager_id = kwargs['manager_id'] if 'manager_id' in kwargs else None
+        c.group_manager_id = kwargs[
+            'group_manager_id'] if 'group_manager_id' in kwargs else None
+        c.with_group = kwargs['with_group'] if 'with_group' in kwargs else None
+        c.int_p1 = kwargs['int_p1'] if 'int_p1' in kwargs else 1
+        c.int_p2 = kwargs['int_p2'] if 'int_p2' in kwargs else 2
+        c.vchar_p3 = kwargs['vchar_p3'] if 'vchar_p3' in kwargs else "p3"
+        c.hidden = kwargs['hidden'] if 'hidden' in kwargs else None
+        c.parent_id = kwargs['parent_id'] if 'parent_id' in kwargs else None
+        c.order = kwargs['order'] if 'order' in kwargs else None
+        c.logo_url = kwargs[
+            'logo_url'] if "logo_url" in kwargs else Dummy.faker_name()
+        c.primary = kwargs['primary'] if "primary" in kwargs else None
+        c.type = kwargs['type'] if 'type' in kwargs else None
+        return c
+
+    @classmethod
+    def multiple_staff_info(self, num, **kwargs):
+        result = []
+
+        start = kwargs['start'] if 'start' in kwargs else 0
+        step = kwargs['step'] if 'start' in kwargs else 1
+        stop = start + step * num
+        for i in range(start, stop, step):
+            result.append(Dummy.one_staff_info(i, **kwargs))
+        return result
+
+    @classmethod
+    def one_group_info(cls, i, type, **kwargs):
+        group = Munch()
+        group.creator_Id = None
+        group.manager_Id = None
+        group.company_id = None
+        group.int_p1 = kwargs['int_p1'] if 'int_p1' in kwargs else None
+        group.int_p2 = kwargs['int_p2'] if 'int_p2' in kwargs else None
+        group.vchar_p3 = kwargs['vchar_p3'] if 'vchar_p3' in kwargs else None
+        group.type = type
+        # group.id = u"123"
+        # group.depart_id = u"456"
+        group.name = u"group%d" % i
+        group.portrait_url = u'http://www.qq1234.org/uploads/allimg/140515/3_140515164252_%d.jpg' % i
+        # group.member_ids = [u"123", u"456"]
+        group.update(kwargs)
+
+        return group
+
+    @classmethod
+    def multiple_group_info(cls, num, type=GroupType.CUSTOM, **kwargs):
+        result = []
+
+        for i in range(num):
+            result.append(Dummy.one_group_info(i, type, **kwargs))
+        return result
+
+    @classmethod
+    def one_depart_info(cls, i, **kwargs):
+        d = Munch()
+        d.id = kwargs['id'] if 'id' in kwargs else None
+        d.name = kwargs['name'] if 'name' in kwargs else 'depart-%d' % i
+        d.full_name = kwargs[
+            'full_name'] if 'full_name' in kwargs else d.name + '-fn'
+        d.manager_id = kwargs['manager_id'] if 'manager_id' in kwargs else None
+        d.parent_id = kwargs['parent_id'] if 'parent_id' in kwargs else None
+        d.parent_org_id = kwargs[
+            'parent_org_id'] if 'parent_org_id' in kwargs else None
+        d.company_id = kwargs['company_id'] if 'company_id' in kwargs else None
+        d.with_group = kwargs['with_group'] if 'with_group' in kwargs else None
+        d.int_p1 = kwargs['int_p1'] if 'int_p1' in kwargs else 1
+        d.int_p2 = kwargs['int_p2'] if 'int_p2' in kwargs else 2
+        d.vchar_p3 = kwargs['vchar_p3'] if 'vchar_p3' in kwargs else "p3"
+        d.hidden = kwargs['hidden'] if 'hidden' in kwargs else None
+        d.order = kwargs['order'] if 'order' in kwargs else None
+        return d
+
+    @classmethod
+    def multiple_depart_info(cls, num, **kwargs):
+        result = []
+        for i in range(num):
+            result.append(Dummy.one_depart_info(i, **kwargs))
+        return result
+
+
+class RestResponse(Munch):
+    def __init__(self, data):
+        if isinstance(data, requests.Response):
+            self.status = data.status_code
+            if data.status_code == 200:
+                self.result = Munch.fromDict(json.loads(data.content))
+            else:
+                self.result = None
+        else:
+            raise RuntimeError
+
+
+def response_converter(response):
+    rsp = RestResponse(response)
+    return rsp
+
+
+class RestClient(object):
+    def __init__(self, name, base_url=None, check_url=True):
+
+        self._base_url = base_url if base_url is not None else LOCALHOST_BASE_URL
+
+        if self._base_url != LOCALHOST_BASE_URL and check_url and check_url:
+            print
+            'REMOTE URL: ' + self._base_url
+            ret = raw_input('Are you sure ? [Y/N]')
+            ret = ret.lower()
+            if ret == 'n' or ret == 'no':
+                exit(1)
+
+            sleep_d = 0 if self._base_url == LOCALHOST_BASE_URL else 3
+            print
+            ''
+            print
+            ''
+            print
+            '=' * 80
+            print
+            '=   package %s' % name
+            print
+            '=   REMOTE URL: %s' % self._base_url
+            print
+            '=   wait %d second ...' % sleep_d
+            print
+            '=' * 80
+
+        self._myself_uid = None
+        self._username = None
+        self._password = None
+        self._session = None
+
+    def gen_url(self, url):
+        # print self._base_url, url
+        ret = posixpath.join(self._base_url, 'api', url.lstrip('/'))
+        # print ret
+        return ret
+
+    def gen_admin_url(self, url):
+        # print self._base_url, url
+        ret = posixpath.join(self._base_url, 'admin-api', url.lstrip('/'))
+        # print ret
+        return ret
+
+    def _convert_data(self, data):
+        if data is None:
+            return None
+
+        if isinstance(data, Munch):
+            data = data.toDict()
+        data_str = json.dumps(data, ensure_ascii=False)
+        if isinstance(data_str, unicode):
+            data_str = data_str.encode('utf-8')
+
+        return data_str
+
+    def _clear_state(self):
+        self._myself_uid = None
+        self._username = None
+        self._password = None
+        self._session = None
+        self.cookies = None
+
+    def pretty_print(self, rsp):
+        print json.dumps(rsp, indent=2)
+
+    def print_response_code(self, rsp):
+        if rsp.status == 200:
+            print rsp.status, rsp.result.code
+        else:
+            print rsp.status, 'null'
+
+    def login(self, username, password, platform='python-test', isAdmin=True):
+        if isAdmin:
+            dst_url = self.gen_admin_url('/user/login')
+        else:
+            dst_url = self.gen_url('/user/login')
+        session = requests.session()
+        response = session.post(dst_url, json={
+            'username': username,
+            'password': password
+        })
+
+        if response.status_code != 200:
+            print
+            'login failure, status_code=%d' % response.status_code
+            print
+            response.content
+            raise RuntimeError('login failure')
+
+        ret = json.loads(response.text)
+
+        if ret['code'] != 10000:
+            tip = ret['msg'] if 'msg' in ret else 'none'
+            err_msg = 'login failure, code=%d, msg=%s' % (ret['code'], tip)
+            print
+            err_msg
+            raise RuntimeError(err_msg)
+
+        self._username = username
+        self._password = password
+        self._session = session
+        self._myself_uid = ret['result']['staff']['id']
+        self.cookies=response.cookies.get_dict()
+
+        result = Munch()
+        result.id = ret['result']['staff']['id']
+        result.name = ret['result']['staff']['name']
+        # result.email = ret['result']['staff']['email']
+        result.token = ret['result']['token']
+        if 'code' in ret['result']['staff']:
+            result.appcode = ret['result']['staff']['code']
+
+        return result
+
+    def logout(self, isAdmin=True):
+        if isAdmin:
+            dst_url = self.gen_admin_url('/user/logout')
+        else:
+            dst_url = self.gen_url('/user/logout')
+
+        if self._session is None:
+            self._clear_state()
+            return
+
+        response = self._session.post(dst_url)
+        if response.status_code != 200:
+            self._clear_state()
+            print
+            'logout failure, status_code=%d' % response.status_code
+            print
+            response.content
+            return
+
+        self._clear_state()
+
+        pass
+
+    def get(self, url, isAdmin=True):
+        if isAdmin:
+            dst_url = self.gen_admin_url(url)
+        else:
+            dst_url = self.gen_url(url)
+
+        if self._session:
+            return response_converter(self._session.get(dst_url))
+        else:
+            return response_converter(requests.get(dst_url))
+
+    def post(self, url, data, isAdmin=True):
+        headers = {
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+
+        if isAdmin:
+            dst_url = self.gen_admin_url(url)
+        else:
+            dst_url = self.gen_url(url)
+
+        data_str = self._convert_data(data)
+
+        if self._session:
+            return response_converter(
+                self._session.post(dst_url, data=data_str, headers=headers))
+        else:
+            return response_converter(
+                requests.post(dst_url, data=data_str, headers=headers))
+
+    def postform(self, url, data, isAdmin=True):
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        if isAdmin:
+            dst_url = self.gen_admin_url(url)
+        else:
+            dst_url = self.gen_url(url)
+        return response_converter(
+            requests.post(dst_url, data=data, headers=headers))
+
+    def delete(self, url, data, isAdmin=True):
+        headers = {
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+
+        if isAdmin:
+            dst_url = self.gen_admin_url(url)
+        else:
+            dst_url = self.gen_url(url)
+
+        data_str = self._convert_data(data)
+
+        if self._session:
+            return response_converter(
+                self._session.delete(dst_url, data=data_str, headers=headers))
+        else:
+            return response_converter(
+                requests.delete(dst_url, data=data_str, headers=headers))
+
+    def put(self, url, data, isAdmin=True):
+        if isAdmin:
+            dst_url = self.gen_admin_url(url)
+        else:
+            dst_url = self.gen_url(url)
+
+        headers = {
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+
+        data_str = self._convert_data(data)
+
+        if self._session:
+            return response_converter(
+                self._session.put(dst_url, data=data_str, headers=headers))
+        else:
+            return response_converter(
+                requests.put(dst_url, data=data_str, headers=headers))

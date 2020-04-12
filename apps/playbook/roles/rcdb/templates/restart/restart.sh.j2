@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+pid=`cat  {{ rcdb_dbpath }}/{{ inst_name }}.pid`
+num=`ps -ef | grep "{{ inst_name }}/rcdb.conf" | grep -v grep | awk '{print $2}'`
+
+if [[ ${pid} == ${num} ]];then
+  {{ rcdb_path }}/rcdb-server {{ rcdb_path }}/rcdb.conf -s restart > {{ rcdb_path }}/var/{{ inst_name }}.log
+else
+   rm -rf {{ rcdb_dbpath }}/{{ inst_name }}.pid
+  {{ rcdb_path }}/rcdb-server {{ rcdb_path }}/rcdb.conf -s restart > {{ rcdb_path }}/var/{{ inst_name }}.log
+fi

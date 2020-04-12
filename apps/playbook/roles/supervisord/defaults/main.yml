@@ -1,0 +1,10 @@
+supervisord_user: "{{ global.rc_user }}"
+
+sock_file: "{{ global.run_path }}/supervisor.sock"
+log_file: "{{ global.log_path }}/supervisord.log"
+pid_file: "{{ global.run_path }}/supervisord.pid"
+
+rpc:
+  port: 8900
+  username: rcloud
+  password: rongcloud@2020

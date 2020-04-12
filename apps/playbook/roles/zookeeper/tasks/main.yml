@@ -1,0 +1,14 @@
+---
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+
+- name: Install OS Packages
+  yum: name={{ item }} state=present
+  with_items:
+    - libselinux-python
+  when: ansible_os_family == 'RedHat'
+  ignore_errors: yes
+
+- include: tarball.yml
+- include: common-config.yml

@@ -1,0 +1,6 @@
+---
+- name: Restart Rce
+  supervisorctl:
+    name: "{{ rce_name }}"
+    state: restarted
+    supervisorctl_path: "{{ supervisorctl }}"

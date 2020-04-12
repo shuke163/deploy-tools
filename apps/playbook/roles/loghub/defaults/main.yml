@@ -1,0 +1,35 @@
+---
+service_name: "loghub"
+inst_name: "loghub"
+
+#package_path: "{{ package_path }}/{{ service_name }}/{{ service_name }}.tar.gz"
+
+package_path_loghub: "{{ package_path }}/{{ service_name}}/{{ service_name }}.tar.gz"
+
+loghub_path: "{{ loghub_app_path }}"
+loghub_port: 8100
+
+rc_user: "{{ rc_user }}"
+rc_group: "{{ rc_group }}"
+
+loghub_app_path: "{{ app_path }}/{{ inst_name }}"
+loghub_data_path: "{{ data_path }}/{{ inst_name }}"
+loghub_logs_path: "{{ logs_path }}/{{ inst_name }}"
+loghub_conf_path: "{{ loghub_app_path }}/conf"
+
+logcollector_base_dir: "{{ loghub_data_path }}"
+logcollector_root_dir: "{{ logcollector_base_dir }}/file"
+logcollector_meta_dir: "{{ logcollector_root_dir }}/meta"
+logcollector_partition_dir: "{{ logcollector_root_dir }}/partitions"
+logcollector_origin_target_dir: "{{ logcollector_root_dir }}/origin"
+logcollector_compress_target_dir: "{{ logcollector_root_dir }}/tmp"
+
+# log4j2
+LOG_HOME: "{{ loghub_logs_path }}/logs"
+
+init_db: True
+
+db:
+  name: "comcloud_x"
+  appId: 1
+  attValue: "http://{{ private_ip }}:{{ loghub_port }}"

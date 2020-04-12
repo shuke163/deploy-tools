@@ -1,0 +1,6 @@
+---
+- name: restart openresty
+  supervisorctl:
+    name: "{{ openresty_name }}"
+    state: restarted
+    supervisorctl_path: "{{ global.supervisorctl }}"

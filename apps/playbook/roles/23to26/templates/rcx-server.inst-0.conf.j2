@@ -1,0 +1,12 @@
+[program:rcx-server.inst-0]
+directory=/data/app/rcx-server.inst-0
+command=/bin/bash ./start.sh
+user=root
+group=root
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+redirect_stderr=true
+environment=LD_LIBRARY_PATH="/usr/local/ssl/lib:/lib:/usr/lib:$LD_LIBRARY_PATH",JAVA_HOME=/data/app/jdk,LANG=en_US.UTF-8
+stdout_logfile=/data/supervisord/var/log/rcx-server.inst-0.log

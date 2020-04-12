@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ulimit -c unlimited
+
+if [ -z $JAVA_HOME ]; then
+    JAVA_BIN=java
+else
+    JAVA_BIN=$JAVA_HOME/bin/java
+fi
+
+if [ -z $JAVA_OPOTS ]; then
+    JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=. -Duser.timezone=UTC -Djava.security.egd=file:/dev/./urandom  -Denv.zookeeper.clusters={{ zkString }} -Denv.node.name=dc.agent.data-inst.2 -Denv.cluster.name=dc1  -Druntime.service.port=8499 -Druntime.service.host={{ ansible_default_ipv4.address }}  -Druntime.agent.type=data -Druntime.agent.data.port=8048 -Druntime.threadpool.model=apiThreadPool"
+else
+    JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=. -Duser.timezone=UTC -Djava.security.egd=file:/dev/./urandom -Denv.zookeeper.clusters={{ zkString }} -Denv.node.name=dc.agent.data-inst.2 -Denv.cluster.name=dc1  -Druntime.service.port=8499 -Druntime.service.host={{ ansible_default_ipv4.address }} -Druntime.agent.type=data -Druntime.agent.data.port=8048  -Druntime.threadpool.model=apiThreadPool"
+fi
+
+
+echo "$(date)"
+
+SCRIPT_PATH=$(dirname $0)
+echo "CURRENT_PATH: $SCRIPT_PATH"
+cd $SCRIPT_PATH
+
+CP=$(find libs -name "*.jar" -exec printf :{} ';')
+
+ARGS="$JAVA_OPTS -cp $(ls ./rcx.bootstrap*)$CP:./configs rcx.bootstrap.Bootstrap"
+
+echo "Command: $JAVA_BIN $ARGS"
+
+exec $JAVA_BIN $ARGS
+

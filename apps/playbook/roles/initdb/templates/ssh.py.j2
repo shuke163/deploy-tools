@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+# encoding: utf-8
+from SecureHTTP import generate_rsa_keys
+
+paths = '{{ tmp_path }}/database/conf/prod.conf'
+(pubkey, privkey) = generate_rsa_keys(incall=True, length=1024)
+
+a = pubkey.split("\n")
+a.remove(a[0])
+a.remove(a[-1])
+aa = ''
+for i in a:
+    aa += i
+
+s = privkey.split("\n")
+s.remove(s[0])
+s.remove(s[-1])
+sss = ''
+for n in s:
+    sss += n
+
+
+value = []
+with open(paths, 'r') as f2:
+    for n in f2:
+        if str(n).strip() == "flyway.placeholders.security.password_public_key_rsa":
+            value.append(n.strip() + " = '" + aa + "'")
+        elif str(n).strip() == "flyway.placeholders.security.password_private_key_rsa":
+            value.append(n.strip() + " = '" + sss + "'")
+        else:
+            value.append(n.replace("\n", ''))
+
+
+with open(paths, 'w') as f4:
+    for i in value:
+        f4.write(i + "\n")

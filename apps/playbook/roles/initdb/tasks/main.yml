@@ -1,0 +1,31 @@
+- name: Ensure tmp path
+  file: path="{{ item }}" state=directory owner={{ rc_user }} group={{ rc_group}} mode=0755
+  with_items:
+    - "{{ global.tmp_path }}"
+
+- name: Copy migrate package
+  unarchive: src="{{ migrate_package }}" dest="{{ global.tmp_path }}" owner={{ rc_user }} group={{ rc_group}} mode=0755
+
+- name: Ensure migrate is configured.
+  template: src=prod.conf.j2 dest="{{ global.tmp_path }}/database/conf/prod.conf" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  when: db_type == 'mysql'
+
+- name: Ensure migrate is configured of kingbase
+  template: src=cn-prod.conf.j2 dest="{{ global.tmp_path }}/database/conf/prod.conf" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  when: db_type == 'kingbase'
+
+- name: config ssh.py
+  template: src=ssh.py.j2 dest="{{ global.tmp_path }}/database/conf/ssh.py" owner={{ rc_user }} group={{ rc_group}} mode=0644
+
+- name: python ssh.py
+  shell: /opt/python2/bin/python {{ global.tmp_path }}/database/conf/ssh.py
+
+- name: Execute migration
+  shell: cd {{ global.tmp_path }}/database && bash -x migrate.sh -cprod
+  environment:
+    PATH: "{{ global.app_path }}/jdk/java/bin:/bin:/usr/bin:/sbin"
+
+- name: Import sql file
+  shell: "mysql -h {{ mysql_host }} -u {{ mysql_user }} -p{{ mysql_password }} {{ erpdb }} < {{ package_path }}/rce/cc_userapplyfortable.sql"
+  ignore_errors: yes
+

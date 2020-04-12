@@ -1,0 +1,64 @@
+- debug: msg="{{ current_time }}"
+
+- name: create {{ nginx_dir }} directory if it doesn't exist
+  file:
+    path: "{{ nginx_dir }}"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+
+- name: unzip {{ rcx_pkg_name }}
+  unarchive:
+    src: "{{ rcx_pkg_path }}/{{ rcx_pkg_name }}"
+    dest: "{{ app_dir }}/{{ rcx_server_app_name }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+
+# - name: copy rcx's config file and supervisor config file
+#   copy:
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+#     owner: "{{ user }}"
+#     group: "{{ group }}"
+#     remote_src: yes
+#     force: yes
+#   with_items:
+#     - { src: "{{ backup_dir }}/{{ rcx_server_app_name }}/configs", dest: "{{ app_dir }}/{{ rcx_server_app_name }}/" }
+#     - { src: "{{ backup_dir }}/{{ rcx_server_app_name }}/{{ rcx_server_app_name }}.conf", dest: "{{ supervisor_conf_dir }}/{{ rcx_server_app_name }}.conf" }
+
+- name: unzip {{ rcx_mgn_pkg_name }}
+  unarchive:
+    src: "{{ rcx_pkg_path }}/{{ rcx_mgn_pkg_name }}"
+    dest: "{{ app_dir }}/www"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+
+- name: the render template of rcx management's config file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    # backup: yes
+  with_items:
+    - { src: "settings.js.j2", dest: "{{ app_dir }}/www/management/setting.js" }
+    - { src: "mgt.conf.j2", dest: "{{ nginx_dir }}/{{ rcx_management_app_name }}.conf" }
+  notify:
+    - systemctl reload nginx.service
+
+- name: the render template of rcx start.sh script
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+    # backup: yes
+  with_items:
+    - { src: "start.sh.j2", dest: "{{ app_dir }}/{{ rcx_server_app_name }}/start.sh" }
+    - { src: "{{ rcx_server_app_name }}.conf.j2", dest: "{{ supervisor_conf_dir }}/{{ rcx_server_app_name }}.conf" }  
+  notify:
+    - supervisorctl rcx23 restart

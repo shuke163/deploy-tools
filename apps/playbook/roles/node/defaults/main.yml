@@ -1,0 +1,6 @@
+---
+# defaults file for node
+package_path: "../packages"
+
+version: "v10.16.3"
+offline: True

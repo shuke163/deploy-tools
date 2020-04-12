@@ -1,0 +1,10 @@
+---
+- name: restart nginx
+  supervisorctl:
+    name: "{{ nginx_name }}"
+    state: restarted
+    supervisorctl_path: "{{ global.supervisorctl }}"
+
+- name: validate nginx configuration
+  command: "{{ nginx_path }}/bin/nginx -t -c {{ nginx_path }}/conf/nginx.conf"
+  changed_when: False

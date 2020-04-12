@@ -1,0 +1,1 @@
+jdk_package: "{{ global.package_path }}/jdk.tar.gz"

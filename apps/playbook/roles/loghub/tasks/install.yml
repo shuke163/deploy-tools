@@ -1,0 +1,80 @@
+---
+- name: Ensure {{ service_name }} work dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ loghub_app_path }}"
+    - "{{ loghub_data_path }}"
+    - "{{ loghub_logs_path }}"
+    - "{{ loghub_conf_path }}"
+
+- name: unzip {{ service_name }}.tar.gz
+  unarchive:
+    src: "{{ package_path_loghub }}"
+    dest: "{{ loghub_path }}/"
+    owner: "{{ rc_user }}"
+    group: "{{ rc_user }}"
+    mode: 0755
+
+- name: copy {{ service_name }} start.sh
+  template:
+    src: "start.sh.j2"
+    dest: "{{ loghub_app_path }}/start.sh"
+    owner: "{{ rc_user }}"
+    group: "{{ rc_group }}"
+    mode: 0645
+
+- name: Add {{ service_name }} config file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ rc_user }}"
+    group: "{{ rc_group }}"
+    mode: 0644
+    backup: yes
+  with_items:
+    - { src: "log4j2.xml.j2", dest: "{{ loghub_conf_path }}/log4j2.xml" }
+    - { src: "logcollector.properties.j2", dest: "{{ loghub_conf_path }}/logcollector.properties" }
+
+- name: Ensure path User
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ rc_user }}"
+    group: "{{ rc_group }}"
+    mode: 0755
+    # recurse: yes
+  with_items:
+    - "{{ loghub_app_path }}"
+    - "{{ loghub_data_path }}"
+    - "{{ loghub_logs_path }}"
+    - "{{ loghub_conf_path }}"
+
+- name: Add {{ service_name }} server configured.
+  template:
+    src: "{{ service_name }}.server.j2"
+    dest: "{{ conf_path }}/{{ inst_name }}.conf"
+    owner: "{{ rc_user }}"
+    group: "{{ rc_user }}"
+    mode: 0644
+  notify: Restart loghub
+
+- name: Ensure {{ service_name }} service is present
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: present
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: Ensure {{ service_name }} is stopped
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: stopped
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: Ensure {{ service_name }} is running
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: started
+    supervisorctl_path: "{{ supervisorctl }}"

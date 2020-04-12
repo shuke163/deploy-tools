@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <host>:{{ api_http_port }}</host>
+  <plugins>
+
+    <plugin>
+      <name>rcx.api.group</name>
+      <path>plugins/rcx.api.group.jar</path>
+      <main>rcx.api.group.Bootstrap</main>
+    </plugin>
+
+    <plugin>
+      <name>rcx.api.message</name>
+      <path>plugins/rcx.api.message.jar</path>
+      <main>rcx.api.message.Bootstrap</main>
+    </plugin>
+
+    <plugin>
+      <name>rcx.api.userinfo</name>
+      <path>plugins/rcx.api.userinfo.jar</path>
+      <main>rcx.api.userinfo.Bootstrap</main>
+    </plugin>
+
+    <plugin>
+      <name>rcx.api.mediacenter</name>
+      <path>plugins/rcx.api.mediacenter.jar</path>
+      <main>rcx.api.mediacenter.Bootstrap</main>
+    </plugin>
+    <plugin>
+            <name>rcx.api.chatroom</name>
+            <path>plugins/rcx.api.chatroom.jar</path>
+            <main>rcx.api.chatroom.Bootstrap</main>
+        </plugin>
+        <plugin>
+            <name>rcx.api.rcpush</name>
+            <path>plugins/rcx.api.rcpush.jar</path>
+            <main>rcx.api.rcpush.Bootstrap</main>
+        </plugin>
+
+  </plugins>
+</config>

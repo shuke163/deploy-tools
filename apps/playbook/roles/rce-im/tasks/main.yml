@@ -1,0 +1,13 @@
+- name: Ensure web im dirs
+  file: path="{{ item }}" state=directory owner="{{ rc_user }}" group="{{ rc_group }}" mode=0755
+  with_items: 
+    - "{{ im_dest }}"
+
+- name: Copy im files
+  unarchive: src="{{ im_local_repo }}" dest="{{ im_dest }}/" owner="{{ rc_user }}" group="{{ rc_user }}" mode=0755
+
+- name: Add im config
+  template: src=im_setting.js.j2 dest="{{ im_dest }}/setting.js" owner="{{ rc_user }}" group="{{ rc_user }}" mode=0644
+
+- name: change im owner
+  file: path="{{ im_dest }}" owner="{{ nginx_user }}" group="{{ nginx_group }}" recurse=yes

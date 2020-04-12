@@ -1,0 +1,10 @@
+redis.host={{ redis_host }}
+redis.port={{ redis_port }}
+{% if redis_pass %}
+redis.pass={{ redis_pass }}
+{% else %}
+redis.pass=wdca@e44ew5
+{% endif %}
+redis.maxIdle=10
+redis.maxTotal=10
+redis.testOnBorrow=true

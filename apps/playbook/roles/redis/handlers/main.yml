@@ -1,0 +1,6 @@
+---
+- name: restart redis
+  supervisorctl:
+    name: "{{ redis_name }}"
+    state: restarted
+    supervisorctl_path: "{{ global.supervisorctl }}"

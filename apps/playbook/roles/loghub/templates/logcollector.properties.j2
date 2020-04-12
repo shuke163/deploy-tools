@@ -1,0 +1,42 @@
+# {{ ansible_managed }}
+
+###  dir path
+logcollector.root.dir = {{ logcollector_root_dir }}
+logcollector.meta.dir = {{ logcollector_meta_dir }}
+logcollector.partition.dir = {{ logcollector_partition_dir }}
+logcollector.origin.target.dir = {{ logcollector_origin_target_dir }}
+logcollector.compress.target.dir = {{ logcollector_compress_target_dir }}
+
+## partition
+#2G
+logcollector.partition.filesize = 2147483648
+#50M
+#logcollector.partition.filesize = 104908800
+
+logcollector.partition.core = 10
+logcollector.partition.max = 20
+
+# 缓冲区大小，增加并发写入，也就是request tps,不要过大，过大积压，导致写入origin锁
+logcollector.partition.memcache = 1024
+
+# 5m进行一次分拣
+logcollector.partition.fileoffset = 1024
+# 一分钟进行一次文件分拣
+logcollector.partition.duration = 2000
+
+## dispatcher
+logcollector.dispatcher.period = 1000
+
+## target
+logcollector.target.thread.core = 12
+logcollector.target.thread.max = 20
+logcollector.target.thread.queue = 100
+# 单位 s
+logcollector.target.thread.waittime = 50
+
+## compress
+logcollector.compress.period = 300000
+
+
+
+

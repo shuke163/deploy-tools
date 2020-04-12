@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- IM服务类型，0内嵌于RCX，直接使用RCX的IM服务，下面IMConfig全部忽略；1独立部署，需要使用指定的IM服务，可以同时指定多个IM服务 -->
+	<IMType>1</IMType>
+	<Robot>moments_system_id</Robot>
+	<!-- IM服务配置 -->
+	<ImConfig>
+		<AppKey>{{ im_appkey }}</AppKey>
+		<Secret>{{ im_secret }}</Secret>
+        <ImApi>http://{{ im_api }}</ImApi>
+	</ImConfig>
+
+	<!-- <ImConfig>
+		<AppKey>{{ im_appkey }}</AppKey>
+		<Secret>{{ im_secret }}</Secret>
+		<ImApi>{{ im_api }}</ImApi>
+	</ImConfig>
+    <ImConfig>
+		<AppKey>{{ im_appkey }}</AppKey>
+		<Secret>{{ im_secret }}</Secret>
+		<ImApi>{{ im_api }}</ImApi>
+	</ImConfig> -->
+
+	<!-- RCE服务配置 -->
+	<RCEConfig>
+		<AppKey>{{ im_appkey }}</AppKey>
+		<!-- moments_system_id固定值，不要修改 -->
+		<Api>http://{{ rce_server_api }}</Api>
+		<!-- RCE superadmin Id和Secret -->
+		<!-- 值来源于flyway.placeholders.superadmin.uid， flyway.placeholders.superadmin.secret -->
+		<SystemAssistant>fGpg5fuCsF2PWCD4uZ8Dzh</SystemAssistant>
+		<Secret>bLGTG21yiRTMN</Secret>
+	</RCEConfig>
+
+	<!-- <RCEConfig>
+		<AppKey>{{ im_appkey }}</AppKey>
+        <Api>{{ rce_server_api }}</Api>
+		<SystemAssistant>fGpg5fuCsF2PWCD4uZ8Dzh</SystemAssistant>
+		<Secret>bLGTG21yiRTMN</Secret>
+	</RCEConfig>
+    	<RCEConfig>
+		<AppKey>{{ im_appkey }}</AppKey>
+        <Api>{{ rce_server_api }}</Api>
+		<SystemAssistant>fGpg5fuCsF2PWCD4uZ8Dzh</SystemAssistant>
+		<Secret>bLGTG21yiRTMN</Secret>
+	</RCEConfig> -->
+
+</config>

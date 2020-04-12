@@ -1,0 +1,4 @@
+miniconda3_package: "{{ global.package_path }}/miniconda3.tar.gz"
+python2_package: "{{ global.package_path }}/python2.tar.gz"
+
+python_pkg: ["miniconda3.tar.gz", "python2.tar.gz"]

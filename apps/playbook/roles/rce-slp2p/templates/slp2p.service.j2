@@ -1,0 +1,13 @@
+[program:{{ inst_name }}]
+directory={{ slp2p_path }}
+command={{ slp2p_path }}/slp2p -c {{ slp2p_path }}/ois.ini -e
+user={{ slp2p_user }}
+group={{ slp2p_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile={{ log_path }}/{{ inst_name }}.log

@@ -1,0 +1,23 @@
+---
+- name: Ensure Rcdb is stopped
+  supervisorctl:
+    name: "{{ name }}"
+    state: stopped
+    supervisorctl_path: "{{ global.supervisorctl }}"
+
+- name: Ensure Rcdb is absent
+  supervisorctl:
+    name: "{{ name }}"
+    state: absent
+    supervisorctl_path: "{{ global.supervisorctl }}"
+
+- name: Remove the app path
+  file:
+    path: "{{ rcdb_path }}"
+    state: absent
+
+- name: Remove startup config
+  file:
+    path: "{{ global.conf_path }}/{{ name }}.conf"
+    state: absent
+

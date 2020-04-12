@@ -1,0 +1,9 @@
+---
+  - hosts: all
+    vars:
+        install_zk: True
+        date: "{{ lookup('pipe','date +%Y-%m-%d') }}"
+        current_time: "{{ lookup('pipe','date +%Y-%m-%d-%X') }}"
+    roles:
+      - { role: zookeeper,when: install_zk }
+      - { role: 23to26,tags: backup, upgrade_db, upgrade_rcx }

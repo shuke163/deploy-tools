@@ -1,0 +1,9 @@
+---
+rce_server_api: 'http://127.0.0.1:80/api'
+erp_package: "{{ package_path }}/rce/work.tar.gz"
+erp_path: "{{ app_path }}/www/work"
+
+rc_user: "rcloud"
+rc_group: "rcloud"
+nginx_user: "{{ rc_user }}"
+nginx_group: "{{ rc_group }}"

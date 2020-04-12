@@ -1,0 +1,5 @@
+---
+
+- name: Create databases
+  shell: "{{ mysql_path }}/bin/mysql -Ne \"use {{ item.name }}\" &> /dev/null || {{ mysql_path }}/bin/mysql -Ne \"CREATE DATABASE {{ item.name }} CHARACTER SET {{ item.encoding | default('utf8') }} COLLATE {{ item.collation | default('utf8_general_ci') }}\""
+  with_items: "{{ mysql_databases }}"

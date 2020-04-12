@@ -1,0 +1,8 @@
+---
+- name: handler kernel parameter
+  import_tasks: kernel.yml
+  tags: kernel
+
+- name: install {{ inst_name }}
+  import_tasks: install.yml
+  tags: install

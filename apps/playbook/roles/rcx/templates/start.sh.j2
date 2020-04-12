@@ -1,0 +1,34 @@
+#!/bin/bash
+
+ulimit -c unlimited
+
+if [ -z $JAVA_HOME ]; then
+    JAVA_BIN=java
+else
+    JAVA_BIN=$JAVA_HOME/bin/java
+fi
+
+{% set zookeeper_list = [] %}
+{% for host in groups['zookeeper']  %}
+{{ zookeeper_list.append( hostvars[host]['private_ip']+":"+zookeeper_port | string ) }}
+{% endfor %}
+
+if [ -z $JAVA_OPOTS ]; then
+    JAVA_OPTS="-XX:+HeapDumpOnOutOfMemoryError -XX:ErrorFile=. -XX:HeapDumpPath=. -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC -Xloggc:{{ logsDir }}/gc.log -Duser.timezone=UTC -Duser.timezone=UTC -Denv.zookeeper.clusters={{ zk_list | product(['2181']) | map('join', ':') | join(',') }} -Denv.node.name={{ private_ip }} -Denv.cluster.name=prod -Druntime.rmtp.port={{ rmtp_public_port }} -Druntime.websocket.port={{ rmtp_ws_public_port }} -Druntime.service.port=8899 -Druntime.service.host={{ ansible_host }} -Druntime.androidpush.port={{ apush_public_port }} -Druntime.threadpool.model=apiThreadPool -Denv.dbcluster.name=prod"
+else
+    JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:ErrorFile=. -XX:HeapDumpPath=. -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC -Xloggc:{{ logsDir }}/gc.log -Duser.timezone=UTC -Duser.timezone=UTC -Denv.zookeeper.clusters={{ zookeeper_list | join(',') }} -Denv.node.name={{ private_ip }} -Denv.cluster.name=prod -Druntime.rmtp.port={{ rmtp_public_port }} -Druntime.websocket.port={{ rmtp_ws_public_port }} -Druntime.service.port=8899 -Druntime.service.host={{ ansible_host }} -Druntime.androidpush.port={{ apush_public_port }} -Denv.dbcluster.name=prod -Druntime.threadpool.model=apiThreadPool"
+fi
+
+echo "$(date)"
+
+SCRIPT_PATH=$(dirname $0)
+echo "CURRENT_PATH: $SCRIPT_PATH"
+cd $SCRIPT_PATH
+
+CP=$(find libs -name "*.jar" -exec printf :{} ';')
+
+ARGS="$JAVA_OPTS -cp $(ls ./rcx.bootstrap*)$CP:./configs rcx.bootstrap.Bootstrap"
+
+echo "Command: $JAVA_BIN $ARGS"
+
+exec $JAVA_BIN $ARGS

@@ -1,0 +1,11 @@
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+
+- name: Install openssl
+  unarchive:
+    src: "{{ ssl_package }}"
+    dest: "/usr/local"
+  when: ansible_os_family == 'RedHat'
+  ignore_errors: yes
+  

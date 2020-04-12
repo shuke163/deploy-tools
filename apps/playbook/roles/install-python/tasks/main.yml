@@ -1,0 +1,28 @@
+- name: Check python2 If Already Installed
+  stat:
+    path: "{{ python_path }}"
+  register: __python2_exists
+
+- name: Install python2 runtime
+  unarchive:
+    src: "{{ python2_package }}"
+    dest: "/opt"
+    owner: "{{ global.rc_user }}"
+    group: "{{ global.rc_group }}"
+    mode: 0755
+  when: not __python2_exists.stat.exists
+  ignore_errors: yes
+
+- name: Add env config
+  template:
+    src: env.j2
+    dest: /etc/profile.d/rc-python.sh
+    owner: "{{ global.rc_group }}"
+    group: "{{ global.rc_group }}"
+    mode: 0755
+
+- name: Source the bashrc file
+  shell: . /etc/profile.d/rc-python.sh
+
+- name: chown "{{ python_path }}" ownership 
+  file: path="{{ python_path }}" state=directory owner="{{ global.rc_user }}" group="{{ global.rc_group }}" mode=0755

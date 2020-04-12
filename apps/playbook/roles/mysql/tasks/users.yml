@@ -1,0 +1,71 @@
+---
+#- name: Ensure MySQL users are present.
+#  mysql_user:
+#    name: "{{ item.name }}"´
+#    host: "{{ item.host | default('localhost') }}"
+#    password: "{{ item.password }}"
+#    priv: "{{ item.priv | default('*.*:USAGE') }}"
+#    state: "{{ item.state | default('present') }}"
+#    append_privs: "{{ item.append_privs | default('no') }}"
+#    encrypted: "{{ item.encrypted | default('no') }}"
+#  with_items: "{{ mysql_users }}"
+#  no_log: true
+
+#- name: Ensure MySQL users are present.
+#  shell: |
+#    {{ mysql_path }}/bin/mysql  -Ne "SHOW GRANTS FOR '{{ item.name }}'@'{{ item.host | default('localhost') }}'" &> /dev/null || {{ mysql_path }}/bin/mysql  -Ne "CREATE USER '{{ item.name }}'@'{{ item.host | default('localhost') }}' IDENTIFIED BY '{{ item.password }}'"
+#    {{ mysql_path }}/bin/mysql  -Ne "GRANT {{ item.priv | default('all') }} on {{ item.table | default('*.*') }} to '{{ item.name }}'@'{{ item.host | default('localhost') }}' WITH GRANT OPTION"
+#  with_items: "{{ mysql_users }}"
+#  no_log: true
+
+#- name: Create user {{ rcx.db_user }} for MySQL
+#  mysql_user:
+#    name: "{{ rcx.db_user }}"
+#    password: "{{ rcx.db_password }}"
+#    login_unix_socket: /opt/mysql/mysql.sock
+#    priv: '{{ imdb }}.*:ALL,GRANT'
+#    state: present
+#  when: mysql_replication_role == 'master'
+
+#- name: Create user {{ mysql_user_name }} for MySQL
+#  mysql_user:
+#    name: "{{ mysql_user_name }}"
+#    password: "{{ mysql_password }}"
+#    login_unix_socket: /opt/mysql/mysql.sock
+#    priv: '*.*:ALL,GRANT'
+#    state: present
+#  when: mysql_replication_role == 'master'
+
+#- name: Create user {{ mysql_replication_user.name }} for MySQL
+#  mysql_user:
+#    name: "{{ mysql_replication_user.name }}"
+#    password: "{{ mysql_replication_user.password }}"
+#    host: "{{ hostvars[groups['mysql'][0]]['ansible_host'] }}"
+#    login_unix_socket: /opt/mysql/mysql.sock
+#    priv: '*.*:REPLICATION CLIENT,REPLICATION SLAVE'
+#    state: present
+#  when: mysql_replication_role == 'master'
+
+#- name: Ensure MySQL replication are present.
+#  shell: |
+#    {{ mysql_path }}/bin/mysql  -Ne "SHOW GRANTS FOR '{{ item.name }}''@'{{ item.host | default('localhost') }}'" &> /dev/null || {{ mysql_path }}/bin/mysql  -Ne "CREATE USER 'im'@'%' IDENTIFIED BY '1qazCDE#'"
+#    {{ mysql_path }}/bin/mysql  -Ne "GRANT {{ item.priv | default('all') }} on {{ item.table | default('*.*') }} to '{{ item.name }}'@'{{ item.host | default('localhost') }}' WITH GRANT OPTION"
+#  with_items: "{{ mysql_replication_user }}"
+#  when: mysql_replication_role == 'master'
+#  # no_log: true
+
+- name: Ensure MySQL im user are present.
+  shell: |
+    {{ mysql_path }}/bin/mysql  -Ne "SHOW GRANTS FOR 'im'@'%'" &> /dev/null || {{ mysql_path }}/bin/mysql  -Ne "CREATE USER 'im'@'%' IDENTIFIED BY '1qazCDE#'"
+    {{ mysql_path }}/bin/mysql  -Ne "GRANT ALL on *.* to 'im'@'%' WITH GRANT OPTION"
+  with_items: "{{ rcx_users }}"
+  when: mysql_replication_role == 'master'
+  no_log: true
+
+- name: Ensure MySQL root users are present.
+  shell: |
+    {{ mysql_path }}/bin/mysql  -Ne "SHOW GRANTS FOR 'root'@'localhost'" &> /dev/null || {{ mysql_path }}/bin/mysql  -Ne "CREATE USER 'root'@'localhost' IDENTIFIED BY '1qazXSW@'"
+    {{ mysql_path }}/bin/mysql  -Ne "GRANT ALL on *.* to 'root'@'localhost' WITH GRANT OPTION"
+  with_items: "{{ mysql_users }}"
+  when: mysql_replication_role == 'master'
+  no_log: true

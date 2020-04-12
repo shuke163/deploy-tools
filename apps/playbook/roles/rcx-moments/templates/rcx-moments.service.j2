@@ -1,0 +1,14 @@
+[program:{{ moments_name }}]
+directory = {{ moments_path }}
+command = {{ java_home }}/bin/java -Duser.timezone=UTC -cp ./rcx.bootstrap-2.1.0-SNAPSHOT.jar:./libs/*:./configs rcx.bootstrap.Bootstrap
+user={{ rc_user }}
+group={{ rc_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopasgroup=true
+killasgroup=true
+environment=LD_LIBRARY_PATH="/usr/local/ssl/lib:/lib:/usr/lib:$LD_LIBRARY_PATH",JAVA_HOME={{ java_home }},LANG=en_US.UTF-8
+stdout_logfile={{ log_path }}/{{ moments_name }}.log

@@ -1,0 +1,6 @@
+---
+- include: install.yml
+  when: __op__ == 'install'
+
+- include: destroy.yml
+  when: __op__ == 'destroy'

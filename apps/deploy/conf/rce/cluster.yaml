@@ -1,0 +1,62 @@
+hosts:
+  rce_node1:
+    ansible_host: ''
+    mysql_server_id: "1"
+    mysql_replication_role: "master"
+  rce_node2:
+    ansible_host: ''
+    mysql_server_id: "2"
+    mysql_replication_role: "slave"
+  rce_node3:
+    ansible_host: ''
+groups:
+  mysql:
+    - rce_node1
+    - rce_node2
+  rce-rcdb:
+    - rce_node3
+  elasticsearch:
+    - rce_node1
+    - rce_node2
+    - rce_node3
+  redis:
+    - rce_node1
+  rce-server:
+    - rce_node1
+    - rce_node2
+    - rce_node3
+  rce-nginx:
+    - rce_node1
+    - rce_node2
+    - rce_node3
+#  erp-server:
+#    - rce_node1
+  rcx-moments:
+    - rce_node3
+  rce-slp2p:
+    - rce_node1
+vars:
+  global:
+    base_path: '/data'
+    tomcat_port: 8080
+    nginx_port: 80
+  mysql:
+    mysql_host: "{{ hostvars[groups['mysql'][0]]['ansible_host'] }}"
+    mysql_replication_master: '{{ mysql_host }}'
+  rce-rcdb:
+    rcdb_nums: 2
+  elasticsearch:
+    elasticsearch_jvm: "1g"
+#  erp-server:
+#    erp_port: 8889
+  rcx-moments:
+    moments_port: 8000
+  rce-slp2p:
+    udp_port: 4118
+    tcp_secret_port: 3443
+    tcp_nonsecret_port: 0
+    tcp_port_monitor: 8123
+    udp_forward: 1
+    udp_forward_speed: 0
+    tcp_secret_keepalive: 3600
+    tcp_nonsecret_keepalive: 3600

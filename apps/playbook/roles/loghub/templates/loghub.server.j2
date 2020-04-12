@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+
+[program:{{ inst_name }}]
+directory = {{ loghub_app_path }}
+command = /bin/bash {{ loghub_app_path }}/start.sh
+numprocs=1
+stopsignal=TERM
+startretries=0
+autostart=false
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile = {{ log_path }}/{{ inst_name }}.log

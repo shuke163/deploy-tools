@@ -1,0 +1,7 @@
+- name: Check If Already Installed
+  stat: path="{{ redis_path }}"
+  register: __redis_exists
+
+- name: uninstall {{ inst_name }} (delete file)
+  file: path={{ redis_path }} state=directory state=absent
+  when: __redis_exists.stat.exists

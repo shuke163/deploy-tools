@@ -1,0 +1,20 @@
+httpPort={{ httpPort }}
+
+# UDP 监听端口
+rtcPort={{ rtcPort }}
+
+
+# 跨数据中心级联使用的 HTTP 地址，用于交换 SDP
+clusterId=http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:{{ httpPort }}
+
+
+# 跨数据中新级联使用的 UDP 地址, 用于传输媒体流，内网IP
+localIP={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+
+
+# 同数据中心级联使用的 UDP 地址, 用于传输媒体流，内网IP
+serverId={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+
+
+# 客户端直接连接的 UDP 地址, 用于传输媒体流，外网IP
+externalIP={{ rtc_public_ip }}

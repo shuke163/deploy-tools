@@ -1,0 +1,9 @@
+<configs>
+	{% set istrue = 1 %}
+	{% for fsnode in fs %}
+	{% if fsnode['isHttpServer'] == 'true' and istrue == 1 %}
+	<fileStorageUrl>http://{{ fsnode['private_ip'] }}:{{ fsnode['port'] }}/getToken?namespace=message</fileStorageUrl>
+	{% set istrue = 0 %}
+	{% endif %}
+	{% endfor %}
+</configs>

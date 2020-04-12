@@ -1,0 +1,29 @@
+[unix_http_server]
+file={{ sock_file }}
+chmod=0700
+chown={{ global.rc_user }}:{{ global.rc_user }}
+
+[inet_http_server]
+port=0.0.0.0:{{ rpc.port }}
+username={{ rpc.username }}
+password={{ rpc.password }}
+
+[supervisord]
+logfile={{ log_file }}
+logfile_maxbytes=50MB
+logfile_backups=10
+loglevel=info
+pidfile={{ pid_file }}
+minfds=655535
+minprocs=200
+user={{ supervisord_user }}
+directory={{ global.run_path }}
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix://{{ sock_file }}
+
+[include]
+files = {{ global.conf_path }}/*.conf

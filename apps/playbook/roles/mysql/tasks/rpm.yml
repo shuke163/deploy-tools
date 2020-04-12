@@ -1,0 +1,7 @@
+- name: Copy {{ numactl_path }}  
+  copy: src="{{ numactl_path }}" dest=/tmp/
+
+- name: Ensure numactl installed
+  yum: name=/tmp/numactl-2.0.12-3.el7.x86_64.rpm
+  when: (ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux') and (ansible_distribution_major_version == '7')
+  ignore_errors: yes

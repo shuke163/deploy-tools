@@ -1,0 +1,69 @@
+---
+- name: Configure zookeeper-env.sh
+  template: src=zookeeper-env.sh.j2 dest={{ zk_path }}/conf/zookeeper-env.sh owner={{ zk_user }} group={{ zk_group }}
+  tags: deploy
+  notify:
+    - Restart zookeeper
+  when: zookeeper_env is defined and zookeeper_env|length > 0
+
+- name: Update the log4j config with saner production values
+  template: src=log4j.properties.j2 dest={{ zk_path }}/conf/log4j.properties
+  tags: deploy
+  notify:
+    - Restart zookeeper
+
+- name: Add zk service configured.
+  template:
+    src: zk.service.j2
+    dest: "{{ global.conf_path }}/{{ zookeeper_name }}.conf"
+    mode: 0644
+    owner: "{{ zk_user }}"
+    group: "{{ zk_group }}"
+  notify: Restart zookeeper
+
+- name: Ensure path User
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ zk_user }}"
+    group: "{{ zk_group }}"
+    mode: 0755
+  with_items: 
+    - "{{ zk_path }}"
+    - "{{ data_dir }}"
+    - "{{ log_dir }}"
+    - "{{ global.tmp_path }}"
+
+- name: Ensure zk service is present
+  supervisorctl:
+    name: "{{ zookeeper_name }}"
+    state: present
+    supervisorctl_path: "{{ global.supervisorctl }}"
+
+- name: Ensure zk is running
+  supervisorctl:
+    name: "{{ zookeeper_name }}"
+    state: started
+    supervisorctl_path: "{{ global.supervisorctl }}"
+
+#- name: Sleep for 3 seconds and continue with play
+#  wait_for: timeout=3
+#  delegate_to: localhost
+
+- name: Create cmp external info
+  znode:
+    hosts: '{{ private_ip }}:{{ zookeeper_port }}'
+    name: "/rcx/prod/externalrmtps/{{ private_ip }}"
+    value: ' {"publicIps":[{"rmtpPort":"{{ rcx.CMP_LISTEN_PORT }}","ip":"{{ private_ip }}","order":1,"wsPort":"{{ rcx.WS_LISTEN_PORT }}","wssPort":"{{ rcx.WS_LISTEN_PORT }}"}]}'
+    state: present
+  with_items: "{{ groups['zookeeper'] }}"
+  ignore_errors: yes
+
+- name: Create apush external info
+  znode:
+    hosts: '{{ private_ip }}:{{ zookeeper_port }}'
+    name: "/rcx/prod/externalandroidpushs/{{ private_ip }}"
+    value: ' {"publicIps":[{"ip":"{{ private_ip }}","order":1,"port":"{{ rcx.PUSH_LISTEN_PORT }}"}]}'
+    state: present
+  with_items: "{{ groups['zookeeper'] }}"
+  ignore_errors: yes

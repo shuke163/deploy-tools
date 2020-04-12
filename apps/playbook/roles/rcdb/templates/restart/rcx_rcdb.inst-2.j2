@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ -f "{{ global.data_path }}/{{ inst_name[2] }}/{{ inst_name[2] }}.pid" ]];then
+    pid=$(cat {{ global.data_path }}/{{ inst_name[2] }}/{{ inst_name[2] }}.pid)
+fi
+
+num=`ps -ef | grep "{{ global.app_path }}/{{ inst_name[2] }}/rcdb.conf" | grep -v grep | awk '{print $2}'`
+
+if [[ ${pid} == ${num} ]];then
+  {{ global.app_path }}/{{ inst_name[2] }}/rcdb-server {{ global.app_path }}/{{ inst_name[2] }}/rcdb.conf -s restart > {{ global.app_path }}/{{ inst_name[2] }}/var/{{ inst_name[2] }}.log
+else
+   rm -rf /{{ inst_name[2] }}.pid
+  {{ global.app_path }}/{{ inst_name[2] }}/rcdb-server {{ global.app_path }}/{{ inst_name[2] }}/rcdb.conf -s restart > {{ global.app_path }}/{{ inst_name[2] }}/var/{{ inst_name[2] }}.log
+fi

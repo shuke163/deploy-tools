@@ -1,0 +1,54 @@
+- debug: msg="{{ current_time }}"
+
+- name: supervisorctl rcx stopped
+  supervisorctl:
+    name: "{{ item }}"
+    state: stopped
+    config: "/etc/supervisord.conf"
+  with_items:
+    - "{{ rcx_server_app_name }}"
+    - "{{ rcx_management_app_name }}"
+
+- name: drop {{ mysql.db_name }} database
+  mysql_db:
+    login_host: "{{ mysql.db_host }}"
+    login_user: "{{ mysql.db_root }}"
+    login_password: "{{ mysql.db_pwd }}"
+    login_port: "{{ mysql.db_port }}"
+    name: "{{ mysql.db_name }}"
+    state: absent
+
+- name: create {{ mysql.db_name }} database
+  mysql_db:
+    login_host: "{{ mysql.db_host }}"
+    login_user: "{{ mysql.db_root }}"
+    login_password: "{{ mysql.db_pwd }}"
+    login_port: "{{ mysql.db_port }}"
+    name: "{{ mysql.db_name }}"
+    encoding: "{{ mysql.encoding }}"
+    state: present
+
+- name: rollback the tables from {{ mysql.db_name }} databases backup files
+  mysql_db:
+    state: import
+    name: "{{ mysql.db_name }}"
+    login_host: "{{ mysql.db_host }}"
+    login_user: "{{ mysql.db_root }}"
+    login_password: "{{ mysql.db_pwd }}"
+    login_port: "{{ mysql.db_port }}"
+    target: "{{ backup_dir }}/databases/{{ mysql.db_name }}.sql"
+
+- name: rollback rcx2.3 dir and config file
+  unarchive:
+    src: "{{ backup_dir }}/{{ item }}.{{ date }}.tar.gz"
+    dest: "{{ app_dir }}/"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+    keep_newer: yes
+    remote_src: yes
+  with_items:
+    - "{{ rcx_server_app_name }}"
+    - "{{ rcx_management_app_name }}"
+  notify:
+    - supervisorctl rcx23 restart

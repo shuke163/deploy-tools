@@ -1,0 +1,13 @@
+[program:{{ inst_name[3] }}]
+directory={{ global.app_path }}/{{ inst_name[3] }}
+command=/bin/bash {{ global.app_path }}/{{ inst_name[3] }}/restart.sh
+user={{ rcdb_user }}
+group={{ rcdb_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile = {{ global.log_path }}/{{ inst_name[3] }}.log

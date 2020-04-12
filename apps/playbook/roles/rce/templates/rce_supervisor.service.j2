@@ -1,0 +1,15 @@
+[program:{{ rce_name }}]
+directory={{ tomcat_instance_path }}
+command={{ tomcat_instance_path }}/bin/catalina.sh run
+process_name=%(program_name)s
+user={{ tomcat_user_name }}
+group={{ tomcat_user_group }}
+startsecs=5
+stopsignal=INT
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+environment=JAVA_HOME={{ java_home }},LANG=en_US.UTF-8
+stdout_logfile = {{ log_path }}/{{ rce_name }}.log

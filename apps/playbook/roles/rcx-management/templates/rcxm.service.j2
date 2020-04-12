@@ -1,0 +1,13 @@
+[program:{{ inst_name }}]
+directory = {{ rcxm_path }}
+command = /opt/python3/bin/gunicorn rcxapi:app -b 0.0.0.0:{{ rcxm_port }} -w 1 --log-level=DEBUG --access-logfile {{ rcxm_logpath }}/access.log --error-logfile {{ rcxm_logpath }}/error.log
+user={{ rc_user }}
+group={{ rc_group }}
+stopsignal=TERM
+startretries=0
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+stdout_logfile = {{ global.log_path }}/{{ inst_name }}.log

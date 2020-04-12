@@ -1,0 +1,18 @@
+- name: Copy comcloud_x sql files
+  template: src="{{ item }}" dest="{{ global.tmp_path}}" owner={{ global.rc_user }} group={{ global.rc_group}} mode=0644
+  with_items:
+    - "sql/comcloud_x_create_base_tables.sql"
+    - "sql/comcloud_x_init.sql"
+
+- name: Import IM DB
+  shell:
+    #"{{ mysql_path }}/bin/mysql -u{{ mysql_user }} -p{{ mysql_password }} -h {{ mysql_host }} -P {{ mysql_port }} < {{ item }}"
+    "{{ mysql_path }}/bin/mysql < {{ item }}"
+  with_items:
+    - "{{ global.tmp_path}}/comcloud_x_create_base_tables.sql"
+    - "{{ global.tmp_path}}/comcloud_x_init.sql"
+#  when: mysql_replication_role == "master"
+#  when: rcx_initdb_enabled == "1" and im_db_init_type == "shell"
+  ignore_errors: yes
+
+

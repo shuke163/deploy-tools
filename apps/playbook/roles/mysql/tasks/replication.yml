@@ -1,0 +1,63 @@
+---
+#- name: Ensure replication user exists on master.
+#  shell: |
+#    {{ mysql_path }}/bin/mysql   -Ne "SHOW GRANTS FOR '{{ mysql_replication_user.name }}'@'{{ mysql_replication_user.host | default('%') }}'" &> /dev/null || {{ mysql_path }}/bin/mysql   -Ne "CREATE USER '{{ mysql_replication_user.name }}'@'{{ mysql_replication_user.host | default('%') }}' IDENTIFIED BY '{{ mysql_replication_user.password }}'"
+#    {{ mysql_path }}/bin/mysql   -Ne "GRANT {{ mysql_replication_user.priv | default('REPLICATION SLAVE,REPLICATION CLIENT') }} on {{ mysql_replication_user.table | default('*.*') }} to '{{ mysql_replication_user.name }}'@'{{ mysql_replication_user.host | default('%') }}' WITH GRANT OPTION"
+#  when: >
+#    (mysql_replication_role == 'master')
+#    and mysql_replication_user
+#    and (mysql_replication_master != '')
+#  ignore_errors: True
+
+- name: Check slave replication status.
+  shell: | 
+    {{ mysql_path }}/bin/mysql   -Ne "show slave status \G"
+  ignore_errors: true
+  register: slave
+  when: >
+    mysql_replication_role == 'slave'
+    and (mysql_replication_master != '')
+
+- name: Check master replication status.
+  shell: |
+    {{ mysql_path }}/bin/mysql -h{{ mysql_replication_master }} -u{{ mysql_root_username }} -p{{ mysql_root_password }} -ANe "show master status" | awk '{print $1}'
+#  delegate_to: "{{ mysql_replication_master }}"
+#    status=$(mysql -ANe "SHOW MASTER STATUS")
+#    File=`echo ${status} | awk '{print $1}'`
+#    Position=`echo ${status} | awk '{print $2}'`
+#    echo "{File:${File}, Position:${Position}}"
+  register: master_binlog
+  when: >
+    (mysql_replication_role == 'slave')
+    and (mysql_replication_master != '')
+
+- name: Check master replication status.
+  shell: |
+    {{ mysql_path }}/bin/mysql -h{{ mysql_replication_master }} -u{{ mysql_root_username }} -p{{ mysql_root_password }} -ANe "show master status" | awk '{print $2}'
+  register: master_position
+  when: >
+    (mysql_replication_role == 'slave')
+    and (mysql_replication_master != '')
+
+- name: debug msg
+  debug: 
+    msg: "slave:{{ slave }}\n master_binlog: {{ master_binlog }} \n master_position: {{ master_position }}" 
+    verbosity: 1
+
+- name: Configure replication on the slave.
+  shell: |
+    {{ mysql_path }}/bin/mysqldump -h{{ mysql_replication_master }} --all-databases --master-data=2 > /tmp/repdump.sql
+    {{ mysql_path }}/bin/mysql   < /tmp/repdump.sql
+    {{ mysql_path }}/bin/mysql   -Ne "CHANGE MASTER TO MASTER_HOST='{{ mysql_replication_master }}',MASTER_PORT={{ mysql_port }},MASTER_USER='{{ mysql_replication_user.name }}',MASTER_PASSWORD='{{ mysql_replication_user.password }}',MASTER_LOG_FILE='{{ master_binlog.stdout }}',MASTER_LOG_POS={{ master_position.stdout }}"
+  ignore_errors: True
+  when: >
+    (mysql_replication_role == 'slave')
+    and (mysql_replication_master != '')
+    and mysql_replication_user
+
+- name: Start replication.
+  shell: |
+    {{ mysql_path }}/bin/mysql   -Ne "START SLAVE"
+  when: >
+    (mysql_replication_role == 'slave')
+    and (mysql_replication_master != '')

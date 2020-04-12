@@ -1,0 +1,42 @@
+---
+- name: Ensure Moments path
+  file: path: "{{ item }}" state=directory owner="{{ rc_user }}" group="{{ rc_group }}" mode=0755
+  with_items:
+    - "{{ app_path }}"
+    - "{{ moments_logpath }}"
+    - "{{ tmp_path }}"
+    - "{{ moments_path }}"
+    - "{{ moments_path }}/configs"
+
+- name: Copy license file
+  template: src=license.j2 dest="{{ moments_path }}/license" owner="{{ rc_user }}" group="{{ rc_group }}" mode=0644
+
+- name: Copy moments package
+  unarchive: src="{{ moments_package }}" dest="{{ moments_path }}" owner="{{ rc_user }}" group="{{ rc_group }}" mode=0755
+  #force: yes
+
+- name: Add rcx common config
+  template: src="{{ item }}.j2" dest="{{ moments_path}}/configs/{{ item }}" owner="{{ rc_user }}" group="{{ rc_group }}" mode=0644
+  with_items:
+    - config.xml
+    - db-config.xml
+    - http-config.xml
+    - log4j2.xml
+    - moments-config.xml
+    - rcx-moments.service
+    - service-config.xml
+
+- name: Add moments service configured.
+  template: src=rcx-moments.service.j2 dest="{{ conf_path }}/{{ moments_name }}.conf" owner="{{ rc_user }}" group="{{ rc_group }}" mode=0644
+
+- name: Ensure path User
+  file: path="{{ item }}" state=directory owner="{{ rc_user }}" group="{{ rc_group }}" mode=0755 recurse=yes
+  with_items:
+    - "{{ moments_path }}"
+    - "{{ moments_logpath }}"
+
+- name: Ensure moments service is present
+  supervisorctl: name="{{ moments_name }}" state=present supervisorctl_path="{{ supervisorctl }}"
+
+- name: Ensure moments is running
+  supervisorctl: name="{{ moments_name }}" state=started supervisorctl_path="{{ supervisorctl }}"

@@ -1,0 +1,9 @@
+---
+mgt_local_repo: "{{ global.package_path }}/mgt.tar.gz"
+mgt_dest: "{{ global.app_path }}/www"
+mgt_host: "{{ private_ip }}"
+mgt_port: 8098
+rc_user: "rcloud"
+rc_group: "rcloud"
+nginx_user: "{{ rc_user }}"
+nginx_group: "{{ rc_group }}"

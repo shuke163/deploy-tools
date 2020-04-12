@@ -1,0 +1,100 @@
+---
+inst_name: "rcx"
+rc_user: "{{ global.rc_user }}"
+rc_group: "{{ global.rc_group }}"
+
+rcx_path: "{{ global.app_path }}/{{ inst_name }}"
+rcx_logpath: "{{ global.logs_path }}/{{ inst_name }}"
+
+# 安装包所在路径
+rcx_pkg_path: "{{ global.package_path }}/rcx"
+
+configs:
+  - admin-http-config.xml
+  - api-http-config.xml
+  - navi-http-config.xml
+  - service-config.xml
+  - rcx-cfg.xml
+  - restfulhttp-config.xml
+#  - tcp-proxy.xml
+  - management.properties
+
+common_config:
+  - config.xml
+  - db-config.xml
+  - comcloud_x_imdb.properties
+  - log4j2.xml
+rcdbs: []
+
+public_ip: "127.0.0.1"
+private_ip: "127.0.0.1"
+apush_public_host: "{{ public_ip }}"
+apush_listen_port: 8089
+apush_public_port: 8089
+
+admin_http_port: 8083
+navi_http_port: 8082
+api_http_port: 8081
+restful_port: 8084
+
+rmtp_public_host: "{{ public_ip }}"
+rmtp_private_host: "{{ private_ip }}"
+rmtp_listen_port: 8087
+rmtp_public_port: 8087
+rmtp_private_port: 8087
+rmtp_ap_port: 8000
+rmtp_ws_listen_port: 8085
+rmtp_ws_public_host: "{{ public_ip }}"
+rmtp_ws_private_host: "{{ private_ip }}"
+rmtp_ws_public_port: 8085
+rmtp_ws_private_port: 8085
+rmtp_wss_public_host: "{{ public_ip }}" 
+rmtp_wss_public_port: 8086
+rmtp_wss_private_host: "{{ private_ip }}"
+rmtp_wss_private_port: 8086
+
+#tproxy_commet_port: 18088
+#tproxy_commet_bak_port: 18089
+#tproxy_rmtp_port: 18070
+#tproxy_ws_port: 18085
+
+zookeeper_hosts: []
+zk_hosts: []
+
+rpc_ip: "{{ ansible_host }}"
+rpc_port: 8090
+
+fileserver_path: "{{ global.data_path }}/filestorage/data"
+fileserver_port: 8083
+isHttpServer: "true"
+virtualNodesNum: "100"
+
+mysql_port: 4306
+mysql_user: 'im'
+mysql_password: '1qazCDE#'
+
+mysql_host: '127.0.0.1'
+imdb: 'comcloud_x'
+cluster: 'clusterCommon'
+proxy_platform: 'MiniProgramKeng'
+rcx_db: 'rcx_db'
+file_expired_day: 18000
+id: 1
+db_type: 'mysql'
+fs: []
+
+zookeeper_port: 2181
+ClusterName: 'cluster_one'
+logsDir: '{{ global.base_path }}/logs'
+
+zookeeper_string: "
+    {%- set ips = [] %}
+    {%- for host in groups['zookeeper'] %}
+    {{- ips.append(dict(id=loop.index, host=host, ip=hostvars[host]['ansible_host'], port=zookeeper_port)) }}
+    {%- endfor %}
+    {{- ips -}}"
+
+zookeeper_string_trim: "{{ zookeeper_string.split('None')[1] }}"
+
+zk_list: "{{ groups['zookeeper'] | map ('extract',hostvars,['private_ip']) | list }}"
+

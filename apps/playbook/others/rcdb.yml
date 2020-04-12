@@ -1,0 +1,15 @@
+- hosts: rcdb
+  roles:
+  - role: rcdb
+    tags: rcdb
+  vars:
+    inst_name:
+    - rcdb.inst-0
+    - rcdb.inst-1
+    - rcdb.inst-2
+    - rcdb.inst-3
+    rcdb_port:
+    - 8888
+    - 8889
+    - 8890
+    - 8891

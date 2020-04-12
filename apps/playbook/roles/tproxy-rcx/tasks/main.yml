@@ -1,0 +1,84 @@
+---
+- name: debug time
+  debug: var=ansible_date_time.iso8601
+  ignore_errors: yes
+  
+- name: Ensure work dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items: 
+    - "{{ app_path }}"
+    - "{{ rcx_logpath }}"
+    - "{{ rcx_path }}"
+    - "{{ rcx_path }}/configs"
+    - "{{ tmp_path }}"
+    - "{{ fileserver_path }}"
+
+- name: copy rcx.tar.gz
+  unarchive:
+    src: "{{ package_path }}/rcx.tar.gz"
+    dest: "{{ rcx_path }}/"
+    copy: "yes"
+
+- name: copy rcx start.sh
+  template:
+    src: "start.sh.j2"
+    dest: "{{ rcx_path}}/start.sh"
+
+
+- name: Add rcx common config
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ rcx_path}}/configs/{{ item }}"
+  with_items: 
+    - "{{ common_config }}"
+
+- name: Add rcx config
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ rcx_path }}/configs/{{ item }}"
+  with_items: 
+    - "{{ configs }}"
+
+- name: Add startup config
+  template:
+    src: rcx.service.j2
+    dest: "{{ conf_path }}/{{ inst_name }}.conf"
+    owner: "{{ rc_user }}"
+    group: "{{ rc_group }}"
+
+- name: Delete rcx.web.configure
+  shell: "rm -f {{ rcx_path }}/plugins/rcx.web.configure*"
+
+- name: Ensure path User
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ rc_user }}"
+    group: "{{ rc_group }}"
+    mode: 0755
+    recurse: yes
+  with_items: 
+    - "{{ rcx_path }}"
+    - "{{ rcx_logpath }}"
+    - "{{ fileserver_path }}"
+
+- name: Ensure RCX service is present
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: present
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: Ensure RCX is stopped
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: stopped
+    supervisorctl_path: "{{ supervisorctl }}"
+
+- name: Ensure RCX is running
+  supervisorctl:
+    name: "{{ inst_name }}"
+    state: started
+    supervisorctl_path: "{{ supervisorctl }}"

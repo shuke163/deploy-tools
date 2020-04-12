@@ -1,0 +1,5 @@
+rtc_server:
+  roles:
+    - rtc
+    - openresty
+  sort: 301

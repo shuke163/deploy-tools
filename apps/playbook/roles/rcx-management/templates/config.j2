@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+
+"""
+@author: liuzhangpei
+@contact: liuzhangpei@rongcloud.cn
+@time: 2018/4/9
+"""
+
+import os
+import platform
+from ConfigParser import RawConfigParser
+
+
+SECRET_KEY = 'GZaI7nIST2fhiQMjoiOgpkPn/6tVyLEr7p6u2FfKWls='
+
+SQLALCHEMY_DATABASE_URI = 'sqlite:///{dbpath}'.format(dbpath=os.path.join(os.path.dirname(__file__), 'db/rc.db'))
+
+systype = platform.system()
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+SQLALCHEMY_ECHO = True
+
+
+
+ADMIN_API = "{{ rcxm_admin_api }}"  # 全局配置
+RC_API = "{{ rcxm_rc_api }}"     # 带有鉴权的 api 接口
+ZK_HOSTS = "{{ rcxm_rc_zk_hosts }}"
+
+
+
+

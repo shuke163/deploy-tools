@@ -1,0 +1,26 @@
+rc_user: "{{ global.user }}"
+rc_group: "{{ global.group }}"
+
+add_groups:
+  - {name: "{{ global.group }}",gid: 2000,system: no}
+
+add_users:
+  - {name: "{{ global.user }}",comment: "app's Home",uid: 2000,group: "{{ global.group }}",system: no}
+
+sysctl_conf: "/etc/sysctl.conf"
+
+sysctl_kernel:
+  - {"key": "vm.max_map_count", "value": "1024"}
+  - {"key": "net.ipv4.tcp_syncookies", "value": "1"}
+  - {"key": "net.ipv4.tcp_tw_reuse", "value": "1"}
+  - {"key": "net.ipv4.tcp_tw_recycle", "value": "1"}
+  - {"key": "net.ipv4.ip_local_port_range", "value": "1024 65535"}
+  - {"key": "net.ipv4.tcp_max_tw_buckets", "value": "5000"}
+  - {"key": "net.core.netdev_max_backlog", "value": "10240"}
+
+libaio7_path: "{{ global.package_path }}/libaio-0.3.109-13.el7.x86_64.rpm"
+libaio6_path: "{{ global.package_path }}/libaio-0.3.107-10.el6.x86_64.rpm"
+openssl_path: "{{ global.package_path }}/openssl-1.0.2k-16.el7.x86_64.rpm"
+tools_path: "{{ global.package_path }}/tools.tar.gz"
+openssl_libs_path: "{{ global.package_path }}/openssl-libs-1.0.2k-16.el7.x86_64.rpm"
+

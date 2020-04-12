@@ -1,0 +1,58 @@
+base:
+  debug: True
+  app: "Door"
+  project:
+    name: 'Door-backend'
+    department: 'channel-devops'
+    team: 'devops'
+
+prod:
+  mysql:
+    db: "doordb"
+    user: "app_door_rw"
+    password: "beRcnLADAJdsycZKrdKseR8d"
+    host: "127.0.0.1"
+    port: 3306
+  redis:
+    host: "127.0.0.1"
+    password: "RongCloud"
+    port: 6380
+    db: 3
+  kafka:
+    brokers:
+      - 127.0.0.1:9092
+    topic: devops
+
+stage:
+  mysql:
+    db: "doordb"
+    user: "app_door_rw"
+    password: "beRcnLADAJdsycZKrdKseR8d"
+    host: "127.0.0.1"
+    port: 3306
+  redis:
+    host: "127.0.0.1"
+    password: "RongCloud"
+    port: 6380
+    db: 3
+  kafka:
+    brokers:
+      - 127.0.0.1:9092
+    topic: devops
+
+dev:
+  mysql:
+    db: "doordb"
+    user: "app_door_rw"
+    password: "beRcnLADAJdsycZKrdKseR8d"
+    host: "127.0.0.1"
+    port: 3306
+  redis:
+    host: "127.0.0.1"
+    password: "RongCloud"
+    port: 6380
+    db: 3
+  kafka:
+    brokers:
+      - 127.0.0.1:9092
+    topic: devops

@@ -1,0 +1,101 @@
+---
+- name: Ensure rcdb logs work dir
+  file:
+    path: "{{ global.logs_path }}/{{ item }}"
+    state: directory
+    owner: "{{ rcdb_user }}"
+    group: "{{ rcdb_group }}"
+    mode: 0755
+  with_items: 
+    - "{{ inst_name }}"
+
+- name: Ensure rcdb work dir
+  file:
+    path: "{{ global.data_path }}/{{ item }}"
+    state: directory
+    owner: "{{ rcdb_user }}"
+    group: "{{ rcdb_group }}"
+    mode: 0755
+  with_items:
+    - "{{ inst_name }}"
+
+- name: Check If Already Installed
+  stat:
+    path: "{{ rcdb_parent_path }}/{{ inst_name[0] }}"
+  register: __rcdb_exists
+
+- name: Copy rcdb files
+  unarchive:
+    src: "{{ rcdb_package }}"
+    dest: "{{ global.tmp_path }}"
+    owner: "{{ rcdb_user }}"
+    group: "{{ rcdb_group }}"
+    mode: 0755
+  when: not __rcdb_exists.stat.exists
+
+- name: Copy Rcdb
+  shell: cp -ar  "{{ global.tmp_path }}/rcdb" "{{ global.app_path }}/{{ item }}"
+  when: not __rcdb_exists.stat.exists
+  with_items: "{{ inst_name }}"
+
+- name: change rcdb ownership
+  file:
+    path: "{{ global.app_path }}/{{ item }}"
+    state: directory
+    owner: "{{ rcdb_user }}"
+    group: "{{ rcdb_group }}"
+    recurse: yes
+    mode: u=rwx,g=rx,o=rx
+  with_items:
+    - "{{ inst_name }}"
+
+- name: Add rcdb config
+  template:
+    src: "conf/{{ item }}.j2"
+    dest: "{{ global.app_path }}/{{ item }}/rcdb.conf"
+    owner: "{{ rcdb_user }}"
+    group: "{{ rcdb_group }}"
+    mode: 0644
+  with_items:
+    - "{{ inst_name }}"
+
+- name: Add rcdb restart.sh
+  template:
+    src: "restart/{{ item }}.j2"
+    dest: "{{ global.app_path }}/{{ item }}/restart.sh"
+    owner: "{{ rcdb_user }}"
+    group: "{{ rcdb_group }}"
+    mode: u=rw,g=r,o=rx
+  with_items:
+    - "{{ inst_name }}"
+
+- name: Add startup config
+  template:
+    src: "supervisor/{{ item }}.j2"
+    dest: "{{ global.conf_path }}/{{ item }}.conf"
+    owner: "{{ rcdb_user }}"
+    group: "{{ rcdb_group }}"
+    mode: 0644
+  with_items:
+    - "{{ inst_name }}"
+
+- name: Ensure Rcdb service is present
+  supervisorctl:
+    name: "{{ item }}"
+    state: present
+    supervisorctl_path: "{{ global.supervisorctl }}"
+  with_items: "{{ inst_name }}"
+
+- name: Ensure Rcdb is stopped
+  supervisorctl:
+    name: "{{ item }}"
+    state: stopped
+    supervisorctl_path: "{{ global.supervisorctl }}"
+  with_items: "{{ inst_name }}"
+
+- name: Ensure Rcdb is running
+  supervisorctl:
+    name: "{{ item }}"
+    state: restarted
+    supervisorctl_path: "{{ global.supervisorctl }}"
+  with_items: "{{ inst_name }}"

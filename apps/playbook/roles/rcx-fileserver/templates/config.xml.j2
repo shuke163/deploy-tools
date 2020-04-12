@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <info>
+    <name>{{ inst_name }}</name>
+    <cluster>Prod</cluster>
+  </info>
+
+  <plugins>
+    {% for plugin in plugins['access'] %}
+
+    <plugin>
+      <name>{{ plugin['name'] }}</name>
+      <path>{{ plugin['path'] }}</path>
+      <main>{{ plugin['main'] }}</main>
+      <config>{{ plugin['config'] }}</config>
+    </plugin>
+    {% endfor %}
+
+  </plugins>
+</config>

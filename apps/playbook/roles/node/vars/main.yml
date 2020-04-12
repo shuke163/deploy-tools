@@ -1,0 +1,10 @@
+---
+# vars file for node
+
+version: "v10.16.3"
+node_download_url: 'https://npm.taobao.org/mirrors/node/{{ version }}/node-{{ version }}-linux-x64.tar.gz'
+base_dir: "/data/tmp"
+pkg_path: "/usr/local/src/node-{{ version }}-linux-x64.tar.xz"
+dst_dir: "/data/tmp/node-{{ version }}-linux-x64"
+link_dir: "/data/app/node"
+network_lock_file: "/tmp/index.lock"

@@ -1,0 +1,45 @@
+---
+- name: Ensure work dir
+  file: path="{{ item }}" state=directory owner={{ rc_user }} group={{ rc_group}} mode=0755
+  with_items:
+    - "{{ global.app_path }}"
+    - "{{ rcx_logpath }}"
+    - "{{ rcx_path }}"
+    - "{{ rcx_path }}/configs"
+    - "{{ global.tmp_path }}"
+    - "{{ fileserver_path }}"
+
+- name: copy rcx.tar.gz
+  unarchive: src="{{ rcx_pkg_path }}/rcx.tar.gz" dest="{{ rcx_path }}/" copy="yes" owner={{ rc_user }} group={{ rc_group}} mode=0755
+
+- name: copy rcx start.sh
+  template: src="start.sh.j2" dest="{{ rcx_path}}/start.sh" owner={{ rc_user }} group={{ rc_group}} mode=0645
+
+- name: Add rcx common config
+  template: src="{{ item }}.j2" dest="{{ rcx_path}}/configs/{{ item }}" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  with_items: 
+    - "{{ common_config }}"
+
+- name: Add rcx config
+  template: src="{{ item }}.j2" dest="{{ rcx_path }}/configs/{{ item }}" owner={{ rc_user }} group={{ rc_group}} mode=0644
+  with_items: 
+    - "{{ configs }}"
+
+- name: Add startup config
+  template: src=rcx.service.j2 dest="{{ global.conf_path }}/{{ inst_name }}.conf" owner={{ rc_user }} group={{ rc_group}} mode=0644
+
+- name: Ensure path User
+  file: path="{{ item }}"  state=directory owner="{{ rc_user }}" group="{{ rc_group }}" mode=0755
+  with_items:
+    - "{{ rcx_path }}"
+    - "{{ rcx_logpath }}"
+    - "{{ fileserver_path }}"
+
+- name: Ensure RCX service is present
+  supervisorctl: name="{{ inst_name }}" state=present supervisorctl_path="{{ global.supervisorctl }}"
+
+- name: Ensure RCX is stopped
+  supervisorctl: name="{{ inst_name }}" state=stopped supervisorctl_path="{{ global.supervisorctl }}"
+
+- name: Ensure RCX is running
+  supervisorctl: name="{{ inst_name }}" state=started supervisorctl_path="{{ global.supervisorctl }}"

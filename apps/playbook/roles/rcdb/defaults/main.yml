@@ -1,0 +1,19 @@
+rcdb_package: "{{ global.package_path }}/rcdb.tar.gz"
+__op__: "install"
+
+inst_name: "rcdb"
+rcdb_host: '0.0.0.0'
+bind_address: '0.0.0.0'
+rcdb_port: 8088
+
+rcdb_parent_path: "{{ global.app_path }}"
+
+#rcdb_path: "{{ global.app_path }}/{{ inst_name }}"
+#rcdb_dbpath: "{{ global.data_path }}/{{ inst_name }}"
+#rcdb_logpath: "{{ global.logs_path }}/{{ inst_name }}"
+#rcdb_logfile: "{{ rcdb_logpath }}/rcdb-server.log"
+
+rc_user: "rcloud"
+rc_group: "rcloud"
+rcdb_user: "{{ global.rc_user }}"
+rcdb_group: "{{ global.rc_group }}"
