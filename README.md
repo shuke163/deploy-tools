@@ -40,6 +40,11 @@
 "sort": 301
 }
 
+## 扫描当前目录下的代码生成`requirements.txt`
+```
+# pipreqs ./ --force --encoding=utf8
+```
+
 ### celery 
 ```
 $ celery -B -A door worker --concurrency=3 -l info
