@@ -42,7 +42,7 @@
 
 ### celery 
 ```
-$ celery -B -A Door worker --concurrency=3 -l info
+$ celery -B -A door worker --concurrency=3 -l info
 ```
 
 ### ansible BUG
