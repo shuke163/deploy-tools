@@ -57,7 +57,7 @@ if "syntax" in context.CLIARGS.keys():
     continue
 ```
 
-### 项目目录结构描述
+### 项目目录结构
 ```
 .
 ├── door
