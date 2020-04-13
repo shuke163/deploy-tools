@@ -283,7 +283,6 @@ class CeleryResultListView(generics.ListAPIView):
     celery result view
     """
     queryset = models.ConfigMap.objects.all().order_by('-id')
-    serializer_class = LicenseSerializer
 
     renderer_classes = (CustomJSONRenderer, JSONRenderer)
 
@@ -308,20 +307,7 @@ class CeleryResultListView(generics.ListAPIView):
                     logger.info(
                         f"task name: {excute_ansible_playbook_shell.__name__}, task id: {task_id} status: {asyncTask.state}")
 
-                    status_list = models.DeployModels.objects.filter().all().values("status")
-                    
-                    st = set([item["status"] for item in status_list]).pop()
-                    logger.info(f"ansible playbook excute task status: {st}")
-                    
-                    if st == 2:
-                        status_val = 2
-                    elif st == -1:
-                        staus_val = -1
-                    elif st == 1:
-                        status_val = 1
-                    else:
-                        status_val = 2
-                    response["status"] = status_val
+                    response["status"] = self._task_status()
                 elif asyncTask.failed():
                     logger.info(
                         f"task name: {excute_ansible_playbook_shell.__name__}, task id: {task_id} status: {asyncTask.status}")
@@ -339,8 +325,17 @@ class CeleryResultListView(generics.ListAPIView):
                         f"task name: {excute_ansible_playbook_shell.__name__}, task id: {task_id} status: {asyncTask.status}")
                     response["status"] = 0
             else:
-                response["status"] = 0
+                response["status"] = self._task_status()
             return Response({"code": status.HTTP_200_OK, "result": response, "msg": "ok"})
         except Exception as e:
             return Response({"code": status.HTTP_500_INTERNAL_SERVER_ERROR, "result": response,
                              "msg": f'{e.__class__.__name__}: {e}'})
+
+    def _task_status(self):
+        status_list = models.DeployModels.objects.filter().all().values("status")
+        if status_list:
+            st = set([item["status"] for item in status_list]).pop()
+            return st
+        return 0
+
+        

@@ -71,7 +71,6 @@ def excute_ansible_playbook():
         finally:
             popen.kill()
 
-
 @app.task(name="tasks.ansible_playbook_shell")
 def excute_ansible_playbook_shell(yml_name="local"):
     p = None
@@ -132,7 +131,7 @@ def excute_ansible_playbook_shell(yml_name="local"):
                 row.save()
         else:
             for row in DeployModels.objects.all():
-                row.sattus = -1
+                row.status = -1
                 row.save()
 
         if p.poll() != 0:

@@ -55,16 +55,12 @@ class ResourceHandlerExcel(object):
 
         if not self.excel.name.split('"')[0]:
             raise Exception("Resource excel name is None...")
-       
-        print(111111, self.request.session.__dict__["_session_cache"])
 
         for k in ["excel_name", "license"]:
             if k in self.request.session.__dict__["_session_cache"].keys():
                 del self.request.session.__dict__["_session_cache"][k]
   
         self.request.session["excel_name"] = self.excel.name.split('"')[0]
-
-        print(22222222, self.request.session.__dict__["_session_cache"])
 
         # business_list = ReadExcel(excel_name=self.excel.name.split('"')[0]).get_business()
 
