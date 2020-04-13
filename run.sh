@@ -199,9 +199,9 @@ function status() {
 function init_deploy() {
     h1 "Deploy System V0.1"
     export LANG=en_US.UTF-8
-    export FLASK_APP=app
-    export FLASK_ENV=development
-    export FLASK_RUN_PORT=${APP_PORT}
+    # export FLASK_APP=app
+    # export FLASK_ENV=development
+    # export FLASK_RUN_PORT=${APP_PORT}
 
     unzip_resource
 
