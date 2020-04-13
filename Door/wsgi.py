@@ -1,5 +1,13 @@
+'''
+@Author: your name
+@Date: 2020-04-13 12:02:08
+@LastEditTime: 2020-04-13 12:19:21
+@LastEditors: Please set LastEditors
+@Description: In User Settings Edit
+@FilePath: /deploy-backend/door/wsgi.py
+'''
 """
-WSGI config for Door project.
+WSGI config for door backend project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +19,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Door.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'door.settings')
 
 application = get_wsgi_application()

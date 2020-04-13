@@ -23,12 +23,12 @@ from apps.core.renders import CustomJSONRenderer
 from drf_yasg.utils import swagger_auto_schema
 from utils.HandlerVars import ApplicationConfig
 from subprocess import check_output
-from Door.celery import app
+from door.celery import app
 from apps.deploy import models
 from apps.deploy.conf import ParseSvcSort
-from apps.deploy.tasks.AnsiblePlaybookTask import excute_ansible_playbook_shell
 from django.db.models import Q
 from utils.HandleExcel import ReadExcel
+from apps.deploy.tasks.AnsiblePlaybookTask import excute_ansible_playbook_shell
 
 from celery.result import AsyncResult
 

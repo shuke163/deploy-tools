@@ -14,7 +14,7 @@ import time
 import logging
 import subprocess
 import traceback
-from Door.celery import app
+from door.celery import app
 from django.conf import settings
 from apps.deploy import models
 from utils.ansible_cmdb_api import AnsibleAPI

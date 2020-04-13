@@ -16,7 +16,7 @@ from celery.schedules import crontab
 from celery.signals import worker_process_init
 from django.conf import settings
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Door.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'door.settings')
 
 app = Celery(settings.APP)
 app.config_from_object('django.conf:settings', namespace='CELERY')

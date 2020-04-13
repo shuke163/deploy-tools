@@ -14,7 +14,7 @@ import sys
 import logging
 import subprocess
 import traceback
-from Door.celery import app
+from door.celery import app
 from django.conf import settings
 from apps.deploy.models import DeployModels
 

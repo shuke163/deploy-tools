@@ -1,3 +1,11 @@
+'''
+@Author: your name
+@Date: 2020-04-13 12:02:08
+@LastEditTime: 2020-04-13 12:19:37
+@LastEditors: your name
+@Description: In User Settings Edit
+@FilePath: /deploy-backend/door/urls.py
+'''
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
@@ -10,14 +18,14 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Door Server API",
+        title="door Server API",
         url="http://localhost:9002/api/",
         default_version='v1',
         description="Door api docs",
     ),
     public=True,
     permission_classes=(permissions.IsAuthenticated,),
-    urlconf="Door.urls",
+    urlconf="door.urls",
 )
 
 urlpatterns = [
