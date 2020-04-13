@@ -21,7 +21,7 @@ from rest_framework.renderers import JSONRenderer
 from apps.core.renders import CustomJSONRenderer
 from drf_yasg.utils import swagger_auto_schema
 from django.http import Http404
-from apps.host import models 
+from apps.host import models
 from apps.deploy.models import DeployModels
 from apps.deploy.models import ConfigMap
 from apps.host.serializers import SvcValidateModelsSerializer
@@ -63,8 +63,8 @@ class SvcValidateListView(generics.ListCreateAPIView, generics.RetrieveDestroyAP
             flag, msg = self._rpc_info()
             if flag:
                 ser = SvcValidateModelsSerializer(self.get_queryset(), many=True)
-                rcx_mgt_url = self._rcx_mgt_url()
-                res = {"url": rcx_mgt_url, "info": ser.data}
+                mgt_url = self._rcx_mgt_url()
+                res = {"external_url": mgt_url["external_url"], "internal_url": mgt_url["internal_url"], "info": ser.data}
                 return Response({"code": status.HTTP_200_OK, "result": res, "msg": msg})
             else:
                 return Response({'code': status.HTTP_500_INTERNAL_SERVER_ERROR, "msg": msg})
@@ -110,7 +110,7 @@ class SvcValidateListView(generics.ListCreateAPIView, generics.RetrieveDestroyAP
                         svc["external_ip"] = host["external_ip"]
                         svc["instance_name"] = host["instance_name"]
                         all_svc_list.append(svc)
-            
+
             logger.info(f"supervisor rpc process info: -> {json.dumps(all_svc_list, indent=4, ensure_ascii=False)}")
 
             models.SvcValidateModel.objects.all().delete()
@@ -129,9 +129,15 @@ class SvcValidateListView(generics.ListCreateAPIView, generics.RetrieveDestroyAP
         """
         rcx mgt url
         """
+        mgt_url = {}
         private_ip = DeployModels.objects.filter(business="rcx").first().private_ip
-        mgt_port = ConfigMap.objects.filter(business="rcx", title="RCX_MGT", key="rcx_mgt").first().value 
-        rcx_mgt_url = f"http://{private_ip}:{mgt_port}/management"
-        logger.info(f"rcx management url: {rcx_mgt_url}")
-        return rcx_mgt_url
-
+        external_ip = DeployModels.objects.filter(business="rcx").first().external_ip
+        if not external_ip:
+            external_ip = private_ip
+        mgt_port = ConfigMap.objects.filter(business="rcx", title="RCX_MGT", key="rcx_mgt").first().value
+        external_url = f"http://{external_ip}:{mgt_port}/management"
+        internal_url = f"http://{private_ip}:{mgt_port}/management"
+        mgt_url.setdefault('external_url', external_url)
+        mgt_url.setdefault('internal_url', internal_url)
+        logger.info(f"rcx management url: {mgt_url}")
+        return mgt_url
