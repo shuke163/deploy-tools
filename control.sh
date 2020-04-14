@@ -50,19 +50,24 @@ CURRENT_PATH=$(
     cd $(dirname $0)
     pwd
 )
-PYTHON_PATH=/opt/python3
+
+PYTHON_PATH=/opt/miniconda3
 
 item=0
 
 function help() {
-    echo "Usage: bash $0 8099"
+    echo "Usage: bash $0 8099 /opt/packages.tar.gz"
 }
 
-if [[ $# -gt 1 ]]; then
+if [[ $# -gt 3 ]]; then
     help
     exit 127
-elif [[ $# -eq 1 ]]; then
-    APP_PORT=$1
+elif [[ $# -lt 2 ]]; then
+    help
+    exit 127
+elif [[ $# -eq 2 ]]; then
+    APP_PORT=${1}
+    RESOURCE_PATH=${2}
 else
     APP_PORT=8099
 fi
@@ -73,50 +78,98 @@ with_notary=$false
 with_clair=$false
 
 function stop() {
-    source ${CURRENT_PATH}/scripts/shutdown.sh
+    source ${CURRENT_PATH}/scripts/shutdown.sh >> ${CURRENT_PATH}/logs/run.log 2>&1 &
+    spid=$!
+    echo "Shutdown app pid=${spid}"
+    wait ${spid} 
+}
+
+function unzip_resource() {
+    if [[ ! -f ${RESOURCE_PATH} ]]; then
+        help
+        exit 127
+        echo "${RESOURCE_PATH} Not Found!"
+    else
+        tar zxf ${RESOURCE_PATH} -C ${CURRENT_PATH}/apps && chown -R root.root ${CURRENT_PATH}
+        if [[ $? -ne 0 ]]; then
+              exit 127
+        fi
+    fi
 }
 
 function redis() {
     if [[ ! -f ${REDIS_CONF} ]]; then
-        source ${CURRENT_PATH}/scripts/install-redis.sh
-        main
+        source ${CURRENT_PATH}/scripts/install-redis.sh >> ${CURRENT_PATH}/logs/run.log 2>&1 &
+        cpid=$!
+        echo "Install redis pid=${cpid}"
+        sleep 3
+        wait ${cpid}
+#       main
     fi
 }
 
 function set_python() {
     USER_ENV="/${USER}/.bashrc"
     if [[ -d "${PYTHON_PATH}" ]]; then
-        rm -rf ${PYTHON_PATH} && tar -zxf ${CURRENT_PATH}/packages/python3.tar.gz -C /opt >/dev/null 2>&1
+        rm -rf ${PYTHON_PATH}
+        tar -zxf ${CURRENT_PATH}/libs/miniconda3.tar.gz -C /opt >/dev/null 2>&1
         if [[ $? -eq 0 ]]; then
             info "${PYTHON_PATH} reinstall success!"
         fi
     else
-        tar -zxf ${CURRENT_PATH}/packages/python3.tar.gz -C /opt >/dev/null 2>&1
+        tar -zxf ${CURRENT_PATH}/libs/miniconda3.tar.gz -C /opt >/dev/null 2>&1
         info "${PYTHON_PATH} install success!"
     fi
-#    if [[ -L /usr/bin/python ]]; then
-#        rm -f /usr/bin/python && ln -s ${PYTHON_PATH}/bin/python /usr/bin/python
-#    fi
     if [[ -f "${USER_ENV}" ]]; then
         sed -i "/LANG.*UTF-8$/d" ${USER_ENV}
         sed -i "/PATH.*python/d" ${USER_ENV}
+        sed -i "/PATH.*miniconda3/d" ${USER_ENV}
+        sed -i "/PATH.*HISTTIMEFORMAT/d" ${USER_ENV}
+        sed -i "/PATH.*HISTFILESIZE/d" ${USER_ENV}
+        echo -e "export HISTTIMEFORMAT=\"%Y-%m-%d %H:%M:%S \"" >>${USER_ENV}
+        echo -e "export HISTFILESIZE=10000" >>${USER_ENV}
         echo -e "export LANG=en_US.UTF-8\nexport PATH=${PYTHON_PATH}/bin:\$PATH" >>${USER_ENV}
         export PATH=${PYTHON_PATH}/bin:$PATH
         source ${USER_ENV}
     fi
+    export PATH=$PATH:${PYTHON_PATH}/bin
     ${PYTHON_PATH}/bin/python -V
 }
 
 function start_app() {
-    [[ ! -d ${CURRENT_PATH}/logs ]] && mkdir logs
-    #    nohup /opt/python3/bin/python ${CURRENT_PATH}/run.py >/tmp/app.log 2>&1 &
-    nohup python manage.py makemigrations >> ${CURRENT_PATH}/logs/app.log 2>&1 &
-    nohup python manage.py migrate >> ${CURRENT_PATH}/logs/app.log 2>&1 &
-    nohup python manage.py runserver 8099 >> ${CURRENT_PATH}/logs/app.log 2>&1 &
-
-#    nohup ${PYTHON_PATH}/bin/flask run --host=0.0.0.0 -p ${APP_PORT} >${CURRENT_PATH}/logs/app.log 2>&1 &
+    
+    if [[ -d "${CURRENT_PATH}/logs" ]]; then
+        rm -fr "${CURRENT_PATH}/logs"
+        mkdir "${CURRENT_PATH}/logs"
+    else
+        mkdir "${CURRENT_PATH}/logs"
+    fi   
+ 
+    cd ${CURRENT_PATH} && rm -f celerybeat-schedule*
+    [[ -d "${CURRENT_PATH}/logs" ]] && rm -fr "${CURRENT_PATH}/logs" && mkdir "${CURRENT_PATH}/logs"
+    [[ -f "${CURRENT_PATH}/db.sqlite3" ]] && rm -f "${CURRENT_PATH}/db.sqlite3"
+    [[ -d "${CURRENT_PATH}/apps/__pycache__" ]] && rm -fr "${CURRENT_PATH}/apps/__pychche__"
+    [[ -d "${CURRENT_PATH}/apps/account/migrations" ]] && rm -fr "${CURRENT_PATH}/apps/account/migrations"
+    [[ -d "${CURRENT_PATH}/apps/account/__pycache__" ]] && rm -fr "${CURRENT_PATH}/apps/account/__pycache__"
+    [[ -d "${CURRENT_PATH}/apps/deploy/migrations" ]] && rm -fr "${CURRENT_PATH}/apps/deploy/migrations"
+    [[ -d "${CURRENT_PATH}/apps/deploy/__pycache__" ]] && rm -fr "${CURRENT_PATH}/apps/deploy/__pycache__"
+    [[ -d "${CURRENT_PATH}/apps/host/migrations" ]] && rm -fr "${CURRENT_PATH}/apps/host/migrations"
+    [[ -d "${CURRENT_PATH}/apps/host/__pycache__" ]] && rm -fr "${CURRENT_PATH}/apps/host/__pycache__"
+    
+    ${PYTHON_PATH}/bin/python manage.py makemigrations deploy >> ${CURRENT_PATH}/logs/db.log 2>&1 &
     sleep 3
+    ${PYTHON_PATH}/bin/python manage.py makemigrations host >> ${CURRENT_PATH}/logs/db.log 2>&1 &
+    sleep 3
+    ${PYTHON_PATH}/bin/python manage.py makemigrations account >> ${CURRENT_PATH}/logs/db.log 2>&1 &
+    sleep 3
+    ${PYTHON_PATH}/bin/python manage.py migrate >> ${CURRENT_PATH}/logs/db.log 2>&1 &
+    sleep 3
+    
+    nohup ${PYTHON_PATH}/bin/python manage.py runserver 0.0.0.0:${APP_PORT} >> ${CURRENT_PATH}/logs/run.log 2>&1 &
 
+    # nohup ${PYTHON_PATH}/bin/flask run --host=0.0.0.0 -p ${APP_PORT} >${CURRENT_PATH}/logs/app.log 2>&1 &
+    sleep 5
+    
     port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
     if [[ -n ${port} ]]; then
         echo -e "\\033[1;32m[INFO] App already started and port is: ${port}\\033[0;39m"
@@ -126,13 +179,13 @@ function start_app() {
 }
 
 function start_celery() {
-    nohup celery -B -A Door worker --concurrency=3 -l info >${CURRENT_PATH}/logs/celery.log 2>&1 &
-    pids=$(ps -ef | grep "app.celery" | grep -v grep | awk '{print $2}')
+    nohup ${PYTHON_PATH}/bin/celery -B -A Door worker --concurrency=3 -l info >${CURRENT_PATH}/logs/celery.log 2>&1 &
+    pids=$(ps -ef | grep "celery" | grep -v grep | awk '{print $2}')
     if [ "x${pids}" != "x" ]; then
         echo -e "\\033[1;32m[INFO] celery start success!\\033[0;39m"
     fi
 }
-    
+
 function status() {
     port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
     if [[ -n ${port} ]]; then
@@ -142,12 +195,15 @@ function status() {
     fi
 }
 
+
 function init_deploy() {
     h1 "Deploy System V0.1"
     export LANG=en_US.UTF-8
-    export FLASK_APP=app
-    export FLASK_ENV=development
-    export FLASK_RUN_PORT=${APP_PORT}
+    # export FLASK_APP=app
+    # export FLASK_ENV=development
+    # export FLASK_RUN_PORT=${APP_PORT}
+
+    unzip_resource
 
     stop
     sleep 3

@@ -1,7 +1,6 @@
 ## django rest demo
 > `Django + logger + Swagger APi docs`
 
-
 ### role 排序
 {
 "base": all
@@ -32,7 +31,6 @@
 "service": ["rtc","openresty","sealrtc-server","sealrtc-web"],
 "sort": 301
 }
-
 
 {
 "business": record
@@ -104,4 +102,22 @@ if "syntax" in context.CLIARGS.keys():
     ├── __init__.py
     ├── ansible_api_v2.py
     ├── ansible_cmdb_api.py  # ansible cmdb api
+```
+
+## uwsgi service crontrol
+- start
+```
+# uwsgi --ini uwsgi.ini
+```
+- reload
+```
+# uwsgi --reload uwsgi/uwsgi.pid
+```
+- connect and read
+```
+# uwsgi --connect-and-read uwsgi/uwsgi.status
+```
+- stop
+```
+# uwsgi --stop uwsgi/uwsgi.pid
 ```
