@@ -5,7 +5,7 @@
 @file: listen_port.py 
 @time: 2020/04/01 03:47
 @contact: shu_ke163@163.com
-@software:  Door
+@software:  door
 """
 
 import os
@@ -20,7 +20,7 @@ import logging
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, PATH)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Door.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "door.settings")
 
 import django
 
