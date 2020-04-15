@@ -80,7 +80,9 @@ class EnvCheckListView(generics.ListAPIView):
             if not ansible_setup_host_list:
                 raise Exception("cmdb table no data!")
 
-            disk = self.max_disk_space
+            cpu = self.max_cpu
+            mem = self.max_mem
+            disk = self.max_disk
 
             for host in host_list:
                 logger.info(f"env check hostname: {host.hostname}, private_ip: {host.private_ip}")
@@ -91,8 +93,8 @@ class EnvCheckListView(generics.ListAPIView):
                         host_check_dict.setdefault("hostname", host.hostname)
                         host_check_dict.setdefault("external_ip", host.external_ip)
                         host_check_dict.setdefault("result", {}).update({"os": {"expect": settings.OS_VERSION, "fact": f"{item.os_type} {item.os_version}"}})
-                        host_check_dict.setdefault("result", {}).update({"cpu": {"expect": host.cpu, "fact": item.cpu}})
-                        host_check_dict.setdefault("result", {}).update({"memory": {"expect": host.mem, "fact": item.memory}})
+                        host_check_dict.setdefault("result", {}).update({"cpu": {"expect": cpu, "fact": item.cpu}})
+                        host_check_dict.setdefault("result", {}).update({"memory": {"expect": mem, "fact": item.memory}})
                         host_check_dict.setdefault("result", {}).update({"disk": {"expect": disk, "fact": item.disk}})
                         host_check_dict.setdefault("result", {}).update({"disk_format": {"expect": "ext4", "fact": item.disk_format}})
                         host_check_dict.setdefault("result", {}).update({"ports": {"expect": distinct_listen_port_list, "fact": []}})
@@ -108,7 +110,7 @@ class EnvCheckListView(generics.ListAPIView):
                             host_check_dict["result"]["os"]["status"] = False
 
                         # cpu
-                        expect_cpu = int(list(host_check_dict["result"]["cpu"]["expect"])[0])
+                        expect_cpu = int(host_check_dict["result"]["cpu"]["expect"][0])
                         fact_cpu = int(list(host_check_dict["result"]["cpu"]["fact"])[0])
                         if fact_cpu >= expect_cpu:
                             host_check_dict["result"]["cpu"]["status"] = True
@@ -121,13 +123,14 @@ class EnvCheckListView(generics.ListAPIView):
                         mem = Decimal(str(host_check_dict["result"]["memory"]["expect"]).split()[0]).quantize(Decimal('0.00'))
                         host_check_dict["result"]["memory"]["expect"] = str(mem) + " GB"
 
-                        if int(float(fact_mem_list[0])) >= int(expect_mem_list[0]):
+                        print("0000",type(fact_mem_list[0]), fact_mem_list[0], expect_mem_list[0])
+                        if float(fact_mem_list[0]) >= float(expect_mem_list[0]):
                             host_check_dict["result"]["memory"]["status"] = True
                         else:
                             host_check_dict["result"]["memory"]["status"] = False
 
                         # disk
-                        expect_disk_list = str(host_check_dict["result"]["disk"]["expect"]).split()
+                        expect_disk_list = host_check_dict["result"]["disk"]["expect"]
                         fact_disk_list = str(host_check_dict["result"]["disk"]["fact"]).split()
 
                         logger.info(f"fact disk: {fact_disk_list[0]}, expect disk: {expect_disk_list[0]}")
@@ -193,7 +196,7 @@ class EnvCheckListView(generics.ListAPIView):
             self.listen_mutil_port(listen_port_list=distinct_listen_port_list)
 
     @property
-    def max_disk_space(self):
+    def max_disk(self):
         disk_list = []
         disk = models.DeployModels.objects.filter().all().values("disk")
         for item in disk:
@@ -203,6 +206,28 @@ class EnvCheckListView(generics.ListAPIView):
         disk = f"{disk} GB"
         logger.info(f"max disk space is: {disk}")
         return disk
+
+    @property
+    def max_cpu(self):
+        cpu_list = []
+        cpu = models.DeployModels.objects.filter().all().values("cpu")
+        for item in cpu:
+            cpu_list.append(item["cpu"][0])
+
+        cpu = max(cpu_list) + "c"
+        logger.info(f"max cpu core is: {cpu}")
+        return cpu
+
+    @property
+    def max_mem(self):
+        mem_list = []
+        mem = models.DeployModels.objects.filter().all().values("mem")
+        for item in mem:
+            mem_list.append(Decimal(float(item["mem"].split()[0])).quantize(Decimal('0.00')))
+
+        mem = max(mem_list)
+        logger.info(f"max mem is: {mem}")
+        return mem
 
     def kill_listen_port_scripts_pid(self,):
         try:

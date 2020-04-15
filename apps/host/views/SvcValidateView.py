@@ -30,7 +30,6 @@ import logging
 
 logger = logging.getLogger("door")
 
-
 class SvcValidateListView(generics.ListCreateAPIView, generics.RetrieveDestroyAPIView):
     """
     host api view

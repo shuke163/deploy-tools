@@ -46,12 +46,16 @@ note() {
     printf "\n${underline}${bold}${blue}Note:${reset} ${blue}%s${reset}\n" "$@"
 }
 
+export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/miniconda3/bin:/opt/python2/bin:/opt/mysql/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+export LANG=en_US.UTF-8
+
 CURRENT_PATH=$(
     cd $(dirname $0)
     pwd
 )
 
 PYTHON_PATH=/opt/miniconda3
+PLATFORM=$(uname)
 
 item=0
 
@@ -167,7 +171,6 @@ function start_app() {
     
     nohup ${PYTHON_PATH}/bin/python manage.py runserver 0.0.0.0:${APP_PORT} >> ${CURRENT_PATH}/logs/run.log 2>&1 &
 
-    # nohup ${PYTHON_PATH}/bin/flask run --host=0.0.0.0 -p ${APP_PORT} >${CURRENT_PATH}/logs/app.log 2>&1 &
     sleep 5
     
     port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
@@ -178,8 +181,15 @@ function start_app() {
     fi
 }
 
+function uwsgi_port() {
+    port=${1}
+    env=${env}
+    cp ../scripts/uwsgi-dev.ini 
+    uwsgi --ini uwsgi.ini
+}
+
 function start_celery() {
-    nohup ${PYTHON_PATH}/bin/celery -B -A Door worker --concurrency=3 -l info >${CURRENT_PATH}/logs/celery.log 2>&1 &
+    nohup ${PYTHON_PATH}/bin/celery -B -A door worker --concurrency=4  -l info >${CURRENT_PATH}/logs/celery.log 2>&1 &
     pids=$(ps -ef | grep "celery" | grep -v grep | awk '{print $2}')
     if [ "x${pids}" != "x" ]; then
         echo -e "\\033[1;32m[INFO] celery start success!\\033[0;39m"
@@ -195,16 +205,25 @@ function status() {
     fi
 }
 
+function start_on_mac() {
+    stop
+    sleep 3
 
-function init_deploy() {
-    h1 "Deploy System V0.1"
-    export LANG=en_US.UTF-8
-    # export FLASK_APP=app
-    # export FLASK_ENV=development
-    # export FLASK_RUN_PORT=${APP_PORT}
+    h2 "[Step $item]: Start App Service ..."
+    let item+=1
+    start_app
 
+    h2 "[Step $item]: Start Celery Service ..."
+    let item+=1
+    start_celery
+
+    h2 "[Step $item]: App Info ..."
+    let item+=1
+    status
+}
+
+function start_on_linux() {
     unzip_resource
-
     stop
     sleep 3
 
@@ -227,6 +246,22 @@ function init_deploy() {
     h2 "[Step $item]: App Info ..."
     let item+=1
     status
+}
+
+function init_deploy() {
+    h1 "Deploy System V0.1"
+
+    case ${PLATFORM} in 
+        Darwin)
+            start_on_mac
+        Linux）
+            start_on_linux
+        *)
+            echo "Unsupported os system types!"
+		    exit
+    esac
+
+    
 }
 
 init_deploy
