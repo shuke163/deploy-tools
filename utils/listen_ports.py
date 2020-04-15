@@ -28,6 +28,14 @@ django.setup()
 
 logger = logging.getLogger("door")
 
+log_filename = f'{settings.BASE_LOG_DIR}/check_ports.log'
+
+logging.basicConfig(
+    level=getattr(logging, 'DEBUG', logging.DEBUG),
+    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+    datefmt="%Y-%m-%d %H:%M:%S",
+    filename=log_filename, filemode='a',
+)
 
 class ListenPorts(object):
     """
@@ -61,21 +69,21 @@ class ListenPorts(object):
                         server.bind(bind)
                         servers.append(server)
 
-            logger.info(f"listen server list: {servers}")
+            logging.info(f"listen server list: {servers}")
 
             while True:
                 readable, _, _ = select.select(servers, [], [])
                 print("000000000000000000000000000000000", readable)
-                logger.info(f"select readable conn: {readable}")
+                logging.info(f"select readable conn: {readable}")
                 ready_server = readable[0]
                 for s in servers:
                     if s in readable:
                         if str(ready_server.type) == "SocketKind.SOCK_DGRAM":
                             data, client = ready_server.recvfrom(1024)
                             if data:
-                                logger.info(f"udp protocol...")
-                                logger.info(f"data: {data}")
-                                logger.info(f"server addr: {readable}, client addr: {s}")
+                                logging.info(f"udp protocol...")
+                                logging.info(f"data: {data}")
+                                logging.info(f"server addr: {readable}, client addr: {s}")
                                 ready_server.settimeout(30)
                                 ready_server.sendto(data, client)
                                 break
@@ -84,18 +92,18 @@ class ListenPorts(object):
                             conn.settimeout(30)
                             data = conn.recv(1024)
                             if data:
-                                logger.info(f"tcp protocol...")
-                                logger.info(f"data: {data}")
-                                logger.info(f"server addr: {readable}, client addr: {addr}")
+                                logging.info(f"tcp protocol...")
+                                logging.info(f"data: {data}")
+                                logging.info(f"server addr: {readable}, client addr: {addr}")
                                 conn.send(bytes(str(data), encoding="utf-8"))
                                 conn.settimeout(30)
                                 conn.close()
                             break
                 continue
-        except OSError as e:
+        except Exception as e:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            logger.error(f"{traceback.format_exception(exc_type, exc_value, exc_traceback)}")
-            logger.error(f"{traceback.print_exc()}")
+            logging.error(f"{traceback.format_exception(exc_type, exc_value, exc_traceback)}")
+            logging.error(f"{traceback.print_exc()}")
 
 
 if __name__ == '__main__':
