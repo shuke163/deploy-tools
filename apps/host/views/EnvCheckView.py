@@ -131,7 +131,7 @@ class EnvCheckListView(generics.ListAPIView):
                         fact_disk_list = str(host_check_dict["result"]["disk"]["fact"]).split()
 
                         logger.info(f"fact disk: {fact_disk_list[0]}, expect disk: {expect_disk_list[0]}")
-                        if (float(fact_disk_list[0]) > float(expect_disk_list[0])) and (float(fact_disk_list[0]) == float(expect_disk_list[0])):
+                        if (float(fact_disk_list[0]) > float(expect_disk_list[0])) or (float(fact_disk_list[0]) == float(expect_disk_list[0])):
                             host_check_dict["result"]["disk"]["status"] = True
                         else:
                             host_check_dict["result"]["disk"]["status"] = False
