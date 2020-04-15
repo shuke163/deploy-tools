@@ -110,8 +110,8 @@ class EnvCheckListView(generics.ListAPIView):
                             host_check_dict["result"]["os"]["status"] = False
 
                         # cpu
-                        expect_cpu = int(host_check_dict["result"]["cpu"]["expect"][0])
-                        fact_cpu = int(list(host_check_dict["result"]["cpu"]["fact"])[0])
+                        expect_cpu = int(host_check_dict["result"]["cpu"]["expect"].split("c")[0])
+                        fact_cpu = int(host_check_dict["result"]["cpu"]["fact"].split("c")[0])
                         if fact_cpu >= expect_cpu:
                             host_check_dict["result"]["cpu"]["status"] = True
                         else:
@@ -123,14 +123,13 @@ class EnvCheckListView(generics.ListAPIView):
                         mem = Decimal(str(host_check_dict["result"]["memory"]["expect"]).split()[0]).quantize(Decimal('0.00'))
                         host_check_dict["result"]["memory"]["expect"] = str(mem) + " GB"
 
-                        print("0000",type(fact_mem_list[0]), fact_mem_list[0], expect_mem_list[0])
                         if float(fact_mem_list[0]) >= float(expect_mem_list[0]):
                             host_check_dict["result"]["memory"]["status"] = True
                         else:
                             host_check_dict["result"]["memory"]["status"] = False
 
                         # disk
-                        expect_disk_list = host_check_dict["result"]["disk"]["expect"]
+                        expect_disk_list = str(host_check_dict["result"]["disk"]["expect"]).split()
                         fact_disk_list = str(host_check_dict["result"]["disk"]["fact"]).split()
 
                         logger.info(f"fact disk: {fact_disk_list[0]}, expect disk: {expect_disk_list[0]}")
@@ -212,9 +211,9 @@ class EnvCheckListView(generics.ListAPIView):
         cpu_list = []
         cpu = models.DeployModels.objects.filter().all().values("cpu")
         for item in cpu:
-            cpu_list.append(item["cpu"][0])
+            cpu_list.append(int(item["cpu"].split("c")[0]))
 
-        cpu = max(cpu_list) + "c"
+        cpu = str(max(cpu_list)) + "c"
         logger.info(f"max cpu core is: {cpu}")
         return cpu
 
