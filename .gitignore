@@ -7,3 +7,5 @@ db.sqlite3
 settings.json
 launch.json
 uwsgi/*
+apps/deploy/migrations/*
+apps/host/migrations/*
