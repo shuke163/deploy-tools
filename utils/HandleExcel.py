@@ -91,10 +91,10 @@ class ReadExcel(object):
                 
                 pattern = re.compile(r'^[a-z]+_[a-z]+|^[a-z]+')
                 if not pattern.match(svc_name):
-                   raise Exception("The deploy model of sheet's server name is Wrong!")
+                   raise Exception("物料内容服务名称格式错误!")
                 
                 if not re.match(r'^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}$', ip_addr):
-                   raise Exception("The deploy model of sheet's ip addr is Wrong!")
+                   raise Exception("物料内容IP地址格式错误!")
 
                 model_list.append(dict(zip(self.title, row), ))
             
