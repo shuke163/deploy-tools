@@ -9,3 +9,5 @@ launch.json
 uwsgi/*
 apps/deploy/migrations/*
 apps/host/migrations/*
+uwsgi-dev.ini
+uwsgi-prod.ini
