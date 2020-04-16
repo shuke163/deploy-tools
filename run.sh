@@ -2,6 +2,7 @@
 
 set +e
 set -o noglob
+shopt -s extglob
 
 # Set Colors
 bold=$(tput bold)
@@ -54,8 +55,11 @@ CURRENT_PATH=$(
     pwd
 )
 
-PYTHON_PATH=/opt/miniconda3
+APP_NAME="door"
 PLATFORM=$(uname)
+PYTHON_PATH=/opt/miniconda3
+
+export ${PLATFORM}
 
 item=0
 
@@ -76,6 +80,20 @@ else
     APP_PORT=8099
 fi
 
+case ${PLATFORM} in
+    Darwin)
+        export PYTHON_PATH=/usr/local/Cellar/miniconda3/envs/door
+        sed -i ""  "s/^bind.*$/bind = \'0.0.0.0:${APP_PORT}\'/" gunicorn.conf.py
+        ;;
+    Linux)
+        export PYTHON_PATH=${PYTHON_PATH}
+        sed -i "s/^bind.*$/bind = \'0.0.0.0:${APP_PORT}\'/" gunicorn.conf.py
+        ;;
+    *)
+        export PYTHON_PATH=${PYTHON_PATH}
+        ;;
+esac
+
 # notary is not enabled by default
 with_notary=$false
 # clair is not enabled by default
@@ -92,7 +110,7 @@ function unzip_resource() {
     if [[ ! -f ${RESOURCE_PATH} ]]; then
         help
         exit 127
-        echo "${RESOURCE_PATH} Not Found!"
+        echo -e "\\033[1;31m[ERROR] ${RESOURCE_PATH} Not Found!\\033[0;39m"
     else
         tar zxf ${RESOURCE_PATH} -C ${CURRENT_PATH}/apps && chown -R root.root ${CURRENT_PATH}
         if [[ $? -ne 0 ]]; then
@@ -147,7 +165,7 @@ function start_app() {
         mkdir "${CURRENT_PATH}/logs"
     else
         mkdir "${CURRENT_PATH}/logs"
-    fi   
+    fi
  
     cd ${CURRENT_PATH} && rm -f celerybeat-schedule*
     [[ -d "${CURRENT_PATH}/logs" ]] && rm -fr "${CURRENT_PATH}/logs" && mkdir "${CURRENT_PATH}/logs"
@@ -169,23 +187,28 @@ function start_app() {
     ${PYTHON_PATH}/bin/python manage.py migrate >> ${CURRENT_PATH}/logs/db.log 2>&1 &
     sleep 3
     
-    nohup ${PYTHON_PATH}/bin/python manage.py runserver 0.0.0.0:${APP_PORT} >> ${CURRENT_PATH}/logs/run.log 2>&1 &
-
+    # start app service
+    ${PYTHON_PATH}/bin/gunicorn  -c gunicorn.conf.py --worker-class=eventlet ${APP_NAME}.wsgi:application
     sleep 5
+    # nohup ${PYTHON_PATH}/bin/python manage.py runserver 0.0.0.0:${APP_PORT} >> ${CURRENT_PATH}/logs/run.log 2>&1 &
+
+    case ${PLATFORM} in 
+        Darwin)
+            local port=$(lsof -i:${APP_PORT} | awk '{print $9}' | uniq)
+            ;;
+        Linux)
+            local port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
+            ;;
+        *)
+            local port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
+            ;;
+    esac
     
-    port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
     if [[ -n ${port} ]]; then
-        echo -e "\\033[1;32m[INFO] App already started and port is: ${port}\\033[0;39m"
+        echo -e "\\033[1;32m[INFO] App already started and port is: ${APP_PORT}\\033[0;39m"
     else
         echo -e "\\033[1;31m[ERROR] App not started!\\033[0;39m"
     fi
-}
-
-function uwsgi_port() {
-    port=${1}
-    env=${env}
-    cp ../scripts/uwsgi-dev.ini 
-    uwsgi --ini uwsgi.ini
 }
 
 function start_celery() {
@@ -197,7 +220,17 @@ function start_celery() {
 }
 
 function status() {
-    port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
+    case ${PLATFORM} in 
+        Darwin)
+            local port=$(lsof -i:${APP_PORT} | awk '{print $2}')
+            ;;
+        Linux)
+            local port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
+            ;;
+        *)
+            local port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
+            ;;
+    esac
     if [[ -n ${port} ]]; then
         echo -e "\\033[1;32m[INFO] URL: http://0.0.0.0:${APP_PORT}\\033[0;39m"
     else
@@ -254,14 +287,15 @@ function init_deploy() {
     case ${PLATFORM} in 
         Darwin)
             start_on_mac
-        Linux）
+            ;;
+        Linux)
             start_on_linux
+            ;;
         *)
-            echo "Unsupported os system types!"
-		    exit
+            echo -e "\\033[1;31m[ERROR] Unsupported operating system types!\\033[0;39m"
+		    exit 127
+            ;;
     esac
-
-    
 }
 
 init_deploy

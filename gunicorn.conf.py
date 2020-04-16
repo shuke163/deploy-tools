@@ -3,7 +3,7 @@
 '''
 @Author: shuke
 @Date: 2020-04-16 12:00:37
-@LastEditTime: 2020-04-16 13:16:44
+@LastEditTime: 2020-04-16 14:56:19
 @LastEditors: Please set LastEditors
 @Description: In User Settings Edit
 @FilePath: /deploy-backend/gunicorn.conf.py
@@ -33,7 +33,7 @@ worker_class = 'gevent'
 x_forwarded_for_header = 'X-FORWARDED-FOR'
 
 debug = True
-# daemon = True
+daemon = True
 loglevel = 'info'
 proc_name = 'gunicorn.door-backend'
 pidfile = os.path.join(BASE_DIR, "var/gunicorn.pid")

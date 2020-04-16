@@ -1,9 +1,21 @@
 #!/usr/bin/env bash
 
+PLATFORM=$(uname)
+
 function stop_celery() {
-    celery_pid=$(ps -ef | grep "/opt/miniconda3/bin/celery" | grep -v grep | awk '{print $2}')
-    if [[ ! -z "${celery_pid}" ]]; then
-        for pid in ${celery_pid[@]}; do
+    case ${PLATFORM} in
+        Darwin)
+            local pids=$(ps -ef | grep celery | grep -v grep | awk '{print $2}')
+            ;;
+        Linux)
+            local pids=$(ps -ef | grep "/opt/miniconda3/bin/celery" | grep -v grep | awk '{print $2}')
+            ;;
+        *)
+            local pids=$(ps -ef | grep "/opt/miniconda3/bin/celery" | grep -v grep | awk '{print $2}')
+            ;;
+    esac
+    if [[ ! -z "${pids}" ]]; then
+        for pid in ${pids[@]}; do
             kill ${pid}
             echo "[INFO] stop celery pid: ${pid}"
         done
@@ -11,7 +23,17 @@ function stop_celery() {
 }
 
 function stop_app() {
-    pids=$(ps aux | grep "/opt/miniconda3/bin/python" | grep -v grep | awk '{print $2}')
+    case ${PLATFORM} in
+        Darwin)
+            local pids=$(ps -ef | grep gunicorn | grep -v grep | awk '{print $2}')
+            ;;
+        Linux)
+            local pids=$(ps -ef | grep gunicorn | grep -v grep | awk '{print $2}')
+            ;;
+        *)
+            local pids=$(ps -ef | grep gunicorn | grep -v grep | awk '{print $2}')
+            ;;
+    esac
     if [ "x${pids}" != "x" ]; then
         echo "[INFO] Kill the app: "
         echo "[INFO] ${pids}"

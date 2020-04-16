@@ -119,27 +119,27 @@ if "syntax" in context.CLIARGS.keys():
 ```
 4. stop
 ```
+# kill -INT `cat uwsgi/uwsgi.pid`
+# or for convenience...
 # uwsgi --stop uwsgi/uwsgi.pid
 ```
 
 ## gunicorn
-1. 启动gunicorn
+
+1. 启动`gunicorn`
 ```
 # gunicorn  -c gunicorn.conf.py --worker-class=eventlet door.wsgi:application
 ```
 2. 查找`masterpid`
 ```
-# pstree -ap|grep gunicorn
+# pstree -ap | grep gunicorn
 ```
-3. 重启`Gunicorn`任务
+3. 重启`gunicorn`任务
 ```
-# kill -HUP 9479
+# kill -HUP $(cat var/gunicorn.pid)
 ```
-4. 退出`Gunicorn`任务
+4. 退出`gunicorn`任务
 ```
-# kill -9 9479
+# kill -9 $(cat var/gunicorn.pid)
 ```
-5. reload logs
-```
-# kill -USR1 $(cat var/gunicorn.pid)
-```
+⚠️: 启动方式可以采用`gunicorn`或者`uwsgi`两种方式，该项目采用`gunicorn`方式启动
