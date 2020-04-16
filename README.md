@@ -121,3 +121,21 @@ if "syntax" in context.CLIARGS.keys():
 ```
 # uwsgi --stop uwsgi/uwsgi.pid
 ```
+
+## gunicorn
+1. 启动gunicorn
+```
+# gunicorn  -c gunicorn.conf.py --worker-class=eventlet door.wsgi:application
+```
+2. 查找`masterpid`
+```
+# pstree -ap|grep gunicorn
+```
+3. 重启`Gunicorn`任务
+```
+# kill -HUP 9479
+```
+4. 退出`Gunicorn`任务
+```
+# kill -9 9479
+```
