@@ -14,3 +14,4 @@ uwsgi-prod.ini
 Procfile
 uwsgi.ini
 gunicorn.pid
+celerybeat-schedule.db
