@@ -105,19 +105,19 @@ if "syntax" in context.CLIARGS.keys():
 ```
 
 ## uwsgi service crontrol
-- start
+1. start
 ```
 # uwsgi --ini uwsgi.ini
 ```
-- reload
+2. reload
 ```
 # uwsgi --reload uwsgi/uwsgi.pid
 ```
-- connect and read
+3. connect and read
 ```
 # uwsgi --connect-and-read uwsgi/uwsgi.status
 ```
-- stop
+4. stop
 ```
 # uwsgi --stop uwsgi/uwsgi.pid
 ```
@@ -138,4 +138,8 @@ if "syntax" in context.CLIARGS.keys():
 4. 退出`Gunicorn`任务
 ```
 # kill -9 9479
+```
+5. reload logs
+```
+# kill -USR1 $(cat var/gunicorn.pid)
 ```
