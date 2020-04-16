@@ -159,7 +159,7 @@ function set_python() {
 }
 
 function start_app() {
-    
+
     if [[ -d "${CURRENT_PATH}/logs" ]]; then
         rm -fr "${CURRENT_PATH}/logs"
         mkdir "${CURRENT_PATH}/logs"
@@ -203,7 +203,7 @@ function start_app() {
             local port=$(ss -ntlp | grep ${APP_PORT} | awk '{print $4}' | awk -F: '{print $2}')
             ;;
     esac
-    
+
     if [[ -n ${port} ]]; then
         echo -e "\\033[1;32m[INFO] App already started and port is: ${APP_PORT}\\033[0;39m"
     else
