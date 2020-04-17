@@ -63,9 +63,10 @@ export ${PLATFORM}
 
 item=0
 
-function help() {
-    echo "Usage: bash $0 8099 /opt/packages.tar.gz"
-}
+# notary is not enabled by default
+with_notary=$false
+# clair is not enabled by default
+with_clair=$false
 
 if [[ $# -gt 3 ]]; then
     help
@@ -94,10 +95,17 @@ case ${PLATFORM} in
         ;;
 esac
 
-# notary is not enabled by default
-with_notary=$false
-# clair is not enabled by default
-with_clair=$false
+function help() {
+    echo "Usage: bash $0 8099 /opt/packages.tar.gz"
+}
+
+function rmsg() { echo -e "\033[31;49m$*\033[0m"; } #输出红色
+function gmsg() { echo -e "\033[32;49m$*\033[0m"; } #输出绿色
+function bmsg() { echo -e "\033[34;49m$*\033[0m"; } #输出蓝色
+
+function log() {
+    echo "$(date +"%Y-%m-%d %H:%M:%S"): $1"
+}
 
 function stop() {
     source ${CURRENT_PATH}/scripts/shutdown.sh >> ${CURRENT_PATH}/logs/run.log 2>&1 &

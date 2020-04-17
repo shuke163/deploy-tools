@@ -5,22 +5,9 @@
         <Property name="MON_HOME">{{ rcx_logpath }}/mon</Property>
         <Property name="MSG_HOME">{{ rcx_logpath }}/msglogs</Property>
         <Property name="IMEDIATEFLUSH">true</Property>
+        <Property name="ACTION_HOME">{{ rcx_logpath }}/actionlogs</Property>
     </Properties>
     <Appenders>
-
-    	<RollingRandomAccessFile name="rcx-perfmon"
-    								 fileName="${LOG_HOME}/rcx-perfmon.log" immediateFlush="${IMEDIATEFLUSH}"
-    								 bufferSize="8192"
-    								 filePattern="${LOG_HOME}/rcx-perfmon-%d{yyyy-MM-dd-HH}.%i.log">
-    			<PatternLayout charset="UTF-8">
-    				<pattern>%d{yyyyMMdd HH:mm:ss,SSS} %msg%n</pattern>
-    			</PatternLayout>
-    			<Policies>
-    				<SizeBasedTriggeringPolicy size="50 MB"/>
-    			</Policies>
-    			<DefaultRolloverStrategy fileIndex="min" max="10"/>
-    	</RollingRandomAccessFile>
-
         <RollingRandomAccessFile name="service-chatroommessage"
                                  fileName="${LOG_HOME}/service-chatroommessage.log" immediateFlush="${IMEDIATEFLUSH}"
                                  bufferSize="8192"
@@ -45,6 +32,40 @@
             </DefaultRolloverStrategy>            
              
         </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="rcx-perfmon"
+                                         fileName="${LOG_HOME}/rcx-perfmon.log" immediateFlush="${IMEDIATEFLUSH}"
+                                         bufferSize="8192"
+                                         filePattern="${LOG_HOME}/rcx-perfmon-%d{yyyy-MM-dd-HH}.%i.log">
+               <PatternLayout charset="UTF-8">
+                    <pattern>%d{MMdd HH:mm:ss,SSS} %msg%n</pattern>
+               </PatternLayout>
+               <Policies>
+                    <SizeBasedTriggeringPolicy size="50 MB"/>
+                    <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+               </Policies>
+
+               <DefaultRolloverStrategy max="10">
+                    <Delete basePath="${LOG_HOME}" maxDepth="1">
+                         <IfFileName glob="rcx-perfmon*" />
+                         <IfLastModified age="168h" />
+                    </Delete>
+               </DefaultRolloverStrategy>
+
+        </RollingRandomAccessFile> 
+        
+         <RollingRandomAccessFile name="action-logger"
+                                  fileName="${ACTION_HOME}/action-logger.log" immediateFlush="${IMEDIATEFLUSH}"
+                                  bufferSize="8192"
+                                  filePattern="${ACTION_HOME}/action-logger-%d{yyyy-MM-dd}.%i.log">
+               <PatternLayout charset="UTF-8">
+                    <pattern>%msg%n</pattern>
+               </PatternLayout>
+               <Policies>
+                    <SizeBasedTriggeringPolicy size="1000 MB"/>
+                    <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+               </Policies>
+          </RollingRandomAccessFile>
 
         <RollingRandomAccessFile name="api-rcpush"
                                  fileName="${LOG_HOME}/api-rcpush.log" immediateFlush="${IMEDIATEFLUSH}"
@@ -318,9 +339,7 @@
         <RollingRandomAccessFile name="service-pushtransmit"
                                  fileName="${LOG_HOME}/service-pushtransmit.log" append="true" immediateFlush="${IMEDIATEFLUSH}" bufferSize="8192"
                                  filePattern="${LOG_HOME}/service-pushtransmit-%d{yyyy-MM-dd-HH}.%i.log">
-            <PatternLayout charset="UTF-8">
-                <pattern>%d{MMdd HH:mm:ss,SSS}:%c{1}:%L %msg%n</pattern>
-            </PatternLayout>
+            <PatternLayout charset="UTF-8"/>
             <Filters>
                 <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
@@ -1149,7 +1168,7 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="service-rtc-logger" level="WARN" additivity="false">
+        <Logger name="service-rtc-logger" level="INFO" additivity="false">
             <AppenderRef ref="service-rtc"/>
             <AppenderRef ref="Console"/>
         </Logger>
@@ -1168,10 +1187,12 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
-		<Logger name="rcx-perfmon-loggerV2" level="info" additivity="false">
-			<AppenderRef ref="rcx-perfmon"/>
-
-		</Logger>
-
-    </Loggers>
+        <Logger name="rcx-perfmon-loggerV2" level="info" additivity="false">
+               <AppenderRef ref="rcx-perfmon"/>
+        </Logger>
+        
+        <Logger name="action-loggerV2" level="info" additivity="false">
+               <AppenderRef ref="action-logger"/>
+        </Logger>
+</Loggers>
 </Configuration>
