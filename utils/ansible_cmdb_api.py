@@ -123,12 +123,12 @@ class CallbackModule(CallbackBase):
             for j in sorted_x:
                 li2.append(j[0])
 
-            li3 = []
+            mount_info = []
             for k in li2:
-                li3.append(mount_map[k])
+                mount_info.append(mount_map[k])
 
-            host_info["mount_point"] = li3[-1]["mount"]
-            host_info["disk_format"] = li3[-1]["fstype"]
+            host_info["mount_point"] = mount_info[-1]["mount"]
+            host_info["disk_format"] = mount_info[-1]["fstype"]
             host_info["ipv4"] = host.get("ansible_default_ipv4")["address"]
             host_info["arch"] = host.get("ansible_architecture", None)
             host_info["os_type"] = host.get("ansible_distribution", None)

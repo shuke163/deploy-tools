@@ -99,9 +99,8 @@ function help() {
     echo "Usage: bash $0 8099 /opt/packages.tar.gz"
 }
 
-function rmsg() { echo -e "\033[31;49m$*\033[0m"; } #输出红色
-function gmsg() { echo -e "\033[32;49m$*\033[0m"; } #输出绿色
-function bmsg() { echo -e "\033[34;49m$*\033[0m"; } #输出蓝色
+function rmsg() { echo -e "\033[31;49m[ERROR]: $*\033[0m"; } #输出红色
+function gmsg() { echo -e "\033[32;49m[INFO]: $*\033[0m"; } #输出绿色
 
 function log() {
     echo "$(date +"%Y-%m-%d %H:%M:%S"): $1"
