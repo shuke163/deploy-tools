@@ -98,14 +98,14 @@ class CallbackModule(CallbackBase):
             memory = Decimal(round(host.get("ansible_memtotal_mb") / 1024) + 1).quantize(Decimal('0.00'))
             host_info["memory"] = "{memory} {unit}".format(memory=str(memory), unit="GB")
             
-            for k, v in host["ansible_facts"]["ansible_devices"].items():
+            for k, v in host["ansible_devices"].items():
                 disk_map[k] = float(v["size"].split()[0])
 
             disk_symbol = max(disk_map, key=disk_map.get)
             disk = str(disk_map[disk_symbol]) + " GB"
             host_info["disk"] = disk
             mount_map = []
-            for mount in host["ansible_facts"]["ansible_mounts"]:
+            for mount in host["ansible_mounts"]:
                 mnt = {}
                 mnt["device"] = mount["device"]
                 mnt["fstype"] = mount["fstype"]
