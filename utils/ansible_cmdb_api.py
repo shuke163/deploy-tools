@@ -105,7 +105,7 @@ class CallbackModule(CallbackBase):
             disk = str(disk_map[disk_symbol]) + " GB"
             host_info["disk"] = disk
             mount_map = []
-            for mount in setup["ansible_facts"]["ansible_mounts"]:
+            for mount in host["ansible_facts"]["ansible_mounts"]:
                 mnt = {}
                 mnt["device"] = mount["device"]
                 mnt["fstype"] = mount["fstype"]
