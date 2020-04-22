@@ -5,7 +5,7 @@
 @file: ansible_api.py 
 @content: zhaofengfeng@rongcloud.cn
 @time: 2020/03/07 14:48
-@software:  Door
+@software:  door backend
 """
 
 import os
@@ -14,6 +14,7 @@ import datetime
 import json
 import shutil
 import logging
+import operator
 from decimal import Decimal
 from django.conf import settings
 from ansible.module_utils.common.collections import ImmutableDict
@@ -33,7 +34,7 @@ from functools import partial
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, PATH)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Door.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "door.settings")
 
 import django
 
@@ -87,6 +88,7 @@ class CallbackModule(CallbackBase):
     def v2_runner_on_ok(self, result, **kwargs):
         hostname = result._host.get_name()
         logger.info(f"ansible v2_runner_on_ok hostname: {hostname}")
+        disk_map = {}
         try:
             host = result._result["ansible_facts"]
             host_info = {}
@@ -95,9 +97,38 @@ class CallbackModule(CallbackBase):
             host_info["cpu"] = str(host.get("ansible_processor_vcpus", None)) + "c"
             memory = Decimal(round(host.get("ansible_memtotal_mb") / 1024) + 1).quantize(Decimal('0.00'))
             host_info["memory"] = "{memory} {unit}".format(memory=str(memory), unit="GB")
-            host_info["disk"] = host.get("ansible_devices")["vda"]["partitions"]["vda1"]["size"]
-            host_info["disk_format"] = host.get("ansible_mounts")[0]["fstype"]
-            host_info["mount_point"] = host.get("ansible_mounts")[0]["mount"]
+            
+            for k, v in host["ansible_facts"]["ansible_devices"].items():
+                disk_map[k] = float(v["size"].split()[0])
+
+            disk_symbol = max(disk_map, key=disk_map.get)
+            disk = str(disk_map[disk_symbol]) + " GB"
+            host_info["disk"] = disk
+            mount_map = []
+            for mount in setup["ansible_facts"]["ansible_mounts"]:
+                mnt = {}
+                mnt["device"] = mount["device"]
+                mnt["fstype"] = mount["fstype"]
+                mnt["mount"] = mount["mount"]
+                mnt["size_total"] = mount["size_total"]
+                mount_map.append(mnt)
+
+            mount_index = {}
+            for i in mount_map:
+                for key, value in i.items():
+                    mount_index[mount_map.index(i)] = value
+            sorted_x = sorted(mount_index.items(), key=operator.itemgetter(1))
+
+            li2 = []
+            for j in sorted_x:
+                li2.append(j[0])
+
+            li3 = []
+            for k in li2:
+                li3.append(mount_map[k])
+
+            host_info["mount_point"] = li3[-1]["mount"]
+            host_info["disk_format"] = li3[-1]["fstype"]
             host_info["ipv4"] = host.get("ansible_default_ipv4")["address"]
             host_info["arch"] = host.get("ansible_architecture", None)
             host_info["os_type"] = host.get("ansible_distribution", None)
