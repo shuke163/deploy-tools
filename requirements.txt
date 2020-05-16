@@ -1,5 +1,5 @@
 drf_yasg==1.17.0
-Django==2.2.6
+Django==2.2.10
 ansible==2.9.6
 Click==7.0
 psutil==5.7.0
