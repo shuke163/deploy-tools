@@ -1,7 +1,7 @@
 ## django rest demo
 > `Django + logger + Swagger APi docs`
 
-### role 排序
+### role sort
 {
 "base": all
 "service": ["install-python","systemconf","supervisord","openssl","jre"],
@@ -38,7 +38,7 @@
 "sort": 301
 }
 
-## 扫描当前目录下的代码生成`requirements.txt`
+## scan dir for `requirements.txt`
 ```
 # pipreqs ./ --force --encoding=utf8
 ```
